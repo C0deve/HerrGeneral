@@ -20,7 +20,7 @@ public class Scanner
 {
     private readonly Type _commandHandlerInterface = typeof(ICommandHandler<,>);
     private readonly Type _writeSideEventHandlerInterface = typeof(IEventHandler<>);
-    private readonly Type _readSideEventHandlerInterface = typeof(ReadSide.Contracts.IEventHandler<>);
+    private readonly Type _readSideEventHandlerInterface = typeof(Contracts.ReadSIde.IEventHandler<>);
     private readonly HashSet<SearchParams> _writeSideSearchParams = new();
     private readonly HashSet<SearchParams> _readSideSearchParams = new();
 

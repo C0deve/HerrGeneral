@@ -1,4 +1,5 @@
 using HerrGeneral.Contracts;
+using HerrGeneral.Contracts.WriteSide;
 using HerrGeneral.Error;
 using HerrGeneral.Test.Extension.Log;
 using HerrGeneral.WriteSide;

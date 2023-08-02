@@ -16,6 +16,7 @@
         <SignAssembly>true</SignAssembly>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,11 +30,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Optional" Version="4.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\HerrGeneral.ReadSide.Contracts\HerrGeneral.ReadSide.Contracts.csproj" />
+      <ProjectReference Include="..\HerrGeneral.Contracts\HerrGeneral.Contracts.csproj" />
     </ItemGroup>
     <PropertyGroup>
         <EnablePackageValidation>true</EnablePackageValidation>

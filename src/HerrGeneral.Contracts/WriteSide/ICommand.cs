@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace HerrGeneral.Contracts;
+namespace HerrGeneral.Contracts.WriteSide;
 
 public interface ICommand<out TResult>
 {

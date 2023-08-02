@@ -21,7 +21,7 @@ public static class ServiceExtension
             serviceCollection.RegisterOpenType(eventHandler, typeof(IEventHandler<>), ServiceLifetime.Transient);
 
         foreach (var eventHandler in scanner.ReadSideEventHandlerTypes)
-            serviceCollection.RegisterOpenType(eventHandler, typeof(ReadSide.Contracts.IEventHandler<>), ServiceLifetime.Singleton);
+            serviceCollection.RegisterOpenType(eventHandler, typeof(Contracts.ReadSIde.IEventHandler<>), ServiceLifetime.Singleton);
 
         serviceCollection.AddSingleton<ReadSideEventDispatcher>();
         serviceCollection.AddSingleton<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());

@@ -1,4 +1,6 @@
 using HerrGeneral.Contracts;
+using HerrGeneral.Contracts.ReadSIde;
+using HerrGeneral.Contracts.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -9,9 +11,9 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
 {
     private static async Task Handle(TEvent @event, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        var logger = serviceProvider.GetService<ILogger<HerrGeneral.ReadSide.Contracts.IEventHandler<TEvent>>>();
+        var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
 
-        foreach (var handler in serviceProvider.GetServices<HerrGeneral.ReadSide.Contracts.IEventHandler<TEvent>>())
+        foreach (var handler in serviceProvider.GetServices<IEventHandler<TEvent>>())
         {
             await 
                 Start(handler)
@@ -24,6 +26,6 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
     public async Task Handle(object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
         await Handle((TEvent)@event, serviceProvider, cancellationToken);
     
-    private static Pipeline.EventHandlerDelegate<TEvent> Start(HerrGeneral.ReadSide.Contracts.IEventHandler<TEvent> handler) =>
+    private static Pipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> handler) =>
         handler.Handle;
 }

@@ -1,7 +1,7 @@
 
-using HerrGeneral.Contracts;
+using HerrGeneral.Contracts.WriteSide;
 
-namespace HerrGeneral.ReadSide.Contracts;
+namespace HerrGeneral.Contracts.ReadSIde;
 
 /// <summary>
 /// Defines a handler for a notification
@@ -10,10 +10,11 @@ namespace HerrGeneral.ReadSide.Contracts;
 public interface IEventHandler<in TEvent>
     where TEvent : IEvent
 {
-    ///// <summary>
-    ///// Handles a notification
-    ///// </summary>
-    ///// <param name="notification">The notification</param>
-    ///// <param name="cancellationToken">Cancellation token</param>
+    /// <summary>
+    /// Handles a notification
+    /// </summary>
+    /// <param name="notification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task Handle(TEvent notification, CancellationToken cancellationToken);
 }

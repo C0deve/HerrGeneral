@@ -46,7 +46,7 @@ public class ScannerShould
 
     [Fact]
     public void Filter_IReadSideEventHandler() =>
-        typeof(MyReadSideEventHandlerImpl).IsAssignableFromOpenType(typeof(ReadSide.Contracts.IEventHandler<>)).ShouldBe(true);
+        typeof(MyReadSideEventHandlerImpl).IsAssignableFromOpenType(typeof(Contracts.ReadSIde.IEventHandler<>)).ShouldBe(true);
 
     public class Command1 : CommandBase<CommandResultV2>
     {
@@ -103,7 +103,7 @@ public class ScannerShould
     {
     }
 
-    private class MyReadSideEventHandlerImpl : ReadSide.Contracts.IEventHandler<MyEvent>
+    private class MyReadSideEventHandlerImpl : Contracts.ReadSIde.IEventHandler<MyEvent>
     {
         public Task Handle(MyEvent notification, CancellationToken cancellationToken) => Task.CompletedTask;
     }

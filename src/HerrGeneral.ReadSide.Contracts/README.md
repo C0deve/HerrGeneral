@@ -1,3 +1,0 @@
-# HerrGeneral
-
-Read side contract

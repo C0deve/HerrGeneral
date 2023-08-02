@@ -6,14 +6,15 @@
         <Nullable>enable</Nullable>
         <Title>Herr General</Title>
         <Authors>Codeve Soft</Authors>
-        <Description>Cqrs library used in my personal work</Description>
+        <Description>Helper methods for Herr General testing</Description>
         <Version>1.0.0-rc</Version>
         <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
         <Product>Herr General</Product>
-        <PackageTags>.Net;Cqrs</PackageTags>
+        <PackageTags>.Net;Cqrs;Test</PackageTags>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
