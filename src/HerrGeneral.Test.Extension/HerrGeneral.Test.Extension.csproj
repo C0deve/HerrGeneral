@@ -4,6 +4,16 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Title>Herr General</Title>
+        <Authors>Codeve Soft</Authors>
+        <Description>Cqrs library used in my personal work</Description>
+        <Version>1.0.0-rc</Version>
+        <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
+        <Product>Herr General</Product>
+        <PackageTags>.Net;Cqrs</PackageTags>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

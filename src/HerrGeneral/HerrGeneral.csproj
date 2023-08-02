@@ -11,6 +11,11 @@
         <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
         <Product>Herr General</Product>
         <PackageTags>.Net;Cqrs</PackageTags>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <SignAssembly>true</SignAssembly>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
