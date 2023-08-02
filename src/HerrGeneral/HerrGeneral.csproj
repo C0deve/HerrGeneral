@@ -4,12 +4,19 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Title>Herr General</Title>
+        <Authors>Codeve Soft</Authors>
+        <Description>Cqrs library used in my personal work</Description>
+        <Version>1.0.0-rc</Version>
+        <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
+        <Product>Herr General</Product>
+        <PackageTags>.Net;Cqrs</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
