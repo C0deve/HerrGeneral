@@ -41,4 +41,9 @@
         <!-- Optional: Detect breaking changes from a previous version -->
         <!-- <PackageValidationBaselineVersion>1.0.0</PackageValidationBaselineVersion> -->
     </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Add a README.md next to the csproj -->
+        <None Include="README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
 </Project>

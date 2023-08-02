@@ -14,7 +14,6 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,4 +26,8 @@
       <PackageReference Include="xunit.assert" Version="2.4.2" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- Add a README.md next to the csproj -->
+        <None Include="README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
 </Project>
