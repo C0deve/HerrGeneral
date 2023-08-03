@@ -6,29 +6,24 @@
         <Nullable>enable</Nullable>
         <Title>Herr General</Title>
         <Authors>Codeve Soft</Authors>
-        <Description>Helper methods for Herr General testing</Description>
-        <Version>0.1.0-rc</Version>
+        <Description>Helper methods for HerrGeneral testing</Description>
+        <Version>0.1.1-rc</Version>
         <MinVerTagPrefix>v</MinVerTagPrefix>
         <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
         <Product>Herr General</Product>
-        <PackageTags>.Net;Cqrs;Test</PackageTags>
+        <PackageTags>HerrGeneral;Test</PackageTags>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HerrGeneral\HerrGeneral.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
-      <PackageReference Include="Shouldly" Version="4.2.1" />
-      <PackageReference Include="xunit.assert" Version="2.4.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <!-- Add a README.md next to the csproj -->
-        <None Include="README.md" Pack="true" PackagePath="" />
+        <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0"/>
+        <PackageReference Include="HerrGeneral" Version="[0.1.1-rc,0.1.2-rc]"/>
+        <PackageReference Include="Shouldly" Version="4.2.1"/>
+        <PackageReference Include="xunit.assert" Version="2.4.2"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
     </ItemGroup>
 </Project>

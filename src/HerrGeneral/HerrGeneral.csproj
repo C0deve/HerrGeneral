@@ -7,7 +7,7 @@
         <Title>Herr General</Title>
         <Authors>Codeve Soft</Authors>
         <Description>Cqrs library used in my personal work</Description>
-        <Version>0.1.0-rc</Version>
+        <Version>0.1.2-rc</Version>
         <MinVerTagPrefix>v</MinVerTagPrefix>
         <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
         <Product>Herr General</Product>
@@ -25,9 +25,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="HerrGeneral.Contracts" Version="0.1.0-rc" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+        <PackageReference Include="HerrGeneral.Contracts" Version="[0.1.0-rc, 0.1.1-rc]"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1"/>
         <PackageReference Include="MinVer" Version="4.3.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -42,6 +42,6 @@
 
     <ItemGroup>
         <!-- Add a README.md next to the csproj -->
-        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
 </Project>

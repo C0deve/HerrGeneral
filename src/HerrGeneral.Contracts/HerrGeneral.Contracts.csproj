@@ -6,20 +6,20 @@
         <Nullable>enable</Nullable>
         <Title>Herr General</Title>
         <Authors>Codeve Soft</Authors>
-        <Description>Write side contracts</Description>
-        <Version>0.1.0-rc</Version>
+        <Description>Contracts used by HerrGeneral</Description>
+        <Version>0.1.1-rc</Version>
         <MinVerTagPrefix>v</MinVerTagPrefix>
         <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
         <Product>Herr General</Product>
-        <PackageTags>.Net;Cqrs</PackageTags>
+        <PackageTags>.Net;HerrGeneral</PackageTags>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <!-- Add a README.md next to the csproj -->
-        <None Include="README.md" Pack="true" PackagePath="" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
     </ItemGroup>
 </Project>
