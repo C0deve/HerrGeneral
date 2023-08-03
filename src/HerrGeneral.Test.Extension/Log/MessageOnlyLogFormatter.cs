@@ -4,8 +4,21 @@ using Microsoft.Extensions.Logging;
 
 namespace HerrGeneral.Test.Extension.Log;
 
-public class SimpleLogFormatter : ILogFormatter
+/// <summary>
+/// Display only the log message if provided
+/// </summary>
+public class MessageOnlyLogFormatter : ILogFormatter
 {
+    /// <summary>
+    /// Format a log
+    /// </summary>
+    /// <param name="scopeLevel"></param>
+    /// <param name="categoryName"></param>
+    /// <param name="logLevel"></param>
+    /// <param name="eventId"></param>
+    /// <param name="message"></param>
+    /// <param name="exception"></param>
+    /// <returns></returns>
     public string Format(
         int scopeLevel,
         string categoryName,
