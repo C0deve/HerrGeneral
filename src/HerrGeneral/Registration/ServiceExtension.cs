@@ -5,8 +5,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Registration;
 
+/// <summary>
+/// Extension methods for registration
+/// </summary>
 public static class ServiceExtension
 {
+    /// <summary>
+    /// Configure HerrGeneral :
+    /// Scan and register all command handlers, write side event handlers and read side event handlers 
+    /// Add required services 
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <param name="scannerDelegate"></param>
+    /// <returns></returns>
     public static IServiceCollection UseHerrGeneral(
         this IServiceCollection serviceCollection,
         Func<Scanner, Scanner> scannerDelegate

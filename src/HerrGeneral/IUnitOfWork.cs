@@ -1,5 +1,9 @@
 ﻿namespace HerrGeneral;
 
+/// <summary>
+/// Interface of the unit of work.
+/// One unit of per command handler
+/// </summary>
 public interface IUnitOfWork
 {
     /// <summary>

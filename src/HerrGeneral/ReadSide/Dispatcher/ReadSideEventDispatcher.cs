@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HerrGeneral.ReadSide.Dispatcher;
 
-public class ReadSideEventDispatcher : EventDispatcherBase, IEventDispatcher, IAddEventToDispatch
+internal class ReadSideEventDispatcher : EventDispatcherBase, IEventDispatcher, IAddEventToDispatch
 {
     private readonly ILogger<ReadSideEventDispatcher> _logger;
     protected override Type WrapperOpenType => typeof(EventHandlerWrapper<>);

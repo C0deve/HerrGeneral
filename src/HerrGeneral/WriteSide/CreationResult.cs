@@ -2,39 +2,57 @@
 
 namespace HerrGeneral.WriteSide;
 
+/// <summary>
+/// Result of an handled creation command
+/// Contain the aggregate id
+/// </summary>
 public class CreationResult : IWithSuccess
 {
+    /// <summary>
+    /// Id of the created aggregate
+    /// </summary>
     public Guid AggregateId { get; }
-    public Exception? PanicException { get; }
-    public DomainError? DomainError { get; }
 
+    private readonly Exception? _panicException;
+    private readonly DomainError? _domainError;
+
+    /// <summary>
+    /// The operation was successful.
+    /// </summary>
     public bool IsSuccess => !IsDomainError && !IsPanicError;
-    private bool IsDomainError => DomainError != null;
-    private bool IsPanicError => PanicException != null;
+    private bool IsDomainError => _domainError != null;
+    private bool IsPanicError => _panicException != null;
 
-    private CreationResult(Guid aggregateId)
-    {
+    private CreationResult(Guid aggregateId) => 
         AggregateId = aggregateId;
-    }
 
-    private CreationResult(DomainError error)
-    {
-        DomainError = error;
-    }
+    private CreationResult(DomainError error) => 
+        _domainError = error;
 
-    private CreationResult(Exception panicException)
-    {
-        PanicException = panicException;
-    }
+    private CreationResult(Exception panicException) => 
+        _panicException = panicException;
 
+    /// <summary>
+    /// Factory for success
+    /// </summary>
     public static CreationResult Success(Guid aggregateId) => new CreationResult(aggregateId);
 
+    /// <summary>
+    /// Factory for domain error
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
     public static CreationResult DomainFail(DomainError error) => new CreationResult(error);
 
+    /// <summary>
+    /// Factory for panic exception
+    /// </summary>
+    /// <param name="panicException"></param>
+    /// <returns></returns>
     public static CreationResult PanicFail(Exception panicException) => new CreationResult(panicException);
 
     /// <summary>
-    /// Evaluates a specified function, based on whether a value is present or not.
+    /// Evaluates a specified function, based on the .current state
     /// </summary>
     /// <param name="onSuccess">The function to evaluate on success.</param>
     /// <param name="onDomainError">The function to evaluate on domain error.</param>
@@ -49,12 +67,12 @@ public class CreationResult : IWithSuccess
         return IsSuccess
             ? onSuccess(AggregateId)
             : IsDomainError
-                ? onDomainError(DomainError ?? throw new InvalidOperationException())
-                : onPanicError(PanicException ?? throw new InvalidOperationException());
+                ? onDomainError(_domainError ?? throw new InvalidOperationException())
+                : onPanicError(_panicException ?? throw new InvalidOperationException());
     }
 
     /// <summary>
-    /// Evaluates a specified action, based on whether a value is present or not.
+    /// Evaluates a specified action based on the .current state
     /// </summary>
     /// <param name="onSuccess">The action to evaluate if the value is present.</param>
     /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
@@ -67,13 +85,13 @@ public class CreationResult : IWithSuccess
         if (IsSuccess)
             onSuccess(AggregateId);
         else if (IsDomainError)
-            onDomainError(DomainError ?? throw new InvalidOperationException());
+            onDomainError(_domainError ?? throw new InvalidOperationException());
         else
-            onPanicError(PanicException ?? throw new InvalidOperationException());
+            onPanicError(_panicException ?? throw new InvalidOperationException());
     }
 
     /// <summary>
-    /// Evaluates a specified action if a value is present.
+    /// Evaluates a specified action based on the .current state
     /// </summary>
     /// <param name="success">The action to evaluate if the value is present.</param>
     public void MatchSuccess(Action<Guid> success)
@@ -84,25 +102,40 @@ public class CreationResult : IWithSuccess
     }
 
     /// <summary>
-    /// Evaluates a specified action if no value is present.
+    /// Evaluates a specified action based on the .current state.
     /// </summary>
     /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
     public void MatchDomainError(Action<DomainError> onDomainError)
     {
         if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
 
-        if (IsDomainError) onDomainError(DomainError ?? throw new InvalidOperationException());
+        if (IsDomainError) onDomainError(_domainError ?? throw new InvalidOperationException());
     }
         
+    /// <summary>
+    /// Evaluates a specified action on panic exception.
+    /// </summary>
+    /// <param name="onPanicException"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="InvalidOperationException"></exception>
     public void MatchPanicException(Action<Exception> onPanicException)
     {
         if (onPanicException == null) throw new ArgumentNullException(nameof(onPanicException));
 
-        if (IsPanicError) onPanicException(PanicException ?? throw new InvalidOperationException());
+        if (IsPanicError) onPanicException(_panicException ?? throw new InvalidOperationException());
     }
 
+    /// <summary>
+    /// True if success, else false.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns></returns>
     public static implicit operator bool(CreationResult result) => result.IsSuccess;
 
+    /// <summary>
+    /// Display the result
+    /// </summary>
+    /// <returns></returns>
     public override string ToString() =>
         Match(
             id => $"Id<{id}>",

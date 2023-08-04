@@ -2,18 +2,30 @@
 
 namespace HerrGeneral;
 
+/// <summary>
+/// Extensions methods
+/// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Fluent guid validation
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns></returns>
     public static bool IsEmpty(this Guid guid) => guid == Guid.Empty;
-    public static TReturn WithValue<TReturn>(this Guid guid, Func<Guid, TReturn> onValue)
-    {
-        if (guid.IsEmpty())
-            throw new ArgumentNullException(nameof(guid));
 
-        return onValue(guid);
-    }
+    /// <summary>
+    /// Fluent string validation
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
     public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
     
+    /// <summary>
+    /// Display the type with a friendly name
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public static string GetFriendlyName(this Type type)
     {
         var friendlyName = type.Name;
@@ -35,14 +47,25 @@ public static class Extensions
 
         return friendlyName;
     }
-    public static string ToLog(this Exception e) =>
-        $"!! Panic exception of type {e.GetType().GetFriendlyName()}\n-- Message : {e.Message}\n-- StackTrace :\n{e.StackTrace}\n";
 
+    /// <summary>
+    /// Add multiple items to the hashSet 
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="values"></param>
+    /// <typeparam name="T"></typeparam>
     public static void AddRange<T>(this HashSet<T> source, IEnumerable<T> values)
     {
         foreach (var value in values) source.Add(value);
     }
 
+    /// <summary>
+    /// Cast a Dictionary to a ReadOnlyDictionary
+    /// </summary>
+    /// <param name="source"></param>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <returns></returns>
     public static ReadOnlyDictionary<TKey, TValue> AsReadonly<TKey, TValue>(this Dictionary<TKey, TValue> source) 
         where TKey : notnull => new(source);
 }

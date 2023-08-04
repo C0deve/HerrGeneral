@@ -9,10 +9,10 @@ namespace HerrGeneral.WriteSide;
 public interface IEventHandler<in TEvent>
     where TEvent : IEvent
 {
-    ///// <summary>
-    ///// Handles a notification
-    ///// </summary>
-    ///// <param name="notification">The notification</param>
-    ///// <param name="cancellationToken">Cancellation token</param>
+    /// <summary>
+    /// Handle a notification
+    /// </summary>
+    /// <param name="notification">The notification</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     Task Handle(TEvent notification, CancellationToken cancellationToken);
 }
