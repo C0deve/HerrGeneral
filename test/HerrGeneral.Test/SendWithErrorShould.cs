@@ -1,10 +1,8 @@
 using HerrGeneral.Registration;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
-using HerrGeneral.Test.Extension.Log;
+using HerrGeneral.Test.Extension.Internal;
 using Lamar;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
 // ReSharper disable once CheckNamespace

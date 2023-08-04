@@ -4,13 +4,11 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
         <PackageReference Include="FakeItEasy" Version="7.4.0" />
         <PackageReference Include="Lamar" Version="12.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
@@ -29,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj" />
+      <ProjectReference Include="..\HerrGeneral.Test.Extension.Internal\HerrGeneral.Test.Extension.Internal.csproj" />
       <ProjectReference Include="..\..\src\HerrGeneral\HerrGeneral.csproj" />
     </ItemGroup>
 

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>HerrGeneral.Test.Extension.Internal</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
+        <PackageReference Include="HerrGeneral" Version="[0.1.1-rc,0.1.2-rc]" />
+        <PackageReference Include="Shouldly" Version="4.2.1" />
+        <PackageReference Include="xunit.assert" Version="2.4.2" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    </ItemGroup>
+</Project>

@@ -1,11 +1,9 @@
 using HerrGeneral.Error;
 using HerrGeneral.ReadSide.Dispatcher;
 using HerrGeneral.Registration;
-using HerrGeneral.Test.Extension.Log;
+using HerrGeneral.Test.Extension.Internal;
 using HerrGeneral.WriteSide;
 using Lamar;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Shouldly;
 using Xunit.Abstractions;
 

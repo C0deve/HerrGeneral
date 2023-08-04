@@ -3,11 +3,9 @@ using FakeItEasy;
 using HerrGeneral.Registration;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
-using HerrGeneral.Test.Extension.Log;
+using HerrGeneral.Test.Extension.Internal;
 using HerrGeneral.WriteSide;
 using Lamar;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Shouldly;
 using Xunit.Abstractions;
 
