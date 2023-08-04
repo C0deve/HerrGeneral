@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using HerrGeneral.Contracts;
 using HerrGeneral.Contracts.WriteSide;
 using HerrGeneral.Error;
 using HerrGeneral.Logger;

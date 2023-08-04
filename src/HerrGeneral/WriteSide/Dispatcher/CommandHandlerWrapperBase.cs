@@ -1,4 +1,3 @@
-using HerrGeneral.Contracts;
 using HerrGeneral.Contracts.WriteSide;
 using HerrGeneral.Error;
 using Microsoft.Extensions.DependencyInjection;
