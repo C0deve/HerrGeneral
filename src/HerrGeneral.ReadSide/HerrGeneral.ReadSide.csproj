@@ -20,7 +20,7 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <EnablePackageValidation>true</EnablePackageValidation>
 
-        <Description>Read site interface for HerrGeneral</Description>
+        <Description>Read side interface for HerrGeneral</Description>
         <PackageTags>.Net;HerrGeneral</PackageTags>
     </PropertyGroup>
     
@@ -28,4 +28,9 @@
       <ProjectReference Include="..\HerrGeneral.Contracts\HerrGeneral.Contracts.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="MinVer" Version="4.3.0" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    </ItemGroup>
+    
 </Project>
