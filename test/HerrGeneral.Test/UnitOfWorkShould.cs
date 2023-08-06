@@ -1,10 +1,9 @@
-
 using FakeItEasy;
-using HerrGeneral.Registration;
+using HerrGeneral.Core;
+using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
-using HerrGeneral.Test.Extension.Internal;
-using HerrGeneral.WriteSide;
+using HerrGeneral.Core.WriteSide;
 using Lamar;
 using Shouldly;
 using Xunit.Abstractions;

@@ -1,8 +1,8 @@
-using HerrGeneral.Contracts;
 using HerrGeneral.Contracts.WriteSide;
-using HerrGeneral.Error;
+using HerrGeneral.Core;
+using HerrGeneral.Core.Error;
 using HerrGeneral.Test.Extension.Log;
-using HerrGeneral.WriteSide;
+using HerrGeneral.Core.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shouldly;
@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 namespace HerrGeneral.Test.Extension;
 
 /// <summary>
-/// Extension methods for testing code using HerrGeneral
+/// Extension methods for testing code using HerrGeneral.Core
 /// </summary>
 public static class Extension
 {

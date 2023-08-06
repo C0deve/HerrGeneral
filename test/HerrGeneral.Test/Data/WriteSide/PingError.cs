@@ -1,4 +1,4 @@
-using HerrGeneral.Error;
+using HerrGeneral.Core.Error;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 

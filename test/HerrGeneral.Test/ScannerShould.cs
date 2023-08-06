@@ -1,5 +1,5 @@
-using HerrGeneral.Registration;
-using HerrGeneral.WriteSide;
+using HerrGeneral.Core.Registration;
+using HerrGeneral.Core.WriteSide;
 using Shouldly;
 
 // ReSharper disable once CheckNamespace
@@ -9,14 +9,14 @@ public class ScannerShould
 {
     [Fact]
     public void Get_all_command_handlers() =>
-        new Registration.Scanner()
+        new Core.Registration.Scanner()
             .OnWriteSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
             .CommandHandlerTypes.ShouldBe(new[] { typeof(Command2Handler), typeof(Command1.Command1Handler) });
 
     [Fact]
     public void Get_all_command_handlers_without_namespace_filter() =>
-        new Registration.Scanner()
+        new Core.Registration.Scanner()
             .OnWriteSide(typeof(Command1).Assembly)
             .Scan()
             .CommandHandlerTypes
@@ -24,14 +24,14 @@ public class ScannerShould
 
     [Fact]
     public void Get_all_event_handlers() =>
-        new Registration.Scanner()
+        new Core.Registration.Scanner()
             .OnWriteSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
             .EventHandlerTypes.ShouldBe(new[] { typeof(MyEventHandler), typeof(MyEventHandlerImpl) });
     
     [Fact]
     public void Get_all_read_event_handlers() =>
-        new Registration.Scanner()
+        new Core.Registration.Scanner()
             .OnReadSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
             .ReadSideEventHandlerTypes.ShouldBe(new[] { typeof(MyReadSideEventHandlerImpl) });

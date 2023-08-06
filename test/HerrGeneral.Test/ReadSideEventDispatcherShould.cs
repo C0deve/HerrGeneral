@@ -1,8 +1,7 @@
-using HerrGeneral.Error;
-using HerrGeneral.ReadSide.Dispatcher;
-using HerrGeneral.Registration;
-using HerrGeneral.Test.Extension.Internal;
-using HerrGeneral.WriteSide;
+using HerrGeneral.Core.Error;
+using HerrGeneral.Core.ReadSide.Dispatcher;
+using HerrGeneral.Core.Registration;
+using HerrGeneral.Core.WriteSide;
 using Lamar;
 using Shouldly;
 using Xunit.Abstractions;
@@ -37,7 +36,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
                     "Pong received",
                     sourceCommandId,
                     Guid.NewGuid()));
-            await container.GetInstance<HerrGeneral.ReadSide.IEventDispatcher>().Dispatch(sourceCommandId, CancellationToken.None);
+            await container.GetInstance<Core.ReadSide.IEventDispatcher>().Dispatch(sourceCommandId, CancellationToken.None);
 
             container.GetInstance<ReadModel>().Message.ShouldBe("Pong received");
         }
@@ -65,7 +64,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
                         Guid.NewGuid()));
 
             async Task Act() =>
-                await container.GetInstance<HerrGeneral.ReadSide.IEventDispatcher>()
+                await container.GetInstance<Core.ReadSide.IEventDispatcher>()
                     .Dispatch(sourceCommandId, CancellationToken.None);
 
             await Should.ThrowAsync<ReadSideException>(Act);

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral", "src\HerrGeneral\HerrGeneral.csproj", "{A3FF80D0-6D34-49DE-B599-13E26F15DE6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Core", "src\HerrGeneral.Core\HerrGeneral.Core.csproj", "{A3FF80D0-6D34-49DE-B599-13E26F15DE6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Contracts", "src\HerrGeneral.Contracts\HerrGeneral.Contracts.csproj", "{AC8C1C87-765A-4C2D-B5A6-DD3159C2DEF5}"
 EndProject
