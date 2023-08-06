@@ -1,4 +1,4 @@
-namespace HerrGeneral.Core.WriteSide.Dispatcher;
+namespace HerrGeneral.Core.WriteSide;
 
 internal interface ICommandHandlerWrapper<TResult>
 {

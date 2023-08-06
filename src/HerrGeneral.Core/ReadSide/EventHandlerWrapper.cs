@@ -3,7 +3,7 @@ using HerrGeneral.ReadSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace HerrGeneral.Core.ReadSide.Dispatcher;
+namespace HerrGeneral.Core.ReadSide;
 
 internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
     where TEvent : IEvent

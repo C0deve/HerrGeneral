@@ -1,5 +1,5 @@
-using HerrGeneral.Core.ReadSide.Dispatcher;
-using HerrGeneral.Core.WriteSide.Dispatcher;
+using HerrGeneral.Core.ReadSide;
+using HerrGeneral.Core.WriteSide;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,7 +38,7 @@ public static class ServiceExtension
         serviceCollection.AddSingleton<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
         serviceCollection.AddSingleton<ReadSide.IEventDispatcher>(x => x.GetRequiredService<ReadSideEventDispatcher>());
 
-        serviceCollection.AddSingleton<IEventDispatcher, EventDispatcher>();
+        serviceCollection.AddSingleton<HerrGeneral.WriteSide.IEventDispatcher, EventDispatcher>();
         serviceCollection.AddSingleton<Mediator>();
 
         return serviceCollection;

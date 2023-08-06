@@ -1,6 +1,6 @@
 using HerrGeneral.WriteSide;
 
-namespace HerrGeneral.Core.WriteSide.Dispatcher;
+namespace HerrGeneral.Core.WriteSide;
 
 internal class CommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, CommandResultV2> where TCommand : Command
 {

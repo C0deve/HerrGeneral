@@ -5,7 +5,7 @@ using HerrGeneral.ReadSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace HerrGeneral.Core.ReadSide.Dispatcher;
+namespace HerrGeneral.Core.ReadSide;
 
 internal static class Pipeline
 {

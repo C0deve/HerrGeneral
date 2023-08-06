@@ -1,5 +1,5 @@
 using HerrGeneral.Core.Error;
-using HerrGeneral.Core.ReadSide.Dispatcher;
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
 using Lamar;

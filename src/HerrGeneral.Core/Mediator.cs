@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using HerrGeneral.Core.WriteSide.Dispatcher;
+using HerrGeneral.Core.WriteSide;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core;

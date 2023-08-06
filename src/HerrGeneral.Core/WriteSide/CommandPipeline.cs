@@ -5,7 +5,7 @@ using HerrGeneral.WriteSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace HerrGeneral.Core.WriteSide.Dispatcher;
+namespace HerrGeneral.Core.WriteSide;
 
 internal static class CommandPipeline
 {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 // Strongly inspired from https://github.com/jbogard/MediatR
 
-namespace HerrGeneral.Core.ReadSide.Dispatcher;
+namespace HerrGeneral.Core.ReadSide;
 
 internal class ReadSideEventDispatcher : EventDispatcherBase, IEventDispatcher, IAddEventToDispatch
 {

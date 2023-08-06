@@ -1,10 +1,9 @@
 using HerrGeneral.Contracts;
-using HerrGeneral.Core.ReadSide.Dispatcher;
-using HerrGeneral.WriteSide;
+using HerrGeneral.Core.ReadSide;
 
-namespace HerrGeneral.Core.WriteSide.Dispatcher;
+namespace HerrGeneral.Core.WriteSide;
 
-internal class EventDispatcher : EventDispatcherBase, IEventDispatcher
+internal class EventDispatcher : EventDispatcherBase, HerrGeneral.WriteSide.IEventDispatcher
 {
     private readonly IAddEventToDispatch _readSideEventDispatcher;
 

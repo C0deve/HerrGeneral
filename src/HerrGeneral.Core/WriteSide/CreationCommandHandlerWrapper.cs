@@ -1,6 +1,6 @@
 using HerrGeneral.WriteSide;
 
-namespace HerrGeneral.Core.WriteSide.Dispatcher;
+namespace HerrGeneral.Core.WriteSide;
 
 internal class CreationCommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, CreationResult>
     where TCommand : CreationCommand
