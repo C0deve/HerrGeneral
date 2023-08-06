@@ -1,6 +1,6 @@
 using HerrGeneral.Contracts.WriteSide;
 
-namespace HerrGeneral.ReadSide.Dispatcher;
+namespace HerrGeneral.Core.ReadSide.Dispatcher;
 
 internal interface IAddEventToDispatch
 {

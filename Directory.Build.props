@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <Import Project="Versions.props"/>
+
+    <PropertyGroup>
+        <LangVersion>$(CSharpLanguageVersion)</LangVersion>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+</Project>

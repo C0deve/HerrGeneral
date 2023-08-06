@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <IsPackable>true</IsPackable>
         <Title>Herr General</Title>
@@ -15,27 +15,32 @@
         <Product>Herr General</Product>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <SignAssembly>true</SignAssembly>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <EnablePackageValidation>true</EnablePackageValidation>
         
-        <Description>Helper methods for HerrGeneral testing</Description>
-        <PackageTags>HerrGeneral;Test</PackageTags>
-    </PropertyGroup>
+        <Description>Cqrs library used in my personal work</Description>
+        <PackageTags>.Net;Cqrs</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+</PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
-        <PackageReference Include="Shouldly" Version="4.2.1" />
-        <PackageReference Include="xunit.assert" Version="2.4.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1"/>
     </ItemGroup>
-
+    
     <ItemGroup>
         <PackageReference Include="MinVer" Version="4.3.0" PrivateAssets="all"/>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\HerrGeneral.Core\HerrGeneral.Core.csproj" />
+        <!-- Add a README.md next to the csproj -->
+        <None Include="README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\HerrGeneral.Contracts\HerrGeneral.Contracts.csproj"/>
     </ItemGroup>
 </Project>

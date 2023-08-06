@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
@@ -27,8 +27,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HerrGeneral.Test.Extension.Internal\HerrGeneral.Test.Extension.Internal.csproj" />
-      <ProjectReference Include="..\..\src\HerrGeneral\HerrGeneral.csproj" />
+      <ProjectReference Include="..\..\src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj" />
+      <ProjectReference Include="..\..\src\HerrGeneral.Core\HerrGeneral.Core.csproj" />
     </ItemGroup>
 
 </Project>
