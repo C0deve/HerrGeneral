@@ -1,7 +1,6 @@
-using System.Text;
 using HerrGeneral.Contracts;
 
-namespace HerrGeneral.WriteSide;
+namespace HerrGeneral.Test;
 
 /// <summary>
 /// Event implementation.
@@ -28,17 +27,6 @@ public abstract class EventBase : IEvent
         AggregateId = aggregateId;
         DateTimeEventOccurred = dateTimeEventOccurred;
     }
-
-    /// <summary>
-    /// Log the event.
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="indent"></param>
-    /// <returns></returns>
-    public virtual StringBuilder Log(StringBuilder sb, string indent = "") =>
-        sb
-            .AppendLine($"{indent}-- Event<{GetType()}>")
-            .AppendLine($"{indent}-- Occured<{DateTimeEventOccurred:g}>");
 
     /// <summary>
     /// Execution date of the event.

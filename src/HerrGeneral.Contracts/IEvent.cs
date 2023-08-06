@@ -21,13 +21,5 @@ public interface IEvent
     /// Id of the command at the origin of the event
     /// </summary>
     Guid SourceCommandId { get; }
-    
-    /// <summary>
-    /// Used to control log format of the event
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="indent"></param>
-    /// <returns></returns>
-    StringBuilder Log(StringBuilder sb, string indent);
 }
 

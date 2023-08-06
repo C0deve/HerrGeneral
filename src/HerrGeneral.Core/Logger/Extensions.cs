@@ -117,4 +117,9 @@ internal static class Extensions
         const string indent = Indent + Indent;
         logger.LogInformation("{Event}", @event.Log(new StringBuilder(), indent).ToString());
     }
+
+    private static StringBuilder Log(this IEvent evt, StringBuilder sb, string indent = "") =>
+        sb
+            .AppendLine($"{indent}-- Event<{evt.GetType()}>")
+            .AppendLine($"{indent}-- Occured<{evt.DateTimeEventOccurred:g}>");
 }
