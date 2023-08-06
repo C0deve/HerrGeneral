@@ -41,7 +41,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\HerrGeneral.Contracts\HerrGeneral.Contracts.csproj"/>
         <ProjectReference Include="..\HerrGeneral.ReadSide\HerrGeneral.ReadSide.csproj" />
         <ProjectReference Include="..\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj" />
     </ItemGroup>
