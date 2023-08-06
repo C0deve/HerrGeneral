@@ -4,7 +4,7 @@
 /// Result of an handled creation command
 /// Contain the aggregate id
 /// </summary>
-public class CreationResult : IWithSuccess
+public sealed class CreationResult : IWithSuccess
 {
     /// <summary>
     /// Id of the created aggregate

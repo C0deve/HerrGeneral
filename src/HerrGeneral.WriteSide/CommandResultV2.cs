@@ -3,7 +3,7 @@
 /// <summary>
 /// Result of an handled command.
 /// </summary>
-public class CommandResultV2 : IWithSuccess
+public sealed class CommandResultV2 : IWithSuccess
 {
     private readonly Exception? _panicException;
     private readonly DomainError? _domainError;
