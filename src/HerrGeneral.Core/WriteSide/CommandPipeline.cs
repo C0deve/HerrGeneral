@@ -12,7 +12,9 @@ internal static class CommandPipeline
     public delegate Task<TResult> HandlerDelegate<in TCommand, TResult>(TCommand command, CancellationToken cancellationToken);
 
     public static HandlerDelegate<TCommand, TResult> WithHandlerLogger<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger) where TCommand : ICommand<TResult> =>
+        this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger)
+        where TCommand : CommandBase<TResult>
+        where TResult : IWithSuccess =>
         async (command, cancellationToken) =>
         {
             logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
@@ -32,7 +34,9 @@ internal static class CommandPipeline
 
 
     public static HandlerDelegate<TCommand, TResult> WithErrorLogger<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ILogger? logger) where TCommand : ICommand<TResult> =>
+        this HandlerDelegate<TCommand, TResult> next, ILogger? logger) 
+        where TCommand : CommandBase<TResult> 
+        where TResult : IWithSuccess =>
         async (command, cancellationToken) =>
         {
             logger ??= NullLogger.Instance;
@@ -62,35 +66,35 @@ internal static class CommandPipeline
         };
 
 
-    
-     public static HandlerDelegate<TCommand, TResult> WithUnitOfWork<TCommand, TResult>(
-         this HandlerDelegate<TCommand, TResult> next, IUnitOfWork? unitOfWork) where TCommand : ICommand<TResult> =>
-         async (command, cancellationToken) =>
-         {
-             
-             try
-             {
-                 unitOfWork?.Start(command.Id);
-                 var result = await next(command, cancellationToken);
-                 unitOfWork?.Commit(command.Id);
-                 return result;
-             }
-             catch (Exception)
-             {
-                 unitOfWork?.RollBack(command.Id);
-                 throw;
-             }
-             finally
-             {
-                 unitOfWork?.Dispose(command.Id);
-             }
-         };
+    public static HandlerDelegate<TCommand, TResult> WithUnitOfWork<TCommand, TResult>(
+        this HandlerDelegate<TCommand, TResult> next, IUnitOfWork? unitOfWork) 
+        where TCommand : CommandBase<TResult> 
+        where TResult : IWithSuccess =>
+        async (command, cancellationToken) =>
+        {
+            try
+            {
+                unitOfWork?.Start(command.Id);
+                var result = await next(command, cancellationToken);
+                unitOfWork?.Commit(command.Id);
+                return result;
+            }
+            catch (Exception)
+            {
+                unitOfWork?.RollBack(command.Id);
+                throw;
+            }
+            finally
+            {
+                unitOfWork?.Dispose(command.Id);
+            }
+        };
 
 
     public static HandlerDelegate<TCommand, CommandResultV2> WithExceptionToCommandResult<TCommand>(
         this HandlerDelegate<TCommand, CommandResultV2> next) =>
         next.WithTryCatch(CommandResultV2.PanicFail, CommandResultV2.DomainFail);
-    
+
     public static HandlerDelegate<TCommand, CreationResult> WithExceptionToCreationResult<TCommand>(
         this HandlerDelegate<TCommand, CreationResult> next) =>
         next.WithTryCatch(CreationResult.PanicFail, CreationResult.DomainFail);
@@ -124,7 +128,7 @@ internal static class CommandPipeline
 
     public static HandlerDelegate<TCommand, TResult> WithReadSideDispatching<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ReadSide.IEventDispatcher readSideEventDispatcher)
-        where TCommand : ICommand<TResult>
+        where TCommand : CommandBase<TResult>
         where TResult : IWithSuccess =>
         async (command, cancellationToken) =>
         {

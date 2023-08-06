@@ -44,7 +44,9 @@ internal static class Extensions
         return retType.ToString();
     }
 
-    public static void StartHandling<TCommand, TResult>(this ILogger<ICommandHandler<TCommand, TResult>> logger, string type, TCommand command) where TCommand : ICommand<TResult> =>
+    public static void StartHandling<TCommand, TResult>(this ILogger<ICommandHandler<TCommand, TResult>> logger, string type, TCommand command) 
+        where TCommand : CommandBase<TResult> 
+        where TResult : IWithSuccess =>
         logger.LogInformation("<------------------- Handle {Type}{CommandId} thread<{CurrentManagedThreadId}> ------------------->\n{Command}",
             type,
             $" <{command.Id}>",

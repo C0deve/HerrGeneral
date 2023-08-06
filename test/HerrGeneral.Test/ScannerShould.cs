@@ -48,7 +48,7 @@ public class ScannerShould
     public void Filter_IReadSideEventHandler() =>
         typeof(MyReadSideEventHandlerImpl).IsAssignableFromOpenType(typeof(ReadSide.IEventHandler<>)).ShouldBe(true);
 
-    public class Command1 : CommandBase<CommandResultV2>
+    public class Command1 : Command
     {
         public class Command1Handler : CommandHandler<Command1>
         {
@@ -61,7 +61,7 @@ public class ScannerShould
         }
     }
 
-    private class Command2 : CommandBase<CommandResultV2>
+    private class Command2 : Command
     {
     }
 

@@ -5,7 +5,7 @@ namespace HerrGeneral.WriteSide;
 /// </summary>
 /// <typeparam name="TCommand"></typeparam>
 public abstract class CreationCommandHandler<TCommand> : CommandHandlerBase<TCommand, CreationResult>
-    where TCommand : ICommand<CreationResult>
+    where TCommand : CreationCommand
 {
     /// <summary>
     /// Ctor

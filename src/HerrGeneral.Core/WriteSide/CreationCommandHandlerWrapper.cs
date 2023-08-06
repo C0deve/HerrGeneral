@@ -3,7 +3,7 @@ using HerrGeneral.WriteSide;
 namespace HerrGeneral.Core.WriteSide.Dispatcher;
 
 internal class CreationCommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, CreationResult>
-    where TCommand : ICommand<CreationResult>
+    where TCommand : CreationCommand
 {
     protected override CommandPipeline.HandlerDelegate<TCommand, CreationResult> BuildPipeline(IServiceProvider serviceProvider) =>
         base

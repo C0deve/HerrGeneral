@@ -17,7 +17,7 @@ public class RegistrationShould
 
     public RegistrationShould(ITestOutputHelper output) => _output = output;
 
-    private class Ping : CommandBase<CommandResultV2>
+    private class Ping : Command
     {
         public string? Message { get; set; }
     }

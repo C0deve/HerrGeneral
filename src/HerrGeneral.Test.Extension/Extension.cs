@@ -21,7 +21,7 @@ public static class Extension
     /// <param name="serviceProvider"></param>
     /// <param name="withResultAssertion"></param>
     /// <returns></returns>
-    public static async Task<CommandResultV2> Send(this ICommand<CommandResultV2> request, IServiceProvider serviceProvider, bool withResultAssertion = true)
+    public static async Task<CommandResultV2> Send(this Command request, IServiceProvider serviceProvider, bool withResultAssertion = true)
     {
         var res = await serviceProvider.GetRequiredService<Mediator>().Send(request);
 
@@ -38,7 +38,7 @@ public static class Extension
     /// <param name="serviceProvider"></param>
     /// <param name="withResultAssertion"></param>
     /// <returns></returns>
-    public static async Task<Guid> Send(this ICommand<CreationResult> request, IServiceProvider serviceProvider, bool withResultAssertion = true)
+    public static async Task<Guid> Send(this CreationCommand request, IServiceProvider serviceProvider, bool withResultAssertion = true)
     {
         var res = await serviceProvider.GetRequiredService<Mediator>().Send(request);
 
