@@ -1,7 +1,7 @@
 using System.Text;
 using HerrGeneral.Contracts.WriteSide;
 
-namespace HerrGeneral.Core.WriteSide;
+namespace HerrGeneral.WriteSide;
 
 /// <summary>
 /// Event implementation.

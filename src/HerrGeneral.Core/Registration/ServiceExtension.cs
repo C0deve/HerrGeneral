@@ -1,6 +1,6 @@
 using HerrGeneral.Core.ReadSide.Dispatcher;
-using HerrGeneral.Core.WriteSide;
 using HerrGeneral.Core.WriteSide.Dispatcher;
+using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Core.Registration;

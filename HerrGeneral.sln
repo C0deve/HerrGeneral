@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Test", "test\He
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Test.Extension", "src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj", "{A061D5F3-2F73-4297-98D6-9F0923C14C2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.WriteSide", "src\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj", "{B73526C2-C81B-42B2-8EC6-960537B7C628}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{A061D5F3-2F73-4297-98D6-9F0923C14C2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A061D5F3-2F73-4297-98D6-9F0923C14C2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A061D5F3-2F73-4297-98D6-9F0923C14C2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B73526C2-C81B-42B2-8EC6-960537B7C628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B73526C2-C81B-42B2-8EC6-960537B7C628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B73526C2-C81B-42B2-8EC6-960537B7C628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B73526C2-C81B-42B2-8EC6-960537B7C628}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

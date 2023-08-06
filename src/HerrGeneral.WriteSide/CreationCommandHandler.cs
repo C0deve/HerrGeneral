@@ -1,6 +1,4 @@
-using HerrGeneral.Contracts.WriteSide;
-
-namespace HerrGeneral.Core.WriteSide;
+namespace HerrGeneral.WriteSide;
 
 /// <summary>
 /// Handler for creation command

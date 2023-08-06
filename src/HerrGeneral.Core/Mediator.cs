@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
-using HerrGeneral.Contracts.WriteSide;
-using HerrGeneral.Core.WriteSide;
 using HerrGeneral.Core.WriteSide.Dispatcher;
+using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core;
 

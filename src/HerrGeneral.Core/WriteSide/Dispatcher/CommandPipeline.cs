@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using HerrGeneral.Contracts.WriteSide;
 using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Logger;
+using HerrGeneral.WriteSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

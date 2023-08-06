@@ -1,7 +1,7 @@
 using System.Text;
 using HerrGeneral.Contracts.WriteSide;
 using HerrGeneral.Core.Error;
-using HerrGeneral.Core.WriteSide;
+using HerrGeneral.WriteSide;
 using Microsoft.Extensions.Logging;
 
 namespace HerrGeneral.Core.Logger;

@@ -1,5 +1,6 @@
 using HerrGeneral.Contracts.WriteSide;
 using HerrGeneral.Core.ReadSide.Dispatcher;
+using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide.Dispatcher;
 

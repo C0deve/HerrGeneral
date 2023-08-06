@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
-using HerrGeneral.Core.WriteSide;
+using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.Registration;
 

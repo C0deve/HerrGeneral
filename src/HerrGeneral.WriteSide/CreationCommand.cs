@@ -1,4 +1,4 @@
-namespace HerrGeneral.Core.WriteSide;
+namespace HerrGeneral.WriteSide;
 
 /// <summary>
 /// Command for aggregate creation (return a CreationResult)

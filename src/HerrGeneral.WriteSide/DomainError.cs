@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral.Core.Error;
+﻿namespace HerrGeneral.WriteSide;
 
 /// <summary>
 /// Error coming from the domain 
@@ -12,7 +12,7 @@ public abstract class DomainError
     /// <exception cref="ArgumentNullException"></exception>
     protected DomainError(string message)
     {
-        if (message.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(message))
             throw new ArgumentNullException(nameof(message));
         
         Message = message;
@@ -22,11 +22,4 @@ public abstract class DomainError
     /// Description of the error
     /// </summary>
     public string Message { get; }
-
-    /// <summary>
-    /// Cast to Domain exception
-    /// </summary>
-    /// <returns></returns>
-    public DomainException ToException() => new(this);
-    
 }

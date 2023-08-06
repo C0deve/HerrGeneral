@@ -29,6 +29,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj" />
       <ProjectReference Include="..\..\src\HerrGeneral.Core\HerrGeneral.Core.csproj" />
+      <ProjectReference Include="..\..\src\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj" />
     </ItemGroup>
 
 </Project>

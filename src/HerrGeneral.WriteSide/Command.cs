@@ -1,4 +1,4 @@
-namespace HerrGeneral.Core.WriteSide;
+namespace HerrGeneral.WriteSide;
 
 /// <summary>
 /// A command returning a CommandResultV2

@@ -1,7 +1,7 @@
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
-using HerrGeneral.Core.WriteSide;
+using HerrGeneral.WriteSide;
 using Lamar;
 using Shouldly;
 using Xunit.Abstractions;

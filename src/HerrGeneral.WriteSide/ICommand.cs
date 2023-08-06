@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace HerrGeneral.Contracts.WriteSide;
+namespace HerrGeneral.WriteSide;
 
 /// <summary>
 /// Command interface (Write side)

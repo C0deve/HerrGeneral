@@ -1,4 +1,6 @@
-﻿namespace HerrGeneral.Core.Error;
+﻿using HerrGeneral.WriteSide;
+
+namespace HerrGeneral.Core.Error;
 
 /// <summary>
 /// Exception wrapper for a domain error

@@ -1,6 +1,6 @@
 using HerrGeneral.Contracts.WriteSide;
 
-namespace HerrGeneral.Core.WriteSide;
+namespace HerrGeneral.WriteSide;
 
 /// <summary>
 /// Interface for event dispatcher
