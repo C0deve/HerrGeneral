@@ -1,7 +1,7 @@
-using HerrGeneral.Contracts.ReadSIde;
-using HerrGeneral.Contracts.WriteSide;
+using HerrGeneral.Contracts;
 using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Logger;
+using HerrGeneral.ReadSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

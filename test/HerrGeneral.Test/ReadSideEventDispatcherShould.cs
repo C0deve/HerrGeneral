@@ -83,7 +83,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
                 Message = message;
         }
 
-        private class PongHandler : Contracts.ReadSIde.IEventHandler<Pong>
+        private class PongHandler : ReadSide.IEventHandler<Pong>
         {
             private readonly ReadModel _readModel;
 
@@ -103,7 +103,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
             }
         }
 
-        private class PongWithFailureHandler : Contracts.ReadSIde.IEventHandler<PongWithFailure>
+        private class PongWithFailureHandler : ReadSide.IEventHandler<PongWithFailure>
         {
             public Task Handle(PongWithFailure notification, CancellationToken cancellationToken) =>
                 throw new Exception("Exception from ReadSide handler");

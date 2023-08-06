@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using HerrGeneral.Contracts.WriteSide;
+using HerrGeneral.Contracts;
 using HerrGeneral.Core.Logger;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

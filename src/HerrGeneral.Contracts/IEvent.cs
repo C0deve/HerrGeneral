@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace HerrGeneral.Contracts.WriteSide;
+namespace HerrGeneral.Contracts;
 
 /// <summary>
 /// Event interface (Write side)

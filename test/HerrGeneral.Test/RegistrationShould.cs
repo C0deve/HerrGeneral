@@ -96,11 +96,11 @@ public class RegistrationShould
         });
 
         container
-            .GetInstance<Contracts.ReadSIde.IEventHandler<AnotherPong>>()
+            .GetInstance<ReadSide.IEventHandler<AnotherPong>>()
             .ShouldBeOfType<ReadModelWithMultipleHandlers.Repository>();
         
         container
-            .GetInstance<Contracts.ReadSIde.IEventHandler<Pong>>()
+            .GetInstance<ReadSide.IEventHandler<Pong>>()
             .ShouldBeOfType<ReadModelWithMultipleHandlers.Repository>();
     }
     

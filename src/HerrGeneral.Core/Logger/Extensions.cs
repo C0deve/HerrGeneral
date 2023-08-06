@@ -1,5 +1,5 @@
 using System.Text;
-using HerrGeneral.Contracts.WriteSide;
+using HerrGeneral.Contracts;
 using HerrGeneral.Core.Error;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.Logging;

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Test.Extension"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.WriteSide", "src\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj", "{B73526C2-C81B-42B2-8EC6-960537B7C628}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.ReadSide", "src\HerrGeneral.ReadSide\HerrGeneral.ReadSide.csproj", "{682C0E83-D0CD-483B-8155-A5FEE8B23384}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{B73526C2-C81B-42B2-8EC6-960537B7C628}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B73526C2-C81B-42B2-8EC6-960537B7C628}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B73526C2-C81B-42B2-8EC6-960537B7C628}.Release|Any CPU.Build.0 = Release|Any CPU
+		{682C0E83-D0CD-483B-8155-A5FEE8B23384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{682C0E83-D0CD-483B-8155-A5FEE8B23384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{682C0E83-D0CD-483B-8155-A5FEE8B23384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{682C0E83-D0CD-483B-8155-A5FEE8B23384}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

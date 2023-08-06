@@ -1,4 +1,4 @@
-using HerrGeneral.Contracts.WriteSide;
+using HerrGeneral.Contracts;
 
 namespace HerrGeneral.Core.ReadSide.Dispatcher;
 

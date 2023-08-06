@@ -11,7 +11,7 @@ public class Scanner
 {
     private readonly Type _commandHandlerInterface = typeof(ICommandHandler<,>);
     private readonly Type _writeSideEventHandlerInterface = typeof(IEventHandler<>);
-    private readonly Type _readSideEventHandlerInterface = typeof(Contracts.ReadSIde.IEventHandler<>);
+    private readonly Type _readSideEventHandlerInterface = typeof(HerrGeneral.ReadSide.IEventHandler<>);
     private readonly HashSet<ScanParam> _writeSideSearchParams = new();
     private readonly HashSet<ScanParam> _readSideSearchParams = new();
 

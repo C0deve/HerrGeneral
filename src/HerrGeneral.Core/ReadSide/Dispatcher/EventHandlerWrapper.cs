@@ -1,5 +1,5 @@
-using HerrGeneral.Contracts.ReadSIde;
-using HerrGeneral.Contracts.WriteSide;
+using HerrGeneral.Contracts;
+using HerrGeneral.ReadSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

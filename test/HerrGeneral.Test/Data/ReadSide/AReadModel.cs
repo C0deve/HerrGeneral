@@ -1,4 +1,4 @@
-using HerrGeneral.Contracts.ReadSIde;
+using HerrGeneral.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
 
 namespace HerrGeneral.Test.Data.ReadSide;

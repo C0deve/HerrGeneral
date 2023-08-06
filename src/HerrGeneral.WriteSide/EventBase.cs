@@ -1,5 +1,5 @@
 using System.Text;
-using HerrGeneral.Contracts.WriteSide;
+using HerrGeneral.Contracts;
 
 namespace HerrGeneral.WriteSide;
 

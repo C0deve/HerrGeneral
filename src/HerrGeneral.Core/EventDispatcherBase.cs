@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using HerrGeneral.Contracts.WriteSide;
+using HerrGeneral.Contracts;
 
 namespace HerrGeneral.Core;
 

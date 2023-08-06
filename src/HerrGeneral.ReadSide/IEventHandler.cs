@@ -1,7 +1,7 @@
 
-using HerrGeneral.Contracts.WriteSide;
+using HerrGeneral.Contracts;
 
-namespace HerrGeneral.Contracts.ReadSIde;
+namespace HerrGeneral.ReadSide;
 
 /// <summary>
 /// Defines a handler for a notification
