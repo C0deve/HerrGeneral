@@ -4,46 +4,40 @@
 /// Result of an handled creation command
 /// Contain the aggregate id
 /// </summary>
-public sealed record CreationResult : IWithSuccess
+public sealed record CreationResult : CommandResultBase
 {
-    private readonly Guid _aggregateId;
-    private readonly Exception? _panicException;
-    private readonly DomainError? _domainError;
+    private readonly Guid? _aggregateId;
 
-    /// <summary>
-    /// The operation was successful.
-    /// </summary>
-    public bool IsSuccess => !IsDomainError && !IsPanicError;
-    private bool IsDomainError => _domainError != null;
-    private bool IsPanicError => _panicException != null;
 
-    private CreationResult(Guid aggregateId) => 
+    private CreationResult(Guid aggregateId) =>
         _aggregateId = aggregateId;
 
-    private CreationResult(DomainError error) => 
-        _domainError = error;
+    private CreationResult(DomainError error) : base(error)
+    {
+    }
 
-    private CreationResult(Exception panicException) => 
-        _panicException = panicException;
+    private CreationResult(Exception panicException) : base(panicException)
+    {
+    }
 
     /// <summary>
     /// Factory for success
     /// </summary>
-    public static CreationResult Success(Guid aggregateId) => new CreationResult(aggregateId);
+    public static CreationResult Success(Guid aggregateId) => new(aggregateId);
 
     /// <summary>
     /// Factory for domain error
     /// </summary>
     /// <param name="error"></param>
     /// <returns></returns>
-    public static CreationResult DomainFail(DomainError error) => new CreationResult(error);
+    public static CreationResult DomainFail(DomainError error) => new(error);
 
     /// <summary>
     /// Factory for panic exception
     /// </summary>
     /// <param name="panicException"></param>
     /// <returns></returns>
-    public static CreationResult PanicFail(Exception panicException) => new CreationResult(panicException);
+    public static CreationResult PanicFail(Exception panicException) => new(panicException);
 
     /// <summary>
     /// Evaluates a specified function, based on the .current state
@@ -57,12 +51,14 @@ public sealed record CreationResult : IWithSuccess
         if (onSuccess == null) throw new ArgumentNullException(nameof(onSuccess));
         if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
         if (onPanicError == null) throw new ArgumentNullException(nameof(onPanicError));
-         
+
         return IsSuccess
-            ? onSuccess(_aggregateId)
+            ? onSuccess(_aggregateId ?? throw new InvalidOperationException($"{nameof(_aggregateId)} is null"))
             : IsDomainError
-                ? onDomainError(_domainError ?? throw new InvalidOperationException())
-                : onPanicError(_panicException ?? throw new InvalidOperationException());
+                ? onDomainError(DomainError ?? throw new InvalidOperationException($"{nameof(DomainError)} is null"))
+                : IsPanicError
+                    ? onPanicError(PanicException ?? throw new InvalidOperationException($"{nameof(PanicException)} is null"))
+                    : throw new InvalidOperationException("Invalid state");
     }
 
     /// <summary>
@@ -75,13 +71,16 @@ public sealed record CreationResult : IWithSuccess
     {
         if (onSuccess == null) throw new ArgumentNullException(nameof(onSuccess));
         if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
+        if (onPanicError == null) throw new ArgumentNullException(nameof(onPanicError));
 
         if (IsSuccess)
-            onSuccess(_aggregateId);
+            onSuccess(_aggregateId ?? throw new InvalidOperationException($"{nameof(_aggregateId)} is null"));
         else if (IsDomainError)
-            onDomainError(_domainError ?? throw new InvalidOperationException());
+            onDomainError(DomainError ?? throw new InvalidOperationException($"{nameof(DomainError)} is null"));
+        else if (IsPanicError)
+            onPanicError(PanicException ?? throw new InvalidOperationException($"{nameof(PanicException)} is null"));
         else
-            onPanicError(_panicException ?? throw new InvalidOperationException());
+            throw new InvalidOperationException("Invalid state");
     }
 
     /// <summary>
@@ -92,32 +91,9 @@ public sealed record CreationResult : IWithSuccess
     {
         if (success == null) throw new ArgumentNullException(nameof(success));
 
-        if (IsSuccess) success(_aggregateId);
+        if (IsSuccess) success(_aggregateId ?? throw new InvalidOperationException($"{nameof(_aggregateId)} is null"));
     }
 
-    /// <summary>
-    /// Evaluates a specified action based on the .current state.
-    /// </summary>
-    /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
-    public void MatchDomainError(Action<DomainError> onDomainError)
-    {
-        if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
-
-        if (IsDomainError) onDomainError(_domainError ?? throw new InvalidOperationException());
-    }
-        
-    /// <summary>
-    /// Evaluates a specified action on panic exception.
-    /// </summary>
-    /// <param name="onPanicException"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="InvalidOperationException"></exception>
-    public void MatchPanicException(Action<Exception> onPanicException)
-    {
-        if (onPanicException == null) throw new ArgumentNullException(nameof(onPanicException));
-
-        if (IsPanicError) onPanicException(_panicException ?? throw new InvalidOperationException());
-    }
 
     /// <summary>
     /// True if success, else false.

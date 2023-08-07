@@ -46,7 +46,7 @@ public class SendShould
     {
         await new Ping { Message = "Ping" }.Send(_container);
 
-        _container.GetInstance<Dependency>().Called.ShouldBe(true);
+        _container.GetInstance<Dependency>().Called.ShouldBeTrue();
     }
 
     [Fact]

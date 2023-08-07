@@ -3,23 +3,20 @@
 /// <summary>
 /// Result of an handled command.
 /// </summary>
-public sealed record CommandResult : IWithSuccess
+public sealed record CommandResult : CommandResultBase
 {
-    private readonly Exception? _panicException;
-    private readonly DomainError? _domainError;
-    private bool IsDomainError => _domainError != null;
-    private bool IsPanicError => _panicException != null;
-    
-    /// <summary>
-    /// Operation succeeded.
-    /// </summary>
-    public bool IsSuccess => !IsDomainError && !IsPanicError;
-    
-    private CommandResult() { }
+    private CommandResult()
+    {
+    }
 
-    private CommandResult(DomainError error) => _domainError = error;
+    private CommandResult(DomainError error) : base(error)
+    {
+    }
 
-    private CommandResult(Exception panicException) => _panicException = panicException;
+    private CommandResult(Exception panicException) : base(panicException)
+    {
+    }
+
 
     /// <summary>
     /// Factory for success.
@@ -52,12 +49,14 @@ public sealed record CommandResult : IWithSuccess
         if (onSuccess == null) throw new ArgumentNullException(nameof(onSuccess));
         if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
         if (onPanicError == null) throw new ArgumentNullException(nameof(onPanicError));
-         
+
         return IsSuccess
             ? onSuccess()
             : IsDomainError
-                ? onDomainError(_domainError ?? throw new InvalidOperationException($"{nameof(_domainError)} is null"))
-                : onPanicError(_panicException ?? throw new InvalidOperationException($"{nameof(_panicException)} is null"));
+                ? onDomainError(DomainError ?? throw new InvalidOperationException($"{nameof(DomainError)} is null"))
+                : IsPanicError
+                    ? onPanicError(PanicException ?? throw new InvalidOperationException($"{nameof(PanicException)} is null"))
+                    : throw new InvalidOperationException("Invalid state");
     }
 
     /// <summary>
@@ -70,13 +69,16 @@ public sealed record CommandResult : IWithSuccess
     {
         if (onSuccess == null) throw new ArgumentNullException(nameof(onSuccess));
         if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
+        if (onPanicError == null) throw new ArgumentNullException(nameof(onPanicError));
 
         if (IsSuccess)
             onSuccess();
         else if (IsDomainError)
-            onDomainError(_domainError ?? throw new InvalidOperationException($"{nameof(_domainError)} is null"));
+            onDomainError(DomainError ?? throw new InvalidOperationException($"{nameof(DomainError)} is null"));
+        else if (IsPanicError)
+            onPanicError(PanicException ?? throw new InvalidOperationException($"{nameof(PanicException)} is null"));
         else
-            onPanicError(_panicException ?? throw new InvalidOperationException($"{nameof(_panicException)} is null"));
+            throw new InvalidOperationException("Invalid state");
     }
 
     /// <summary>
@@ -88,30 +90,6 @@ public sealed record CommandResult : IWithSuccess
         if (success == null) throw new ArgumentNullException(nameof(success));
 
         if (IsSuccess) success();
-    }
-
-    /// <summary>
-    /// Evaluates a specified action on domain error.
-    /// </summary>
-    /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
-    public void MatchDomainError(Action<DomainError> onDomainError)
-    {
-        if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
-
-        if (IsDomainError) onDomainError(_domainError ?? throw new InvalidOperationException($"{nameof(_domainError)}  is null"));
-    }
-        
-    /// <summary>
-    /// Evaluates a specified action on panic exception.
-    /// </summary>
-    /// <param name="onPanicException"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="InvalidOperationException"></exception>
-    public void MatchPanicException(Action<Exception> onPanicException)
-    {
-        if (onPanicException == null) throw new ArgumentNullException(nameof(onPanicException));
-
-        if (IsPanicError) onPanicException(_panicException ?? throw new InvalidOperationException($"{nameof(_panicException)}  is null"));
     }
 
     /// <summary>
