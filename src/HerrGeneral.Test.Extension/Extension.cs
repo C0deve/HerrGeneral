@@ -21,15 +21,29 @@ public static class Extension
     /// <param name="serviceProvider"></param>
     /// <param name="withResultAssertion"></param>
     /// <returns></returns>
-    public static async Task<CommandResultV2> Send(this Command request, IServiceProvider serviceProvider, bool withResultAssertion = true)
+    public static async Task<CommandResult> Send(this Command request, IServiceProvider serviceProvider, bool withResultAssertion = true)
     {
         var res = await serviceProvider.GetRequiredService<Mediator>().Send(request);
 
         if (withResultAssertion)
-            res.IsSuccess.ShouldBe(true, $"{request.GetType().FullName}: {res}");
+            res.IsSuccess.ShouldBeTrue($"{request.GetType().FullName}: {res}");
 
         return res;
     }
+
+    /// <summary>
+    /// Send the creation command and return the Id of the created aggregate
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="serviceProvider"></param>
+    /// <returns></returns>
+    public static async Task<Guid> Send(this CreationCommand request, IServiceProvider serviceProvider) =>
+        (await serviceProvider
+            .GetRequiredService<Mediator>()
+            .Send(request))
+        .Match(id => id,
+            domainError => throw new Exception(domainError.Message),
+            exception => throw exception);
 
     /// <summary>
     /// Send the creation command with assertion on the success result by default
@@ -38,14 +52,14 @@ public static class Extension
     /// <param name="serviceProvider"></param>
     /// <param name="withResultAssertion"></param>
     /// <returns></returns>
-    public static async Task<Guid> Send(this CreationCommand request, IServiceProvider serviceProvider, bool withResultAssertion = true)
+    public static async Task<CreationResult> Send(this CreationCommand request, IServiceProvider serviceProvider, bool withResultAssertion)
     {
         var res = await serviceProvider.GetRequiredService<Mediator>().Send(request);
 
         if (withResultAssertion)
-            res.IsSuccess.ShouldBe(true, $"{request.GetType().FullName}: {res}");
+            res.IsSuccess.ShouldBeTrue($"{request.GetType().FullName}: {res}");
 
-        return res.AggregateId;
+        return res;
     }
 
     /// <summary>
@@ -54,7 +68,7 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TDomainError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<CommandResultV2> task) where TDomainError : DomainError
+    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<CommandResult> task) where TDomainError : DomainError
     {
         if (task == null) throw new ArgumentNullException(nameof(task));
         (await task)
@@ -71,7 +85,7 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<CommandResultV2> task) where TError : Exception
+    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<CommandResult> task) where TError : Exception
     {
         if (task == null) throw new ArgumentNullException(nameof(task));
         (await task)

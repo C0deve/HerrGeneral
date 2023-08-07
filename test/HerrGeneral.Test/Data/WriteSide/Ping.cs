@@ -12,10 +12,10 @@ public class Ping : Command
         {
         }
 
-        public override async Task<CommandResultV2> Handle(Ping command, CancellationToken cancellationToken)
+        public override async Task<CommandResult> Handle(Ping command, CancellationToken cancellationToken)
         {
             await Publish(new Pong($"{command.Message} received", command.Id, Guid.NewGuid()), cancellationToken);
-            return CommandResultV2.Success;
+            return CommandResult.Success;
         }
     }
 }

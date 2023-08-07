@@ -57,8 +57,8 @@ public class ScannerShould
             {
             }
 
-            public override Task<CommandResultV2> Handle(Command1 command, CancellationToken cancellationToken) =>
-                Task.FromResult(CommandResultV2.Success);
+            public override Task<CommandResult> Handle(Command1 command, CancellationToken cancellationToken) =>
+                Task.FromResult(CommandResult.Success);
         }
     }
 
@@ -72,8 +72,8 @@ public class ScannerShould
         {
         }
 
-        public override Task<CommandResultV2> Handle(Command2 command, CancellationToken cancellationToken) => 
-            Task.FromResult(CommandResultV2.Success);
+        public override Task<CommandResult> Handle(Command2 command, CancellationToken cancellationToken) => 
+            Task.FromResult(CommandResult.Success);
     }
 
     private class Command2Handler : Command2HandlerBase

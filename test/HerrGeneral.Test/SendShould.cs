@@ -31,12 +31,15 @@ public class SendShould
 
     [Fact]
     public async Task Resolve_main_handler() =>
-        (await new Ping { Message = "Ping" }.Send(_container, false))
-        .ShouldBe(CommandResultV2.Success);
+        (await new Ping { Message = "Ping" }
+            .Send(_container, false))
+        .ShouldBe(CommandResult.Success);
 
     [Fact]
     public async Task Resolve_main_handler_for_creation_command() =>
-        await new CreatePing { Message = "Ping" }.Send(_container);
+        (await new CreatePing { Message = "Ping" }
+            .Send(_container, false))
+        .ShouldBe(CreationResult.Success(CreatePing.AggregateId));
 
     [Fact]
     public async Task Dispatch_events_on_write_side()

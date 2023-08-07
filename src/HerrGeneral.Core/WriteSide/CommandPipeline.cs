@@ -91,9 +91,9 @@ internal static class CommandPipeline
         };
 
 
-    public static HandlerDelegate<TCommand, CommandResultV2> WithExceptionToCommandResult<TCommand>(
-        this HandlerDelegate<TCommand, CommandResultV2> next) =>
-        next.WithTryCatch(CommandResultV2.PanicFail, CommandResultV2.DomainFail);
+    public static HandlerDelegate<TCommand, CommandResult> WithExceptionToCommandResult<TCommand>(
+        this HandlerDelegate<TCommand, CommandResult> next) =>
+        next.WithTryCatch(CommandResult.PanicFail, CommandResult.DomainFail);
 
     public static HandlerDelegate<TCommand, CreationResult> WithExceptionToCreationResult<TCommand>(
         this HandlerDelegate<TCommand, CreationResult> next) =>

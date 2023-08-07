@@ -3,7 +3,7 @@ namespace HerrGeneral.WriteSide;
 /// <summary>
 /// A command returning a CommandResultV2
 /// </summary>
-public abstract class Command : CommandBase<CommandResultV2>
+public abstract class Command : CommandBase<CommandResult>
 {
     /// <summary>
     /// Ctor

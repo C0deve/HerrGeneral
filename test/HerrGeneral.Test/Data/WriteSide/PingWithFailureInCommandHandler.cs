@@ -11,7 +11,7 @@ public class PingWithFailureInCommandHandler : Command
         {
         }
 
-        public override async Task<CommandResultV2> Handle(PingWithFailureInCommandHandler command, CancellationToken cancellationToken)
+        public override async Task<CommandResult> Handle(PingWithFailureInCommandHandler command, CancellationToken cancellationToken)
         {
             await Publish(new Pong("Command received", command.Id, Guid.NewGuid()), cancellationToken);
             throw new PingError().ToException();

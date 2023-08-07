@@ -10,10 +10,10 @@ public class PingWithFailureInEventHandler : Command
         {
         }
 
-        public override async Task<CommandResultV2> Handle(PingWithFailureInEventHandler command, CancellationToken cancellationToken)
+        public override async Task<CommandResult> Handle(PingWithFailureInEventHandler command, CancellationToken cancellationToken)
         {
             await Publish(new PongWithFailureInEventHandlerEvent(command.Id, Guid.NewGuid()), cancellationToken);
-            return CommandResultV2.Success;
+            return CommandResult.Success;
         }
     }
 }

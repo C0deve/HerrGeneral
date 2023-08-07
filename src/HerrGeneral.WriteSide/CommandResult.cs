@@ -3,7 +3,7 @@
 /// <summary>
 /// Result of an handled command.
 /// </summary>
-public sealed class CommandResultV2 : IWithSuccess
+public sealed record CommandResult : IWithSuccess
 {
     private readonly Exception? _panicException;
     private readonly DomainError? _domainError;
@@ -15,30 +15,30 @@ public sealed class CommandResultV2 : IWithSuccess
     /// </summary>
     public bool IsSuccess => !IsDomainError && !IsPanicError;
     
-    private CommandResultV2() { }
+    private CommandResult() { }
 
-    private CommandResultV2(DomainError error) => _domainError = error;
+    private CommandResult(DomainError error) => _domainError = error;
 
-    private CommandResultV2(Exception panicException) => _panicException = panicException;
+    private CommandResult(Exception panicException) => _panicException = panicException;
 
     /// <summary>
     /// Factory for success.
     /// </summary>
-    public static CommandResultV2 Success { get; } = new();
+    public static CommandResult Success { get; } = new();
 
     /// <summary>
     /// Factory for domain error.
     /// </summary>
     /// <param name="error"></param>
     /// <returns></returns>
-    public static CommandResultV2 DomainFail(DomainError error) => new(error);
+    public static CommandResult DomainFail(DomainError error) => new(error);
 
     /// <summary>
     /// Factory for panic exception.
     /// </summary>
     /// <param name="panicException"></param>
     /// <returns></returns>
-    public static CommandResultV2 PanicFail(Exception panicException) => new(panicException);
+    public static CommandResult PanicFail(Exception panicException) => new(panicException);
 
     /// <summary>
     /// Evaluates a specified function, based on the .current state.
@@ -117,9 +117,9 @@ public sealed class CommandResultV2 : IWithSuccess
     /// <summary>
     /// True if success, else false.
     /// </summary>
-    /// <param name="resultV2"></param>
+    /// <param name="result"></param>
     /// <returns></returns>
-    public static implicit operator bool(CommandResultV2 resultV2) => resultV2.IsSuccess;
+    public static implicit operator bool(CommandResult result) => result.IsSuccess;
 
     /// <summary>
     /// Display the result

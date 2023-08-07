@@ -10,7 +10,7 @@ public class PingWithPanicException : Command
         {
         }
 
-        public override async Task<CommandResultV2> Handle(PingWithPanicException command, CancellationToken cancellationToken)
+        public override async Task<CommandResult> Handle(PingWithPanicException command, CancellationToken cancellationToken)
         {
             await Publish(new Pong("Command received", command.Id, Guid.NewGuid()), cancellationToken);
             throw new PanicException();

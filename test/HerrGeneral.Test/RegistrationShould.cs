@@ -30,10 +30,10 @@ public class RegistrationShould
         public PingHandler(Dependency dependency, IEventDispatcher eventDispatcher) : base(eventDispatcher) =>
             _dependency = dependency;
 
-        public override Task<CommandResultV2> Handle(Ping command, CancellationToken cancellationToken)
+        public override Task<CommandResult> Handle(Ping command, CancellationToken cancellationToken)
         {
             _dependency.Called = true;
-            return Task.FromResult(CommandResultV2.Success);
+            return Task.FromResult(CommandResult.Success);
         }
     }
 
@@ -62,7 +62,7 @@ public class RegistrationShould
 
         var response = await mediator.Send(new Ping { Message = "Ping" });
 
-        response.ShouldBe(CommandResultV2.Success);
+        response.ShouldBe(CommandResult.Success);
         container.GetInstance<Dependency>().Called.ShouldBe(true);
     }
 

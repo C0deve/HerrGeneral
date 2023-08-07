@@ -4,13 +4,9 @@
 /// Result of an handled creation command
 /// Contain the aggregate id
 /// </summary>
-public sealed class CreationResult : IWithSuccess
+public sealed record CreationResult : IWithSuccess
 {
-    /// <summary>
-    /// Id of the created aggregate
-    /// </summary>
-    public Guid AggregateId { get; }
-
+    private readonly Guid _aggregateId;
     private readonly Exception? _panicException;
     private readonly DomainError? _domainError;
 
@@ -22,7 +18,7 @@ public sealed class CreationResult : IWithSuccess
     private bool IsPanicError => _panicException != null;
 
     private CreationResult(Guid aggregateId) => 
-        AggregateId = aggregateId;
+        _aggregateId = aggregateId;
 
     private CreationResult(DomainError error) => 
         _domainError = error;
@@ -63,7 +59,7 @@ public sealed class CreationResult : IWithSuccess
         if (onPanicError == null) throw new ArgumentNullException(nameof(onPanicError));
          
         return IsSuccess
-            ? onSuccess(AggregateId)
+            ? onSuccess(_aggregateId)
             : IsDomainError
                 ? onDomainError(_domainError ?? throw new InvalidOperationException())
                 : onPanicError(_panicException ?? throw new InvalidOperationException());
@@ -81,7 +77,7 @@ public sealed class CreationResult : IWithSuccess
         if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
 
         if (IsSuccess)
-            onSuccess(AggregateId);
+            onSuccess(_aggregateId);
         else if (IsDomainError)
             onDomainError(_domainError ?? throw new InvalidOperationException());
         else
@@ -96,7 +92,7 @@ public sealed class CreationResult : IWithSuccess
     {
         if (success == null) throw new ArgumentNullException(nameof(success));
 
-        if (IsSuccess) success(AggregateId);
+        if (IsSuccess) success(_aggregateId);
     }
 
     /// <summary>
