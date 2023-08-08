@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace HerrGeneral.Test.Extension;
 
@@ -42,8 +43,8 @@ public static class Extension
             .GetRequiredService<Mediator>()
             .Send(request))
         .Match(id => id,
-            domainError => throw new Exception(domainError.Message),
-            exception => throw exception);
+            domainError => throw new XunitException($"Command have a domain error of type<{domainError.GetType()}>. {domainError.Message}"),
+            exception => throw new XunitException($"Command have a panic exception of type<{exception.GetType()}>. {exception.Message}", exception));
 
     /// <summary>
     /// Send the creation command with assertion on the success result by default
@@ -73,9 +74,25 @@ public static class Extension
         if (task == null) throw new ArgumentNullException(nameof(task));
         (await task)
             .Match(
-                () => Assert.Fail($"Command is successful but should have domain error of type<{typeof(TDomainError)}>"),
-                error => error.ShouldBeOfType<TDomainError>($"DomainError<{error.GetType()} is not of type<{typeof(TDomainError)}>"),
-                exception => Assert.Fail($"Command should have domain error of type<{typeof(TDomainError)}> but has panic error. {exception}")
+                () => Assert.Fail($"Command is successful but should have a domain error of type<{typeof(TDomainError)}>."),
+                error => error.ShouldBeOfType<TDomainError>($"DomainError<{error.GetType()} is not of type<{typeof(TDomainError)}>."),
+                exception => Assert.Fail($"Command should have a domain error of type<{typeof(TDomainError)}> but has panic exception. {exception}"));
+    }
+    
+    /// <summary>
+    /// Assert for domain exception
+    /// </summary>
+    /// <param name="task"></param>
+    /// <typeparam name="TDomainError"></typeparam>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<CreationResult> task) where TDomainError : DomainError
+    {
+        if (task == null) throw new ArgumentNullException(nameof(task));
+        (await task)
+            .Match(
+                _ => Assert.Fail($"Command is successful but should have a domain error of type<{typeof(TDomainError)}>."),
+                error => error.ShouldBeOfType<TDomainError>($"DomainError<{error.GetType()} is not of type<{typeof(TDomainError)}>."),
+                exception => Assert.Fail($"Command should have a domain error of type<{typeof(TDomainError)}> but has panic exception. {exception}")
             );
     }
 
@@ -90,9 +107,25 @@ public static class Extension
         if (task == null) throw new ArgumentNullException(nameof(task));
         (await task)
             .Match(
-                () => Assert.Fail($"Command is successful but should have domain error of type<{typeof(TError)}>"),
-                error => Assert.Fail($"Command should have domain error of type<{typeof(TError)}> but has panic error. {error}"),
-                exception => exception.ShouldBeOfType<TError>($"{exception.GetType()} is not of type<{typeof(TError)}>"));
+                () => Assert.Fail($"Command is successful but should have a panic exception of type<{typeof(TError)}>."),
+                error => Assert.Fail($"Command should have a panic exception of type<{typeof(TError)}> but has panic error. {error}"),
+                exception => exception.ShouldBeOfType<TError>($"{exception.GetType()} is not of type<{typeof(TError)}>."));
+    }
+    
+    /// <summary>
+    /// Assert for panic exception
+    /// </summary>
+    /// <param name="task"></param>
+    /// <typeparam name="TError"></typeparam>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<CreationResult> task) where TError : Exception
+    {
+        if (task == null) throw new ArgumentNullException(nameof(task));
+        (await task)
+            .Match(
+                _ => Assert.Fail($"Command is successful but should have a panic exception of type<{typeof(TError)}>."),
+                error => Assert.Fail($"Command should have a panic exception of type<{typeof(TError)}> but has panic error. {error}"),
+                exception => exception.ShouldBeOfType<TError>($"{exception.GetType()} is not of type<{typeof(TError)}>."));
     }
 
     /// <summary>
