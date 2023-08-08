@@ -1,7 +1,7 @@
 namespace HerrGeneral.WriteSide;
 
 /// <summary>
-/// Handler for command returning a CommandResultV2
+/// Handler for command returning a CommandResult
 /// </summary>
 /// <typeparam name="TCommand"></typeparam>
 public abstract class CommandHandler<TCommand> : CommandHandlerBase<TCommand, CommandResult>

@@ -1,7 +1,7 @@
 namespace HerrGeneral.WriteSide;
 
 /// <summary>
-/// Handler for creation command
+/// Handler for creation command returning a CreationResult
 /// </summary>
 /// <typeparam name="TCommand"></typeparam>
 public abstract class CreationCommandHandler<TCommand> : CommandHandlerBase<TCommand, CreationResult>

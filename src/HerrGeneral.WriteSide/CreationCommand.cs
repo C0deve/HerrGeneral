@@ -1,8 +1,8 @@
 namespace HerrGeneral.WriteSide;
 
 /// <summary>
-/// Command for aggregate creation (return a CreationResult)
-/// Return the id of the created aggregate
+/// Command for aggregate creation.
+/// Return a CreationResult containing the id of the created aggregate.
 /// </summary>
 public abstract class CreationCommand : CommandBase<CreationResult>
 {
