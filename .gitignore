@@ -26,3 +26,6 @@ bld/
 # NUNIT
 *.VisualState.xml
 TestResult.xml
+
+/assets/.$HowItWorks.drawio.bkp
+/assets/.$HowItWorks.drawio.dtmp
