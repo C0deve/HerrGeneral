@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -20,7 +20,7 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <EnablePackageValidation>true</EnablePackageValidation>
 
-        <Description>Write site implementation for HerrGeneral</Description>
+        <Description>Write side implementation for HerrGeneral</Description>
         <PackageTags>.Net;HerrGeneral</PackageTags>
     </PropertyGroup>
     
