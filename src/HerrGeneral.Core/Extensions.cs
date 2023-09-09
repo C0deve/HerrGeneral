@@ -5,7 +5,7 @@ namespace HerrGeneral.Core;
 /// <summary>
 /// Extensions methods
 /// </summary>
-public static class Extensions
+internal static class Extensions
 {
     /// <summary>
     /// Fluent guid validation
@@ -14,6 +14,14 @@ public static class Extensions
     /// <returns></returns>
     public static bool IsEmpty(this Guid guid) => guid == Guid.Empty;
 
+    public static TReturn WithValue<TReturn>(this Guid guid, Func<Guid, TReturn> onValue)
+    {
+        if (guid.IsEmpty())
+            throw new ArgumentNullException(nameof(guid));
+
+        return onValue(guid);
+    }
+    
     /// <summary>
     /// Fluent string validation
     /// </summary>

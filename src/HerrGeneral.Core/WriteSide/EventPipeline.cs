@@ -1,3 +1,4 @@
+using System.Text;
 using HerrGeneral.Contracts;
 using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Logger;
@@ -11,37 +12,35 @@ internal static class EventPipeline
 {
     public delegate Task EventHandlerDelegate<in TEvent>(TEvent @event, CancellationToken cancellationToken) where TEvent : IEvent;
 
-    public static EventHandlerDelegate<TEvent> WithHandlerLogging<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, IEventHandler<TEvent> handler) where TEvent : IEvent =>
+    public static EventHandlerDelegate<TEvent> WithHandlerLogging<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, IEventHandler<TEvent> handler, StringBuilder stringBuilderLogger) where TEvent : IEvent =>
         async (@event, cancellationToken) =>
         {
             logger ??= NullLogger<IEventHandler<TEvent>>.Instance;
-            try
-            {
-                logger.StartHandling(handler, @event);
-                await next(@event, cancellationToken);
-            }
-            finally
-            {
-                logger.StopHandling(handler);
-            }
+            if(logger.IsEnabled(LogLevel.Debug))
+                stringBuilderLogger.HandleEvent(handler.GetType());
+            
+            await next(@event, cancellationToken);
         };
     
-    public static EventHandlerDelegate<TEvent> WithErrorLogger<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger) where TEvent : IEvent =>
+    public static EventHandlerDelegate<TEvent> WithErrorLogger<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, StringBuilder stringBuilderLogger) where TEvent : IEvent =>
         async (@event, cancellationToken) =>
         {
             logger ??= NullLogger<IEventHandler<TEvent>>.Instance;
+            if(!logger.IsEnabled(LogLevel.Debug))
+                await next(@event, cancellationToken);
+            
             try
             {
                 await next(@event, cancellationToken);
             }
             catch (DomainException e)
             {
-                logger.Log(e, 2);
+                stringBuilderLogger.OnException(e, 2);
                 throw;
             }
             catch (Exception e)
             {
-                logger.Log(e, 2);
+                stringBuilderLogger.OnException(e, 2);
                 throw;
             }
         };

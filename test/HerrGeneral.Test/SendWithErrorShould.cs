@@ -44,5 +44,10 @@ public class SendWithErrorShould
     public async Task Return_result_failure_on_panic_exception() => 
         await new PingWithPanicException()
             .Send(_container, false)
-            .ShouldHavePanicExceptionOfType<PanicException>();
+            .ShouldHavePanicExceptionOfType<SomePanicException>();
+    [Fact]
+    public async Task Return_result_failure_on_panic_exception_from_read_side() => 
+        await new PingWithFailureInReadSideEventHandler()
+            .Send(_container, false)
+            .ShouldHavePanicExceptionOfType<SomePanicException>();
 }

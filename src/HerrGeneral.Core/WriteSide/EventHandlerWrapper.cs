@@ -11,14 +11,15 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
     private static async Task Handle(TEvent @event, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
-
+        var stringBuilderLogger = serviceProvider.GetRequiredService<CommandLogger>().GetStringBuilder(@event.SourceCommandId);
+        
         foreach (var handler in serviceProvider.GetServices<IEventHandler<TEvent>>())
         {
             await
                 Start(handler)
-                    .WithErrorLogger(logger)
+                    .WithErrorLogger(logger, stringBuilderLogger)
                     .WithErrorMapping()
-                    .WithHandlerLogging(logger, handler)
+                    .WithHandlerLogging(logger, handler, stringBuilderLogger)
                     (@event, cancellationToken);
         }
     }

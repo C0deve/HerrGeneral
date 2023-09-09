@@ -1,13 +1,18 @@
 using HerrGeneral.WriteSide;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Core.WriteSide;
 
 internal class CreationCommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, CreationResult>
     where TCommand : CreationCommand
 {
-    protected override CommandPipeline.HandlerDelegate<TCommand, CreationResult> BuildPipeline(IServiceProvider serviceProvider) =>
-        base
+    protected override CommandPipeline.HandlerDelegate<TCommand, CreationResult> BuildPipeline(IServiceProvider serviceProvider)
+    {
+        var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
+
+        return base
             .BuildPipeline(serviceProvider)
             .WithExceptionToCreationResult()
-            .WithHandlerLogger(GetLogger(serviceProvider));
+            .WithHandlerLogger(GetLogger(serviceProvider), commandLogger);
+    }
 }

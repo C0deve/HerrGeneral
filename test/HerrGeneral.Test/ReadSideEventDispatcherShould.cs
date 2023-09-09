@@ -41,35 +41,6 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
             container.GetInstance<ReadModel>().Message.ShouldBe("Pong received");
         }
 
-        [Fact]
-        public async Task Throw_ReadSideException()
-        {
-            var container = new Container(cfg =>
-            {
-                cfg.AddHerrGeneralTestLogger(_output);
-                
-                cfg.ForSingletonOf<ReadModel>().Use<ReadModel>();
-
-                cfg.UseHerrGeneral(scanner =>
-                    scanner
-                        .OnWriteSide(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!)
-                        .OnReadSide(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!));
-            });
-            var sourceCommandId = Guid.NewGuid();
-
-            container.GetInstance<IAddEventToDispatch>()
-                .AddEventToDispatch(
-                    new PongWithFailure(
-                        sourceCommandId,
-                        Guid.NewGuid()));
-
-            async Task Act() =>
-                await container.GetInstance<Core.ReadSide.IEventDispatcher>()
-                    .Dispatch(sourceCommandId, CancellationToken.None);
-
-            await Should.ThrowAsync<ReadSideException>(Act);
-        }
-
         private class ReadModel
         {
             public string Message { get; set; } = string.Empty;

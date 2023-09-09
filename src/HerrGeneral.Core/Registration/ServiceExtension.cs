@@ -27,17 +27,14 @@ public static class ServiceExtension
 
         foreach (var commandHandler in scanner.CommandHandlerTypes)
             serviceCollection.RegisterOpenType(commandHandler, typeof(ICommandHandler<,>), ServiceLifetime.Transient);
-
         foreach (var eventHandler in scanner.EventHandlerTypes)
             serviceCollection.RegisterOpenType(eventHandler, typeof(IEventHandler<>), ServiceLifetime.Transient);
-
         foreach (var eventHandler in scanner.ReadSideEventHandlerTypes)
             serviceCollection.RegisterOpenType(eventHandler, typeof(HerrGeneral.ReadSide.IEventHandler<>), ServiceLifetime.Singleton);
-
+        serviceCollection.AddSingleton<CommandLogger>();
         serviceCollection.AddSingleton<ReadSideEventDispatcher>();
         serviceCollection.AddSingleton<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
         serviceCollection.AddSingleton<ReadSide.IEventDispatcher>(x => x.GetRequiredService<ReadSideEventDispatcher>());
-
         serviceCollection.AddSingleton<HerrGeneral.WriteSide.IEventDispatcher, EventDispatcher>();
         serviceCollection.AddSingleton<Mediator>();
 

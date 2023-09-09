@@ -21,12 +21,13 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
         var logger = GetLogger(serviceProvider);
         var readSideEventDispatcher = serviceProvider.GetRequiredService<ReadSide.IEventDispatcher>();
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
+        var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
         
         return
             Start(commandHandler)
                 .WithReadSideDispatching(readSideEventDispatcher)
                 .WithUnitOfWork(unitOfWork)
-                .WithErrorLogger(logger);
+                .WithErrorLogger(logger, commandLogger);
     }
 
     private static CommandPipeline.HandlerDelegate<TCommand, TResult> Start(ICommandHandler<TCommand, TResult> commandHandler) =>

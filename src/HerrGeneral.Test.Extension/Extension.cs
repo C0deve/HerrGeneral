@@ -135,5 +135,10 @@ public static class Extension
     /// <param name="testOutputHelper"></param>
     /// <returns></returns>
     public static IServiceCollection AddHerrGeneralTestLogger(this IServiceCollection serviceCollection, ITestOutputHelper testOutputHelper) =>
-        serviceCollection.AddLogging(builder => { builder.AddXunit(testOutputHelper, LogConfig.Current); });
+        serviceCollection.AddLogging(builder =>
+        {
+            builder
+                .SetMinimumLevel(LogLevel.Debug)
+                .AddXunit(testOutputHelper, LogConfig.Current);
+        });
 }

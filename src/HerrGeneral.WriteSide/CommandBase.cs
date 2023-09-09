@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace HerrGeneral.WriteSide;
+﻿namespace HerrGeneral.WriteSide;
 
 /// <summary>
 /// Command implementation
@@ -33,12 +31,4 @@ public abstract class CommandBase<TResult>
         Id = Guid.NewGuid();
         ExecutionDate = executionDate;
     }
-
-    /// <summary>
-    /// Log the command
-    /// </summary>
-    /// <param name="sb"></param>
-    /// <returns></returns>
-    public virtual StringBuilder Log(StringBuilder sb) =>
-        sb.AppendLine($"-- Execution date {ExecutionDate:g}");
 }
