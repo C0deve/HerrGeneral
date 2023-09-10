@@ -4,7 +4,7 @@
 /// Command implementation
 /// </summary>
 /// <typeparam name="TResult"></typeparam>
-public abstract class CommandBase<TResult>
+public abstract record CommandBase<TResult>
 {
     /// <summary>
     /// Id of the command

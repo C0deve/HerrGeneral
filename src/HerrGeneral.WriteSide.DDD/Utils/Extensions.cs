@@ -14,6 +14,4 @@ internal static class Extensions
 
         ag.ClearNewEvents();
     }
-
-    
 }

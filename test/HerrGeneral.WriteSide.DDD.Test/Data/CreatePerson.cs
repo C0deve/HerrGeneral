@@ -1,6 +1,6 @@
 ﻿namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
-public class CreatePerson : CreateAggregate<Person>
+public record CreatePerson : CreateAggregate<Person>
 {
     public class Handler: CreateAggregateHandler<Person,CreatePerson>
     {

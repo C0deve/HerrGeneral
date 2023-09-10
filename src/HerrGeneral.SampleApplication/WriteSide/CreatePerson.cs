@@ -2,7 +2,7 @@
 
 namespace HerrGeneral.SampleApplication.WriteSide;
 
-public class CreatePerson : CreateAggregate<Person>
+public record CreatePerson : CreateAggregate<Person>
 {
     private readonly string _myFriend;
     private readonly string _name;

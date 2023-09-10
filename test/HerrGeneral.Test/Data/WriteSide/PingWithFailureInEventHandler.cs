@@ -2,7 +2,7 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class PingWithFailureInEventHandler : Command
+public record PingWithFailureInEventHandler : Command
 {
     public class Handler : CommandHandler<PingWithFailureInEventHandler>
     {

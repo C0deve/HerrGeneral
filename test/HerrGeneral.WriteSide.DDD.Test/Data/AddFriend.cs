@@ -1,6 +1,6 @@
 ﻿namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
-public class AddFriend : ChangeAggregate<Person>
+public record AddFriend : ChangeAggregate<Person>
 {
     public AddFriend(Guid aggregateId) : base(aggregateId)
     {

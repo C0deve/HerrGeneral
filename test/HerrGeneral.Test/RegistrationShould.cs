@@ -17,10 +17,7 @@ public class RegistrationShould
 
     public RegistrationShould(ITestOutputHelper output) => _output = output;
 
-    private class Ping : Command
-    {
-        public string? Message { get; set; }
-    }
+    private record Ping : Command;
 
 
     private class PingHandler : CommandHandler<Ping>
@@ -60,7 +57,7 @@ public class RegistrationShould
 
         var mediator = container.GetInstance<Mediator>();
 
-        var response = await mediator.Send(new Ping { Message = "Ping" });
+        var response = await mediator.Send(new Ping());
 
         response.ShouldBe(CommandResult.Success);
         container.GetInstance<Dependency>().Called.ShouldBe(true);
@@ -81,7 +78,7 @@ public class RegistrationShould
 
         var mediator = container.GetInstance<Mediator>();
 
-        await Should.ThrowAsync<MissingCommandHandlerRegistrationException>(async () => await mediator.Send(new Ping { Message = "Ping" }));
+        await Should.ThrowAsync<MissingCommandHandlerRegistrationException>(async () => await mediator.Send(new Ping ()));
     }
     
     [Fact]

@@ -49,7 +49,7 @@ public class ScannerShould
     public void Filter_IReadSideEventHandler() =>
         typeof(MyReadSideEventHandlerImpl).IsAssignableFromOpenType(typeof(ReadSide.IEventHandler<>)).ShouldBe(true);
 
-    public class Command1 : Command
+    public record Command1 : Command
     {
         public class Command1Handler : CommandHandler<Command1>
         {
@@ -62,9 +62,7 @@ public class ScannerShould
         }
     }
 
-    private class Command2 : Command
-    {
-    }
+    private record Command2 : Command;
 
     private abstract class Command2HandlerBase : CommandHandler<Command2>
     {
@@ -83,7 +81,7 @@ public class ScannerShould
         }
     }
 
-    private class MyEvent : EventBase
+    private record MyEvent : EventBase
     {
         public MyEvent(Guid sourceCommandId, Guid aggregateId) : base(sourceCommandId, aggregateId, DateTime.Now)
         {

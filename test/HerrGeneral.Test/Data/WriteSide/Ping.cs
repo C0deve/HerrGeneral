@@ -2,7 +2,7 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class Ping : Command
+public record Ping : Command
 {
     public string Message { get; set; } = string.Empty;
 

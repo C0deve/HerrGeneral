@@ -5,7 +5,7 @@ namespace HerrGeneral.Test;
 /// <summary>
 /// Event implementation.
 /// </summary>
-public abstract class EventBase : IEvent
+public abstract record EventBase : IEvent
 {
     /// <summary>
     /// Ctor

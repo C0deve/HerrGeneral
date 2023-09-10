@@ -2,7 +2,7 @@
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class PingWithFailureInReadSideEventHandler : Command
+public record PingWithFailureInReadSideEventHandler : Command
 {
     public class Handler : CommandHandler<PingWithFailureInReadSideEventHandler>
     {

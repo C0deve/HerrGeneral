@@ -7,7 +7,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// Command for editing an aggregate
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
-public class ChangeAggregate<TAggregate> : Command
+public record ChangeAggregate<TAggregate> : Command
     where TAggregate : Aggregate<TAggregate>
 {
     /// <summary>

@@ -7,7 +7,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// Command for aggregate creation
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
-public abstract class CreateAggregate<TAggregate> : CreationCommand
+public abstract record CreateAggregate<TAggregate> : CreationCommand
     where TAggregate : Aggregate<TAggregate>
 {
     /// <summary>

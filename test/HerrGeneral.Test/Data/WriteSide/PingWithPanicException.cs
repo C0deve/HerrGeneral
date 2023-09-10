@@ -2,7 +2,7 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class PingWithPanicException : Command
+public record PingWithPanicException : Command
 {
     public class Handler : CommandHandler<PingWithPanicException>
     {

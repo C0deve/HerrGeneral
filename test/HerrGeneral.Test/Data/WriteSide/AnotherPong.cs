@@ -1,6 +1,6 @@
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class AnotherPong : EventBase
+public record AnotherPong : EventBase
 {
     public string Message { get; }
 

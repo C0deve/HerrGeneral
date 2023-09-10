@@ -2,7 +2,7 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class CreatePing : CreationCommand
+public record CreatePing : CreationCommand
 {
     public static readonly Guid AggregateId  = Guid.NewGuid();
 

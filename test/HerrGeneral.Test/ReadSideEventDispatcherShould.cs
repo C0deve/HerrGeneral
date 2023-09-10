@@ -46,7 +46,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
             public string Message { get; set; } = string.Empty;
         }
 
-        private class Pong : EventBase
+        private record Pong : EventBase
         {
             public string Message { get; }
 
@@ -54,7 +54,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
                 Message = message;
         }
 
-        private class PongHandler : ReadSide.IEventHandler<Pong>
+        private record PongHandler : ReadSide.IEventHandler<Pong>
         {
             private readonly ReadModel _readModel;
 
@@ -67,7 +67,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
             }
         }
 
-        private class PongWithFailure : EventBase
+        private record PongWithFailure : EventBase
         {
             public PongWithFailure(Guid sourceCommandId, Guid aggregateId) : base(sourceCommandId, aggregateId)
             {

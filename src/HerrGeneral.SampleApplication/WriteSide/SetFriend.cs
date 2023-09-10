@@ -2,7 +2,7 @@
 
 namespace HerrGeneral.SampleApplication.WriteSide;
 
-public class SetFriend : ChangeAggregate<Person>
+public record SetFriend : ChangeAggregate<Person>
 {
     private readonly string _friend;
 
