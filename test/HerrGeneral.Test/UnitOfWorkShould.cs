@@ -31,7 +31,7 @@ public class UnitOfWorkShould
 
         
         var result = await new Ping { Message = "Ping" }.Send(container, false);
-        result.ShouldBe(CommandResult.Success);
+        result.ShouldBe(ChangeResult.Success);
     }
     
     private Container Register(IUnitOfWork unitOfWork) =>

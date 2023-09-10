@@ -8,7 +8,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class ChangeAggregateHandler<TAggregate, TCommand> : CommandHandler<TCommand>
+public abstract class ChangeAggregateHandler<TAggregate, TCommand> : ChangeHandler<TCommand>
     where TAggregate : Aggregate<TAggregate>
     where TCommand : ChangeAggregate<TAggregate>
 {
@@ -37,14 +37,14 @@ public abstract class ChangeAggregateHandler<TAggregate, TCommand> : CommandHand
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public sealed override async Task<CommandResult> Handle(TCommand command, CancellationToken cancellationToken)
+    public sealed override async Task<ChangeResult> Handle(TCommand command, CancellationToken cancellationToken)
     {
         var aggregate = GetAggregate(command);
 
         await Handle(aggregate, command)
             .SaveAndDispatch(command.Id, Publish, _repository);
     
-        return CommandResult.Success;
+        return ChangeResult.Success;
     }
 
     private TAggregate GetAggregate(TCommand command) =>

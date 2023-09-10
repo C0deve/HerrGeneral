@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal static class EventPipeline
+internal static class WriteSideEventPipeline
 {
     public delegate Task EventHandlerDelegate<in TEvent>(TEvent @event, CancellationToken cancellationToken) where TEvent : IEvent;
 

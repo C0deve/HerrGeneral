@@ -4,12 +4,12 @@ namespace HerrGeneral.WriteSide;
 /// Handler for creation command returning a CreationResult
 /// </summary>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class CreationCommandHandler<TCommand> : CommandHandlerBase<TCommand, CreationResult>
-    where TCommand : CreationCommand
+public abstract class CreateHandler<TCommand> : CommandHandlerBase<TCommand, CreateResult>
+    where TCommand : Create
 {
     /// <summary>
     /// Ctor
     /// </summary>
     /// <param name="eventDispatcher"></param>
-    protected CreationCommandHandler(IEventDispatcher eventDispatcher) : base(eventDispatcher) { }
+    protected CreateHandler(IEventDispatcher eventDispatcher) : base(eventDispatcher) { }
 }

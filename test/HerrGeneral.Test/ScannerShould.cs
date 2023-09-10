@@ -49,29 +49,29 @@ public class ScannerShould
     public void Filter_IReadSideEventHandler() =>
         typeof(MyReadSideEventHandlerImpl).IsAssignableFromOpenType(typeof(ReadSide.IEventHandler<>)).ShouldBe(true);
 
-    public record Command1 : Command
+    public record Command1 : Change
     {
-        public class Command1Handler : CommandHandler<Command1>
+        public class Command1Handler : ChangeHandler<Command1>
         {
             public Command1Handler(IEventDispatcher eventDispatcher) : base(eventDispatcher)
             {
             }
 
-            public override Task<CommandResult> Handle(Command1 command, CancellationToken cancellationToken) =>
-                Task.FromResult(CommandResult.Success);
+            public override Task<ChangeResult> Handle(Command1 command, CancellationToken cancellationToken) =>
+                Task.FromResult(ChangeResult.Success);
         }
     }
 
-    private record Command2 : Command;
+    private record Command2 : Change;
 
-    private abstract class Command2HandlerBase : CommandHandler<Command2>
+    private abstract class Command2HandlerBase : ChangeHandler<Command2>
     {
         protected Command2HandlerBase(IEventDispatcher eventDispatcher) : base(eventDispatcher)
         {
         }
 
-        public override Task<CommandResult> Handle(Command2 command, CancellationToken cancellationToken) => 
-            Task.FromResult(CommandResult.Success);
+        public override Task<ChangeResult> Handle(Command2 command, CancellationToken cancellationToken) => 
+            Task.FromResult(ChangeResult.Success);
     }
 
     private class Command2Handler : Command2HandlerBase

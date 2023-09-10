@@ -2,18 +2,18 @@
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public record PingWithFailureInReadSideEventHandler : Command
+public record PingWithFailureInReadSideEventHandler : Change
 {
-    public class Handler : CommandHandler<PingWithFailureInReadSideEventHandler>
+    public class Handler : ChangeHandler<PingWithFailureInReadSideEventHandler>
     {
         public Handler(IEventDispatcher eventDispatcher) : base(eventDispatcher)
         {
         }
 
-        public override async Task<CommandResult> Handle(PingWithFailureInReadSideEventHandler command, CancellationToken cancellationToken)
+        public override async Task<ChangeResult> Handle(PingWithFailureInReadSideEventHandler command, CancellationToken cancellationToken)
         {
             await Publish(new PongWithReadSideFailure(command.Id, Guid.NewGuid()), cancellationToken);
-            return CommandResult.Success;
+            return ChangeResult.Success;
         }
     }
 }

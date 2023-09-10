@@ -100,13 +100,13 @@ internal static class CommandPipeline
         };
 
 
-    public static HandlerDelegate<TCommand, CommandResult> WithExceptionToCommandResult<TCommand>(
-        this HandlerDelegate<TCommand, CommandResult> next) =>
-        next.WithTryCatch(CommandResult.PanicFail, CommandResult.DomainFail);
+    public static HandlerDelegate<TCommand, ChangeResult> WithExceptionToCommandResult<TCommand>(
+        this HandlerDelegate<TCommand, ChangeResult> next) =>
+        next.WithTryCatch(ChangeResult.PanicFail, ChangeResult.DomainFail);
 
-    public static HandlerDelegate<TCommand, CreationResult> WithExceptionToCreationResult<TCommand>(
-        this HandlerDelegate<TCommand, CreationResult> next) =>
-        next.WithTryCatch(CreationResult.PanicFail, CreationResult.DomainFail);
+    public static HandlerDelegate<TCommand, CreateResult> WithExceptionToCreationResult<TCommand>(
+        this HandlerDelegate<TCommand, CreateResult> next) =>
+        next.WithTryCatch(CreateResult.PanicFail, CreateResult.DomainFail);
 
     private static HandlerDelegate<TCommand, TResult> WithTryCatch<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> action,
         Func<Exception, TResult> onException,

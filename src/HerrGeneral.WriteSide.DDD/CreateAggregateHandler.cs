@@ -7,7 +7,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class CreateAggregateHandler<TAggregate, TCommand> : CreationCommandHandler<TCommand>
+public abstract class CreateAggregateHandler<TAggregate, TCommand> : CreateHandler<TCommand>
     where TAggregate : Aggregate<TAggregate>
     where TCommand : CreateAggregate<TAggregate>
 {
@@ -35,12 +35,12 @@ public abstract class CreateAggregateHandler<TAggregate, TCommand> : CreationCom
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public sealed override async Task<CreationResult> Handle(TCommand command, CancellationToken cancellationToken)
+    public sealed override async Task<CreateResult> Handle(TCommand command, CancellationToken cancellationToken)
     {
         var id = Guid.NewGuid();
         var aggregate = Handle(command, id);
         await aggregate.SaveAndDispatch(command.Id, Publish, _repository);
-        return CreationResult.Success(aggregate.Id);
+        return CreateResult.Success(aggregate.Id);
     }
 
 

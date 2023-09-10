@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal class CommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, CommandResult> where TCommand : Command
+internal class ChangeHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, ChangeResult> where TCommand : Change
 {
-    protected override CommandPipeline.HandlerDelegate<TCommand, CommandResult> BuildPipeline(IServiceProvider serviceProvider)
+    protected override CommandPipeline.HandlerDelegate<TCommand, ChangeResult> BuildPipeline(IServiceProvider serviceProvider)
     {
         var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
 

@@ -6,26 +6,26 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal class EventDispatcher : EventDispatcherBase, HerrGeneral.WriteSide.IEventDispatcher
+internal class WriteSideEventDispatcher : EventDispatcherBase, HerrGeneral.WriteSide.IEventDispatcher
 {
     private readonly IAddEventToDispatch _readSideEventDispatcher;
-    private readonly ILogger<EventDispatcher> _logger;
+    private readonly ILogger<WriteSideEventDispatcher> _logger;
     private readonly CommandLogger _commandLogger;
 
-    public EventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, ILogger<EventDispatcher> logger, CommandLogger commandLogger) : base(serviceProvider)
+    public WriteSideEventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, ILogger<WriteSideEventDispatcher> logger, CommandLogger commandLogger) : base(serviceProvider)
     {
         _readSideEventDispatcher = readSideEventDispatcher;
         _logger = logger;
         _commandLogger = commandLogger;
     }
-    public EventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, CommandLogger commandLogger) : base(serviceProvider)
+    public WriteSideEventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, CommandLogger commandLogger) : base(serviceProvider)
     {
         _readSideEventDispatcher = readSideEventDispatcher;
-        _logger =  NullLogger<EventDispatcher>.Instance;;
+        _logger =  NullLogger<WriteSideEventDispatcher>.Instance;;
         _commandLogger = commandLogger;
     }
 
-    protected override Type WrapperOpenType => typeof(EventHandlerWrapper<>);
+    protected override Type WrapperOpenType => typeof(WriteSideEventHandlerWrapper<>);
 
     public override async Task Dispatch(IEvent eventToDispatch, CancellationToken cancellationToken)
     {

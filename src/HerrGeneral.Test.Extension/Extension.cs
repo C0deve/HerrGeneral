@@ -22,7 +22,7 @@ public static class Extension
     /// <param name="serviceProvider"></param>
     /// <param name="withResultAssertion"></param>
     /// <returns></returns>
-    public static async Task<CommandResult> Send(this Command request, IServiceProvider serviceProvider, bool withResultAssertion = true)
+    public static async Task<ChangeResult> Send(this Change request, IServiceProvider serviceProvider, bool withResultAssertion = true)
     {
         var res = await serviceProvider.GetRequiredService<Mediator>().Send(request);
 
@@ -38,7 +38,7 @@ public static class Extension
     /// <param name="request"></param>
     /// <param name="serviceProvider"></param>
     /// <returns></returns>
-    public static async Task<Guid> Send(this CreationCommand request, IServiceProvider serviceProvider) =>
+    public static async Task<Guid> Send(this Create request, IServiceProvider serviceProvider) =>
         (await serviceProvider
             .GetRequiredService<Mediator>()
             .Send(request))
@@ -53,7 +53,7 @@ public static class Extension
     /// <param name="serviceProvider"></param>
     /// <param name="withResultAssertion"></param>
     /// <returns></returns>
-    public static async Task<CreationResult> Send(this CreationCommand request, IServiceProvider serviceProvider, bool withResultAssertion)
+    public static async Task<CreateResult> Send(this Create request, IServiceProvider serviceProvider, bool withResultAssertion)
     {
         var res = await serviceProvider.GetRequiredService<Mediator>().Send(request);
 
@@ -69,7 +69,7 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TDomainError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<CommandResult> task) where TDomainError : DomainError
+    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<ChangeResult> task) where TDomainError : DomainError
     {
         if (task == null) throw new ArgumentNullException(nameof(task));
         (await task)
@@ -85,7 +85,7 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TDomainError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<CreationResult> task) where TDomainError : DomainError
+    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<CreateResult> task) where TDomainError : DomainError
     {
         if (task == null) throw new ArgumentNullException(nameof(task));
         (await task)
@@ -102,7 +102,7 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<CommandResult> task) where TError : Exception
+    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<ChangeResult> task) where TError : Exception
     {
         if (task == null) throw new ArgumentNullException(nameof(task));
         (await task)
@@ -118,7 +118,7 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<CreationResult> task) where TError : Exception
+    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<CreateResult> task) where TError : Exception
     {
         if (task == null) throw new ArgumentNullException(nameof(task));
         (await task)

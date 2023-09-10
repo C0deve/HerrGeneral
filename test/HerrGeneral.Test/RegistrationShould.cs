@@ -17,20 +17,20 @@ public class RegistrationShould
 
     public RegistrationShould(ITestOutputHelper output) => _output = output;
 
-    private record Ping : Command;
+    private record Ping : Change;
 
 
-    private class PingHandler : CommandHandler<Ping>
+    private class PingHandler : ChangeHandler<Ping>
     {
         private readonly Dependency _dependency;
 
         public PingHandler(Dependency dependency, IEventDispatcher eventDispatcher) : base(eventDispatcher) =>
             _dependency = dependency;
 
-        public override Task<CommandResult> Handle(Ping command, CancellationToken cancellationToken)
+        public override Task<ChangeResult> Handle(Ping command, CancellationToken cancellationToken)
         {
             _dependency.Called = true;
-            return Task.FromResult(CommandResult.Success);
+            return Task.FromResult(ChangeResult.Success);
         }
     }
 
@@ -59,7 +59,7 @@ public class RegistrationShould
 
         var response = await mediator.Send(new Ping());
 
-        response.ShouldBe(CommandResult.Success);
+        response.ShouldBe(ChangeResult.Success);
         container.GetInstance<Dependency>().Called.ShouldBe(true);
     }
 

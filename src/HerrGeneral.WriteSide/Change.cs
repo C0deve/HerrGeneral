@@ -3,12 +3,12 @@ namespace HerrGeneral.WriteSide;
 /// <summary>
 /// A command returning a CommandResultV2
 /// </summary>
-public abstract record Command : CommandBase<CommandResult>
+public abstract record Change : CommandBase<ChangeResult>
 {
     /// <summary>
     /// Ctor
     /// </summary>
-    protected Command()
+    protected Change()
     {
         
     }
@@ -17,7 +17,7 @@ public abstract record Command : CommandBase<CommandResult>
     /// Ctor
     /// </summary>
     /// <param name="executionDate"></param>
-    protected Command(DateTime executionDate) : base(executionDate)
+    protected Change(DateTime executionDate) : base(executionDate)
     {
     }
 }

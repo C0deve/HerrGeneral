@@ -39,8 +39,8 @@ var setFriendResult = await result.Match(guid =>
         Console.WriteLine("Set theo as a friend");
         return mediator.Send(new SetFriend(guid, "Theo"));
     },
-    error => Task.FromResult(CommandResult.DomainFail(error)),
-    exception => Task.FromResult(CommandResult.PanicFail(exception)));
+    error => Task.FromResult(ChangeResult.DomainFail(error)),
+    exception => Task.FromResult(ChangeResult.PanicFail(exception)));
 
 setFriendResult.Match(() =>
     {

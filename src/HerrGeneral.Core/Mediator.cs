@@ -24,8 +24,8 @@ public class Mediator
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<CreationResult> Send(CreationCommand command, CancellationToken cancellationToken = default) =>
-        await Send(command, typeof(CreationCommandHandlerWrapper<>), cancellationToken).ConfigureAwait(false);
+    public async Task<CreateResult> Send(Create command, CancellationToken cancellationToken = default) =>
+        await Send(command, typeof(CreateHandlerWrapper<>), cancellationToken).ConfigureAwait(false);
 
     /// <summary>
     /// Send a command
@@ -33,8 +33,8 @@ public class Mediator
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<CommandResult> Send(Command command, CancellationToken cancellationToken = default) =>
-        await Send(command, typeof(CommandHandlerWrapper<>), cancellationToken).ConfigureAwait(false);
+    public async Task<ChangeResult> Send(Change command, CancellationToken cancellationToken = default) =>
+        await Send(command, typeof(ChangeHandlerWrapper<>), cancellationToken).ConfigureAwait(false);
 
     private async Task<TResult> Send<TResult>(CommandBase<TResult> command, Type openWrapperType, CancellationToken cancellationToken) 
         where TResult : IWithSuccess

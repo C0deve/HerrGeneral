@@ -3,10 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal class CreationCommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, CreationResult>
-    where TCommand : CreationCommand
+internal class CreateHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, CreateResult>
+    where TCommand : Create
 {
-    protected override CommandPipeline.HandlerDelegate<TCommand, CreationResult> BuildPipeline(IServiceProvider serviceProvider)
+    protected override CommandPipeline.HandlerDelegate<TCommand, CreateResult> BuildPipeline(IServiceProvider serviceProvider)
     {
         var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
 

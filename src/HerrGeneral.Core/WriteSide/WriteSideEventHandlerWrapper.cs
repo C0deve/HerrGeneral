@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
+internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
     where TEvent : IEvent
 {
     private static async Task Handle(TEvent @event, IServiceProvider serviceProvider, CancellationToken cancellationToken)
@@ -27,6 +27,6 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
     public async Task Handle(object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
         await Handle((TEvent)@event, serviceProvider, cancellationToken);
 
-    private static EventPipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> eventHandler) =>
+    private static WriteSideEventPipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> eventHandler) =>
         eventHandler.Handle;
 }

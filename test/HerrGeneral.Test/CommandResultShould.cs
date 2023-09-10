@@ -12,7 +12,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        CommandResult
+        ChangeResult
             .Success
             .Match(
                 () => message = "success",
@@ -27,7 +27,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        CommandResult
+        ChangeResult
             .DomainFail(new PingError())
             .Match(
                 () => message = "success",
@@ -42,7 +42,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        CommandResult
+        ChangeResult
             .PanicFail(new Exception())
             .Match(
                 () => message = "success",
@@ -54,7 +54,7 @@ public class CommandResultShould
 
     [Fact]
     public void MatchFunctionOnSuccess() =>
-        CommandResult
+        ChangeResult
             .Success
             .Match(
                 () => "success",
@@ -64,7 +64,7 @@ public class CommandResultShould
 
     [Fact]
     public void MatchFunctionOnDomainError() =>
-        CommandResult
+        ChangeResult
             .DomainFail(new PingError())
             .Match(
                 () => "success",
@@ -74,7 +74,7 @@ public class CommandResultShould
 
     [Fact]
     public void MatchFunctionOnPanicException() =>
-        CommandResult
+        ChangeResult
             .PanicFail(new Exception())
             .Match(
                 () => "success",
@@ -87,7 +87,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        CommandResult.Success.MatchSuccess(() => message = "success");
+        ChangeResult.Success.MatchSuccess(() => message = "success");
 
         message.ShouldBe("success");
     }
@@ -97,7 +97,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        CommandResult
+        ChangeResult
             .DomainFail(new PingError())
             .MatchDomainError(_ => message = "domainError");
 
@@ -109,7 +109,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        CommandResult
+        ChangeResult
             .PanicFail(new Exception())
             .MatchPanicException(_ => message = "panicException");
 

@@ -4,12 +4,12 @@ namespace HerrGeneral.WriteSide;
 /// Command for aggregate creation.
 /// Return a CreationResult containing the id of the created aggregate.
 /// </summary>
-public abstract record CreationCommand : CommandBase<CreationResult>
+public abstract record Create : CommandBase<CreateResult>
 {
     /// <summary>
     /// Ctor
     /// </summary>
-    protected CreationCommand()
+    protected Create()
     {
         
     }
@@ -18,7 +18,7 @@ public abstract record CreationCommand : CommandBase<CreationResult>
     /// Ctor
     /// </summary>
     /// <param name="executionDate"></param>
-    protected CreationCommand(DateTime executionDate) : base(executionDate)
+    protected Create(DateTime executionDate) : base(executionDate)
     {
     }
 }

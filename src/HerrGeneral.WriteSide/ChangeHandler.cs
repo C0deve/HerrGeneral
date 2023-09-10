@@ -4,12 +4,12 @@ namespace HerrGeneral.WriteSide;
 /// Handler for command returning a CommandResult
 /// </summary>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class CommandHandler<TCommand> : CommandHandlerBase<TCommand, CommandResult>
-    where TCommand : Command
+public abstract class ChangeHandler<TCommand> : CommandHandlerBase<TCommand, ChangeResult>
+    where TCommand : Change
 {
     /// <summary>
     /// Ctor
     /// </summary>
     /// <param name="eventDispatcher"></param>
-    protected CommandHandler(IEventDispatcher eventDispatcher) : base(eventDispatcher) { }
+    protected ChangeHandler(IEventDispatcher eventDispatcher) : base(eventDispatcher) { }
 }
