@@ -133,12 +133,13 @@ public static class Extension
     /// </summary>
     /// <param name="serviceCollection"></param>
     /// <param name="testOutputHelper"></param>
+    /// <param name="logLevel"></param>
     /// <returns></returns>
-    public static IServiceCollection AddHerrGeneralTestLogger(this IServiceCollection serviceCollection, ITestOutputHelper testOutputHelper) =>
+    public static IServiceCollection AddHerrGeneralTestLogger(this IServiceCollection serviceCollection, ITestOutputHelper testOutputHelper, LogLevel logLevel = LogLevel.Debug) =>
         serviceCollection.AddLogging(builder =>
         {
             builder
-                .SetMinimumLevel(LogLevel.Debug)
+                .SetMinimumLevel(logLevel)
                 .AddXunit(testOutputHelper, LogConfig.Current);
         });
 }

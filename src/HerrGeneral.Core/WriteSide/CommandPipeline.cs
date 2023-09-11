@@ -4,6 +4,7 @@ using HerrGeneral.Core.Logger;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Text.Json;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -11,16 +12,25 @@ internal static class CommandPipeline
 {
     public delegate Task<TResult> HandlerDelegate<in TCommand, TResult>(TCommand command, CancellationToken cancellationToken);
 
-    public static HandlerDelegate<TCommand, TResult> WithHandlerLogger<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandLogger commandLogger)
+    public static HandlerDelegate<TCommand, TResult> WithLogger<TCommand, TResult>(
+        this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandLogger commandLogger)
+        where TCommand : CommandBase<TResult>
+        where TResult : IWithSuccess
+    {
+        logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
+        
+        if (logger.IsEnabled(LogLevel.Debug))
+            return WithDebugLogger(next, logger, commandLogger);
+        return logger.IsEnabled(LogLevel.Information) 
+            ? WithInformationLogger(next, logger) 
+            : next;
+    }
+
+    private static HandlerDelegate<TCommand, TResult> WithDebugLogger<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>> logger, CommandLogger commandLogger)
         where TCommand : CommandBase<TResult>
         where TResult : IWithSuccess =>
         async (command, cancellationToken) =>
         {
-            logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
-
-            if (!logger.IsEnabled(LogLevel.Debug))
-                return await next(command, cancellationToken);
-
             var watch = new Stopwatch();
             var type = typeof(TCommand).GetFriendlyName();
 
@@ -28,28 +38,6 @@ internal static class CommandPipeline
                 .StartHandlingCommand<TCommand, TResult>(type, command);
 
             watch.Start();
-            var result = await next(command, cancellationToken);
-            watch.Stop();
-
-            sb.StopHandlingCommand(type, watch.Elapsed);
-            
-            logger.LogDebug("{Message}", sb.ToString());
-            commandLogger.RemoveStringBuilder(command.Id);
-            
-            return result;
-        };
-
-
-    public static HandlerDelegate<TCommand, TResult> WithErrorLogger<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ILogger? logger, CommandLogger commandLogger)
-        where TCommand : CommandBase<TResult>
-        where TResult : IWithSuccess =>
-        async (command, cancellationToken) =>
-        {
-            logger ??= NullLogger.Instance;
-            if (!logger.IsEnabled(LogLevel.Debug))
-                return await next(command, cancellationToken);
-            
             try
             {
                 return await next(command, cancellationToken);
@@ -60,7 +48,7 @@ internal static class CommandPipeline
             }
             catch (DomainException e)
             {
-                commandLogger.GetStringBuilder(command.Id).OnException(e,2);
+                commandLogger.GetStringBuilder(command.Id).OnException(e, 2);
                 throw;
             }
             catch (EventHandlerException)
@@ -69,11 +57,51 @@ internal static class CommandPipeline
             }
             catch (Exception e)
             {
-                commandLogger.GetStringBuilder(command.Id).OnException(e,2);
+                commandLogger.GetStringBuilder(command.Id).OnException(e, 2);
                 throw;
+            }
+            finally
+            {
+                watch.Stop();
+
+                sb.StopHandlingCommand(type, watch.Elapsed);
+
+                logger.LogDebug("{Message}", sb.ToString());
+                commandLogger.RemoveStringBuilder(command.Id);
             }
         };
 
+
+    private static HandlerDelegate<TCommand, TResult> WithInformationLogger<TCommand, TResult>(
+        this HandlerDelegate<TCommand, TResult> next, ILogger logger)
+        where TCommand : CommandBase<TResult>
+        where TResult : IWithSuccess =>
+        async (command, cancellationToken) =>
+        {
+            try
+            {
+                logger.LogInformation("{CommandType}, {Data}", command.GetType(), JsonSerializer.Serialize(command));
+                return await next(command, cancellationToken);
+            }
+            catch (EventHandlerDomainException)
+            {
+                throw;
+            }
+            catch (DomainException e)
+            {
+                logger.LogError(e, null);
+                throw;
+            }
+            catch (EventHandlerException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, null);
+                throw;
+            }
+        };
 
     public static HandlerDelegate<TCommand, TResult> WithUnitOfWork<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, IUnitOfWork? unitOfWork)
@@ -98,7 +126,6 @@ internal static class CommandPipeline
                 unitOfWork?.Dispose(command.Id);
             }
         };
-
 
     public static HandlerDelegate<TCommand, ChangeResult> WithExceptionToCommandResult<TCommand>(
         this HandlerDelegate<TCommand, ChangeResult> next) =>

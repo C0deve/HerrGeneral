@@ -27,7 +27,7 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
             Start(commandHandler)
                 .WithReadSideDispatching(readSideEventDispatcher)
                 .WithUnitOfWork(unitOfWork)
-                .WithErrorLogger(logger, commandLogger);
+                .WithLogger(logger, commandLogger);
     }
 
     private static CommandPipeline.HandlerDelegate<TCommand, TResult> Start(ICommandHandler<TCommand, TResult> commandHandler) =>
@@ -36,6 +36,6 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
     private static ICommandHandler<TCommand, TResult> GetHandler(IServiceProvider serviceProvider) =>
         serviceProvider.GetService<ICommandHandler<TCommand, TResult>>() ?? throw new MissingCommandHandlerRegistrationException(typeof(TCommand));
 
-    protected static ILogger<ICommandHandler<TCommand, TResult>>? GetLogger(IServiceProvider serviceProvider) =>
+    private static ILogger<ICommandHandler<TCommand, TResult>>? GetLogger(IServiceProvider serviceProvider) =>
         serviceProvider.GetService<ILogger<ICommandHandler<TCommand, TResult>>>();
 }
