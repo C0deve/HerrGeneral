@@ -6,7 +6,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// Aggregate implementation with IDomainEvent publication
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class Aggregate<T> where T : Aggregate<T>
+public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
 {
     private readonly List<IDomainEvent<T>> _newEvents = new();
 

@@ -4,7 +4,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// Interface for aggregate repository
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IAggregateRepository<T> where T : Aggregate<T>
+public interface IAggregateRepository<T> where T : IAggregate
 {
     /// <summary>
     /// Find the aggregate with by id 

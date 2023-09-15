@@ -8,7 +8,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 public record ChangeAggregate<TAggregate> : Change
-    where TAggregate : Aggregate<TAggregate>
+    where TAggregate : IAggregate
 {
     /// <summary>
     /// Constructor
