@@ -1,21 +1,21 @@
 # Herr General
 
-Herr General is a Cqrs implementation with built in debug log for simple modular monolith.
+Herr General is a Cqrs implementation with built in debug log for simple modular monolith.  
 (strongly inspired from MediatR)
 
-## Implementation choice
+## Implementation choices
 
-One storage for all
-pro : no eventual consistency
-cons : no eventual consistency => doesn't scale
+One storage for all side  
+   pro : no eventual consistency  
+   cons : no eventual consistency => doesn't scale  
 
-One transaction by command.
+One transaction by command.  
 
-ReadModel as singleton.
+ReadModel as singleton.  
 
-All ids are System.Guid.
+All ids are System.Guid.  
 
-Result pattern but CreationResult return the id of the created object.
+Result pattern but CreationResult return the id of the created object.  
 
 ## Installing Herr General with NuGet
 
@@ -66,49 +66,46 @@ public record PersonFriendRM(Guid PersonId, string Person, string Friend)
 {
     public class PersonFriendRMRepository : IEventHandler<FriendChanged>
     {
-        private readonly Dictionary<Guid, PersonFriendRM> _personFriends = new();
         public Task Handle(FriendChanged notification, CancellationToken cancellationToken)
         {
-            _personFriends[notification.AggregateId] = new PersonFriendRM(notification.AggregateId, notification.Person, notification.FriendName);
+            ...
             return Task.CompletedTask;
         }
-
-        public PersonFriendRM Get(Guid personId) => _personFriends[personId];
     }    
 }
 ```
 
 ## Debug logger output sample
 
-<------------------- SetFriend <46a0deab-0485-403e-821a-834a96517a7c> thread<1> ------------------->
-|| Publish Write Side on thread<1>
-HerrGeneral.SampleApplication.WriteSide.FriendChanged
-
-|| Publish Read Side (1 event) on thread<1>
-HerrGeneral.SampleApplication.WriteSide.FriendChanged
--> Handle by HerrGeneral.SampleApplication.ReadSide.PersonFriendRM+PersonFriendRMRepository
-<------------------- SetFriend Finished 00:00:00.0021475 -------------------/>
+<------------------- SetFriend <46a0deab-0485-403e-821a-834a96517a7c> thread<1> ------------------->  
+|| Publish Write Side on thread<1>  
+HerrGeneral.SampleApplication.WriteSide.FriendChanged  
+  
+|| Publish Read Side (1 event) on thread<1>  
+HerrGeneral.SampleApplication.WriteSide.FriendChanged  
+-> Handle by HerrGeneral.SampleApplication.ReadSide.PersonFriendRM+PersonFriendRMRepository  
+<------------------- SetFriend Finished 00:00:00.0021475 -------------------/>  
 
 ## How it works
 
-A user: Hey, I want to change my friend name.
-Application: Ok, give me the command and I will take care of the rest. I'll send you back a commandResult when I'm done.
+A user: Hey, I want to change my friend name.  
+Application: Ok, give me the command and I will take care of the rest. I'll send you back a commandResult when I'm done.  
 
-In the application black box :
-Mediator: Anybody to handle this command ?
-CommandHandler: I"m here.
-CommandHandler: I'm done and I have some events to publish.
-WriteSideEventPublisher: That's my job.
-WriteSideEventPublisher: Anybody to handle this event on the write side ? (for each event).
-WriteSideEventHandler: Me (and I may have other events to publish).
-WriteSideEventPublisher: I'm done.
-CommandHandler: Thank you, now I can transmit all those events to the read side.
-ReadSideEventPublisher: Anybody to handle this event on the read side ? (for each event).
-ReadModel: Yes me.
-ReadSideEventPublisher: I'm done.
-CommandHandler: I'm done.
-
-Application: Here is your command result.
+In the application black box :   
+Mediator: Anybody to handle this command ?  
+CommandHandler: I"m here.  
+CommandHandler: I'm done and I have some events to publish.  
+WriteSideEventPublisher: That's my job.  
+WriteSideEventPublisher: Anybody to handle this event on the write side ? (for each event).  
+WriteSideEventHandler: Me (and I may have other events to publish).  
+WriteSideEventPublisher: I'm done.  
+CommandHandler: Thank you, now I can transmit all those events to the read side.  
+ReadSideEventPublisher: Anybody to handle this event on the read side ? (for each event).  
+ReadModel: Yes me.  
+ReadSideEventPublisher: I'm done.  
+CommandHandler: I'm done.  
+  
+Application: Here is your command result.  
 
 ![HowItWorks.png](..\assets\HowItWorks.png)
 
@@ -124,8 +121,8 @@ updateResult.Match(() =>
     {
         ...
     },
-    error => ...,
-    exception => ...);
+    domainError => ...,
+    panicException => ...);
 ```
 
 ### CreationResult
@@ -138,8 +135,8 @@ creationResult.Match(id =>
     {
         ...
     },
-    error => ...,
-    exception => ...);
+    domainError => ...,
+    panicException => ...);
 ```
 
 
