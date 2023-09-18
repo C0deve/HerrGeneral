@@ -20,6 +20,7 @@ public class CreateAggregateShould
                 scanner.OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!));
         });
     }
+    
     [Fact]
     public async Task Create()
     {

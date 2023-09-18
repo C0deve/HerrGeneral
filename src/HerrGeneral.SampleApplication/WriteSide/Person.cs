@@ -19,7 +19,7 @@ public sealed class Person : Aggregate<Person>
         MyFriend = friendName;
         return EmitFriendChanged(sourceCommandId);
     }
-
+    
     private Person EmitFriendChanged(Guid sourceCommandId) => 
         Emit(new FriendChanged(Name, MyFriend, sourceCommandId, Id));
 }

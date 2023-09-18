@@ -34,7 +34,8 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
         commandHandler.Handle;
 
     private static ICommandHandler<TCommand, TResult> GetHandler(IServiceProvider serviceProvider) =>
-        serviceProvider.GetService<ICommandHandler<TCommand, TResult>>() ?? throw new MissingCommandHandlerRegistrationException(typeof(TCommand));
+        serviceProvider.GetService<ICommandHandler<TCommand, TResult>>() ?? 
+        throw new MissingCommandHandlerRegistrationException(typeof(TCommand));
 
     private static ILogger<ICommandHandler<TCommand, TResult>>? GetLogger(IServiceProvider serviceProvider) =>
         serviceProvider.GetService<ILogger<ICommandHandler<TCommand, TResult>>>();
