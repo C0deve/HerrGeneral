@@ -17,21 +17,21 @@ internal static class TypeExtensions
         return type.BaseType != null && type.BaseType != typeof(object) && IsAssignableFromOpenType(type.BaseType, openType);
     }
 
-    public static IEnumerable<Type> GetCloseTypesFromOpenType(this Type type, Type openTypeInterface)
+    public static IEnumerable<Type> GetCloseInterfacesFromOpenInterface(this Type type, Type openTypeInterface)
     {
-        var closeTypes = type
+        var closeInterfaces = type
             .GetInterfaces()
             .Where(t =>
-                t.IsGenericType &&
-                t.GetGenericTypeDefinition() == openTypeInterface);
+                t is { IsInterface: true, IsGenericType: true } &&
+                t.GetGenericTypeDefinition() == openTypeInterface)
+            .ToList();
 
-        foreach (var closeType in closeTypes)
-            yield return closeType;
-
+        if (closeInterfaces.Any()) 
+            return closeInterfaces;
+        
         if (type.BaseType == null || type.BaseType == typeof(object))
-            yield break;
+            return Enumerable.Empty<Type>();
 
-        foreach (var parentCloseType in GetCloseTypesFromOpenType(type.BaseType, openTypeInterface))
-            yield return parentCloseType;
+        return GetCloseInterfacesFromOpenInterface(type.BaseType, openTypeInterface);
     }
 }

@@ -54,7 +54,7 @@ public static class ServiceExtension
 
     private static void RegisterOpenTypeInternal(this IServiceCollection serviceCollection, Type tHandler, Type openTypeInterface, ServiceLifetime serviceLifetime)
     {
-        foreach (var @interface in tHandler.GetCloseTypesFromOpenType(openTypeInterface))
+        foreach (var @interface in tHandler.GetCloseInterfacesFromOpenInterface(openTypeInterface))
             serviceCollection.Add(new ServiceDescriptor(
                 @interface,
                 provider => provider.GetRequiredService(tHandler),
