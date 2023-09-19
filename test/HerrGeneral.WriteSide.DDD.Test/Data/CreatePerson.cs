@@ -1,6 +1,6 @@
 ﻿namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
-public record CreatePerson : CreateAggregate<Person>
+public record CreatePerson(string Name) : CreateAggregate<Person>
 {
     public class Handler: CreateAggregateHandler<Person,CreatePerson>
     {
@@ -8,6 +8,7 @@ public record CreatePerson : CreateAggregate<Person>
         {
         }
 
-        protected override Person Handle(CreatePerson command, Guid aggregateId) => new(aggregateId);
+        protected override Person Handle(CreatePerson command, Guid aggregateId) => 
+            new(aggregateId, command.Name);
     }
 }

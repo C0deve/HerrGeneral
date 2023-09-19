@@ -1,0 +1,76 @@
+﻿using System.Reflection;
+using HerrGeneral.WriteSide;
+using HerrGeneral.WriteSide.DDD;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace HerrGeneral.Core.DDD;
+
+/// <summary>
+/// Extensions method for IServiceCollection
+/// Registration of dynamic handlers
+/// </summary>
+public static class ServiceExtension
+{
+    /// <summary>
+    /// Register all dynamic handler
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <param name="assembly"></param>
+    /// <returns></returns>
+    public static IServiceCollection RegisterDynamicHandlers(this IServiceCollection serviceCollection, Assembly assembly)
+    {
+        var types = Select(assembly);
+
+        foreach (var (@interface, type) in types)
+            serviceCollection.TryAddTransient(
+                @interface,
+                type);
+
+        return serviceCollection;
+    }
+
+    private static IEnumerable<(Type Interface, Type HandlerType)> Select(Assembly assembly)
+    {
+        foreach (var type in assembly.GetTypes())
+        {
+            if (type.IsCreateCommand())
+            {
+                yield return (
+                    Interface: type.MakeHandlerInterfaceForCreateCommand(),
+                    HandlerType: type.MakeDynamicHandlerForCreateCommand());
+                continue;
+            }
+
+            if (!type.IsChangeCommand()) 
+                continue;
+            
+            yield return (
+                Interface: type.MakeHandlerInterfaceForChangeCommand(),
+                HandlerType: type.MakeDynamicHandlerForChangeCommand());
+        }
+    }
+    
+    private static bool IsCreateCommand(this Type type) =>
+        type.BaseType?.IsGenericType == true &&
+        type.BaseType.GetGenericTypeDefinition() == typeof(CreateAggregate<>);
+
+    private static Type MakeHandlerInterfaceForCreateCommand(this Type commandType) =>
+        typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(CreateResult));
+
+    private static Type MakeDynamicHandlerForCreateCommand(this Type commandType) =>
+        typeof(CreateAggregateHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);
+    
+    private static bool IsChangeCommand(this Type type) =>
+        type.BaseType?.IsGenericType == true &&
+        type.BaseType.GetGenericTypeDefinition() == typeof(ChangeAggregate<>);
+
+    private static Type MakeHandlerInterfaceForChangeCommand(this Type commandType) =>
+        typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(ChangeResult));
+
+    private static Type MakeDynamicHandlerForChangeCommand(this Type commandType) =>
+        typeof(ChangeAggregateHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);
+
+    private static Type GetAggregateTypeFromCommand(this Type commandType) =>
+        commandType.BaseType!.GetGenericArguments()[0];
+}

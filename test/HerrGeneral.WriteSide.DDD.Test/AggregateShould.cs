@@ -11,7 +11,7 @@ public class AggregateShould
     [Fact]
     public void AddNewEventOnEmit()
     {
-        var person = new Person(Guid.NewGuid())
+        var person = new Person(Guid.NewGuid(), "John")
             .AddFriend("Smith", Guid.NewGuid())
             .AddFriend("Adams", Guid.NewGuid());
 
@@ -21,7 +21,7 @@ public class AggregateShould
     [Fact]
     public void ClearNewEvents()
     {
-        var person = new Person(Guid.NewGuid())
+        var person = new Person(Guid.NewGuid(), "John")
             .AddFriend("Smith", Guid.NewGuid())
             .AddFriend("Adams", Guid.NewGuid());
 
@@ -35,13 +35,13 @@ public class AggregateShould
     [Fact]
     public void ThrowIfAnEventIsEmitWithADifferentAggregateId() =>
         Should.Throw<IdMismatchOnEventEmit<Person>>(() =>
-            new Person(Guid.NewGuid()).AddFriendWithDifferentAggregateId("Smith", Guid.NewGuid())
+            new Person(Guid.NewGuid(), "John").AddFriendWithDifferentAggregateId("Smith", Guid.NewGuid())
         );
 
     [Fact]
     public async Task ClearNewEventsOnSaveAndDispatch()
     {
-        var person = new Person(Guid.NewGuid()).AddFriend("Smith", Guid.NewGuid());
+        var person = new Person(Guid.NewGuid(), "John").AddFriend("Smith", Guid.NewGuid());
 
         await person.SaveAndDispatch(
             Guid.NewGuid(),
@@ -57,7 +57,7 @@ public class AggregateShould
     {
         var dispatchedEvents = new List<IEvent>();
 
-        await new Person(Guid.NewGuid())
+        await new Person(Guid.NewGuid(), "John")
             .AddFriend("Smith", Guid.NewGuid())
             .SaveAndDispatch(
                 Guid.NewGuid(),
@@ -77,7 +77,7 @@ public class AggregateShould
     {
         var aggregateRepository = new PersonRepository();
         
-        await new Person(Guid.NewGuid())
+        await new Person(Guid.NewGuid(), "John")
             .SaveAndDispatch(
                 Guid.NewGuid(),
                 (_, _) => Task.CompletedTask,
