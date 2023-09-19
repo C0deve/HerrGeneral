@@ -53,23 +53,23 @@ public static class ServiceExtension
     
     private static bool IsCreateCommand(this Type type) =>
         type.BaseType?.IsGenericType == true &&
-        type.BaseType.GetGenericTypeDefinition() == typeof(CreateAggregate<>);
+        type.BaseType.GetGenericTypeDefinition() == typeof(Create<>);
 
     private static Type MakeHandlerInterfaceForCreateCommand(this Type commandType) =>
         typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(CreateResult));
 
     private static Type MakeDynamicHandlerForCreateCommand(this Type commandType) =>
-        typeof(CreateAggregateHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);
+        typeof(CreateHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);
     
     private static bool IsChangeCommand(this Type type) =>
         type.BaseType?.IsGenericType == true &&
-        type.BaseType.GetGenericTypeDefinition() == typeof(ChangeAggregate<>);
+        type.BaseType.GetGenericTypeDefinition() == typeof(Change<>);
 
     private static Type MakeHandlerInterfaceForChangeCommand(this Type commandType) =>
         typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(ChangeResult));
 
     private static Type MakeDynamicHandlerForChangeCommand(this Type commandType) =>
-        typeof(ChangeAggregateHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);
+        typeof(ChangeHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);
 
     private static Type GetAggregateTypeFromCommand(this Type commandType) =>
         commandType.BaseType!.GetGenericArguments()[0];

@@ -8,9 +8,9 @@ namespace HerrGeneral.WriteSide.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class ChangeAggregateHandler<TAggregate, TCommand> : ChangeHandler<TCommand>
+public abstract class ChangeHandler<TAggregate, TCommand> : ChangeHandler<TCommand>
     where TAggregate : Aggregate<TAggregate>
-    where TCommand : ChangeAggregate<TAggregate>
+    where TCommand : Change<TAggregate>
 {
     private readonly IAggregateRepository<TAggregate> _repository;
 
@@ -27,7 +27,7 @@ public abstract class ChangeAggregateHandler<TAggregate, TCommand> : ChangeHandl
     /// Constructor
     /// </summary>
     /// <param name="ctorParams"></param>
-    protected ChangeAggregateHandler(CtorParams ctorParams) : base(ctorParams.EventDispatcher) =>
+    protected ChangeHandler(CtorParams ctorParams) : base(ctorParams.EventDispatcher) =>
         _repository = ctorParams.Repository;
 
 

@@ -7,9 +7,9 @@ namespace HerrGeneral.WriteSide.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class CreateAggregateHandler<TAggregate, TCommand> : CreateHandler<TCommand>
+public abstract class CreateHandler<TAggregate, TCommand> : CreateHandler<TCommand>
     where TAggregate : Aggregate<TAggregate>
-    where TCommand : CreateAggregate<TAggregate>
+    where TCommand : Create<TAggregate>
 {
     private readonly IAggregateRepository<TAggregate> _repository;
 
@@ -26,7 +26,7 @@ public abstract class CreateAggregateHandler<TAggregate, TCommand> : CreateHandl
     /// Constructor
     /// </summary>
     /// <param name="params"></param>
-    protected CreateAggregateHandler(CtorParams @params) : base(@params.EventDispatcher) =>
+    protected CreateHandler(CtorParams @params) : base(@params.EventDispatcher) =>
         _repository = @params.Repository;
 
     /// <summary>

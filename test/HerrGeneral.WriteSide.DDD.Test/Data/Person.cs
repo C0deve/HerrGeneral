@@ -3,6 +3,7 @@
 public class Person : Aggregate<Person>
 {
     public string Name { get; }
+    
     public Person(Guid id, string name) : base(id) => 
         Name = name;
 

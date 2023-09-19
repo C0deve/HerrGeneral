@@ -1,13 +1,13 @@
 ﻿namespace HerrGeneral.WriteSide.DDD;
 
-internal class ChangeAggregateHandlerDynamic<TAggregate, TCommand> : ChangeAggregateHandler<TAggregate, TCommand> 
-    where TAggregate : Aggregate<TAggregate> where TCommand : ChangeAggregate<TAggregate>
+internal class ChangeHandlerDynamic<TAggregate, TCommand> : ChangeHandler<TAggregate, TCommand> 
+    where TAggregate : Aggregate<TAggregate> where TCommand : Change<TAggregate>
 {
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="ctorParams"></param>
-    public ChangeAggregateHandlerDynamic(CtorParams ctorParams) : base(ctorParams)
+    public ChangeHandlerDynamic(CtorParams ctorParams) : base(ctorParams)
     {
     }
 

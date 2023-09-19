@@ -2,13 +2,13 @@
 
 namespace HerrGeneral.SampleApplication.WriteSide;
 
-public record SetFriend : ChangeAggregate<Person>
+public record SetFriend : Change<Person>
 {
     private readonly string _friend;
 
     public SetFriend(Guid aggregateId, string friend) : base(aggregateId) => _friend = friend;
 
-    public class Handler : ChangeAggregateHandler<Person,SetFriend>
+    public class Handler : ChangeHandler<Person,SetFriend>
     {
         public Handler(CtorParams ctorParams) : base(ctorParams)
         {

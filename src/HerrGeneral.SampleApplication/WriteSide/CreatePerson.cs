@@ -2,7 +2,7 @@
 
 namespace HerrGeneral.SampleApplication.WriteSide;
 
-public record CreatePerson : CreateAggregate<Person>
+public record CreatePerson : Create<Person>
 {
     private readonly string _myFriend;
     private readonly string _name;
@@ -13,7 +13,7 @@ public record CreatePerson : CreateAggregate<Person>
         _name = name;
     }
 
-    public class Handler: CreateAggregateHandler<Person,CreatePerson>
+    public class Handler: CreateHandler<Person,CreatePerson>
     {
         public Handler(CtorParams @params) : base(@params)
         {

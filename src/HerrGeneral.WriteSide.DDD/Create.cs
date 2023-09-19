@@ -7,13 +7,13 @@ namespace HerrGeneral.WriteSide.DDD;
 /// Command for aggregate creation
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
-public abstract record CreateAggregate<TAggregate> : Create
+public abstract record Create<TAggregate> : Create
     where TAggregate : IAggregate
 {
     /// <summary>
     /// Constructor
     /// </summary>
-    protected CreateAggregate()
+    protected Create()
     {
     }
 
@@ -21,7 +21,7 @@ public abstract record CreateAggregate<TAggregate> : Create
     /// Constructor
     /// </summary>
     /// <param name="executionDate"></param>
-    protected CreateAggregate(DateTime executionDate) : base(executionDate)
+    protected Create(DateTime executionDate) : base(executionDate)
     {
     }
 }

@@ -1,12 +1,12 @@
 ﻿namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
-public record AddFriend : ChangeAggregate<Person>
+public record AddFriend : Change<Person>
 {
     public AddFriend(Guid aggregateId) : base(aggregateId)
     {
     }
     
-    public class Handler : ChangeAggregateHandler<Person,AddFriend>
+    public class Handler : ChangeHandler<Person,AddFriend>
     {
         public Handler(CtorParams ctorParams) : base(ctorParams)
         {

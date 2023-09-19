@@ -1,8 +1,8 @@
 ﻿namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
-public record CreatePerson(string Name) : CreateAggregate<Person>
+public record CreatePerson(string Name) : Create<Person>
 {
-    public class Handler: CreateAggregateHandler<Person,CreatePerson>
+    public class Handler: CreateHandler<Person,CreatePerson>
     {
         public Handler(CtorParams @params) : base(@params)
         {
