@@ -1,6 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using HerrGeneral.Core;
+﻿using HerrGeneral.Core;
+using HerrGeneral.Core.DDD;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.SampleApplication.ReadSide;
 using HerrGeneral.SampleApplication.WriteSide;
@@ -10,17 +9,18 @@ using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-Console.WriteLine("Hello, World!");
 var container = new Container(cfg =>
 {
     cfg.AddLogging(builder => builder
         .SetMinimumLevel(LogLevel.Information)
         .AddSimpleConsole());
     cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
+    cfg.For<IAggregateFactory<Person>>().Use<DefaultAggregateFactory<Person>>();
     cfg.UseHerrGeneral(scanner =>
         scanner
             .OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!)
-            .OnReadSide(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!));
+            .OnReadSide(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!))
+        .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
 });
 Console.WriteLine("Initialization Ok");
 

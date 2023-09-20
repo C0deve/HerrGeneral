@@ -7,17 +7,18 @@ public sealed class Person : Aggregate<Person>
     public string Name { get; }
     public string MyFriend { get; private set; }
     
-    public Person(Guid id, string name, string myFriend, Guid sourceCommandId) : base(id)
+    internal Person(CreatePerson createPerson, Guid id) : base(id)
     {
-        Name = name;
-        MyFriend = myFriend;
-        EmitFriendChanged(sourceCommandId);
+        Name = createPerson.Name;
+        MyFriend = createPerson.MyFriend;
+        EmitFriendChanged(createPerson.Id);
     }
     
-    public Person SetFriend(string friendName, Guid sourceCommandId)
+    // ReSharper disable once UnusedMember.Global
+    public Person Execute(SetFriend command)
     {
-        MyFriend = friendName;
-        return EmitFriendChanged(sourceCommandId);
+        MyFriend = command.Friend;
+        return EmitFriendChanged(command.Id);
     }
     
     private Person EmitFriendChanged(Guid sourceCommandId) => 
