@@ -17,6 +17,7 @@ public class DynamicHandlerHandlerShould
         {
             cfg.AddHerrGeneralTestLogger(output);
             cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
+            cfg.For<IAggregateFactory<Person>>().Use<DefaultAggregateFactory<Person>>();
             cfg.UseHerrGeneral(scanner =>
                     scanner.OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!))
                 .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly);

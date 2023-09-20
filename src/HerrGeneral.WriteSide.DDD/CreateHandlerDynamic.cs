@@ -2,10 +2,11 @@
 
 internal class CreateHandlerDynamic<TAggregate, TCommand> : CreateHandler<TAggregate, TCommand> where TAggregate : Aggregate<TAggregate> where TCommand : Create<TAggregate>
 {
-    public CreateHandlerDynamic(CtorParams @params) : base(@params)
-    {
-    }
+    private readonly IAggregateFactory<TAggregate> _aggregateFactory;
 
-    protected override TAggregate Handle(TCommand command, Guid aggregateId) =>
-        (TAggregate)(Activator.CreateInstance(typeof(TAggregate), command, aggregateId) ?? throw new InvalidOperationException());
+    public CreateHandlerDynamic(CtorParams @params, IAggregateFactory<TAggregate> aggregateFactory) : base(@params) => 
+        _aggregateFactory = aggregateFactory;
+
+    protected override TAggregate Handle(TCommand command, Guid aggregateId) => 
+        _aggregateFactory.Create(command, aggregateId);
 }
