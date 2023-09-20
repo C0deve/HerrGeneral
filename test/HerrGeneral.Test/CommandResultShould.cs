@@ -115,4 +115,52 @@ public class CommandResultShould
 
         message.ShouldBe("panicException");
     }
+
+    [Fact]
+    public void ChangeResultRailwaySuccess() =>
+        ChangeResult.Success
+            .Then(() => ChangeResult.Success)
+            .ShouldBe(ChangeResult.Success);
+
+    [Fact]
+    public void ChangeResultRailwayDomainError() =>
+        ChangeResult.DomainFail(new PingError())
+            .Then(() => ChangeResult.Success)
+            .IsSuccess.ShouldBe(false);
+
+    [Fact]
+    public void ChangeResultRailwayDomainError2() =>
+        ChangeResult.Success
+            .Then(() => ChangeResult.DomainFail(new PingError()))
+            .IsSuccess.ShouldBe(false);
+
+    [Fact]
+    public async Task ChangeResultRailwayDomainError3() =>
+        (await Task.FromResult(ChangeResult.Success)
+            .Then(() => Task.FromResult(ChangeResult.DomainFail(new PingError()))))
+        .IsSuccess.ShouldBe(false);
+
+    [Fact]
+    public async Task ChangeResultRailwayDomainError4() =>
+        (await Task.FromResult(ChangeResult.DomainFail(new PingError()))
+            .Then(() => Task.FromResult(ChangeResult.Success)))
+        .IsSuccess.ShouldBe(false);
+
+    [Fact]
+    public async Task CreateResultRailwaySuccess() =>
+        (await Task.FromResult(CreateResult.Success(Guid.NewGuid()))
+            .Then(_ => Task.FromResult(ChangeResult.Success)))
+        .ShouldBe(ChangeResult.Success);
+    
+    [Fact]
+    public async Task CreateResultRailwayDomainError() =>
+        (await Task.FromResult(CreateResult.DomainFail(new PingError()))
+            .Then(_ => Task.FromResult(ChangeResult.Success)))
+        .IsSuccess.ShouldBe(false);
+    
+    [Fact]
+    public async Task CreateResultRailwayDomainError2() =>
+        (await Task.FromResult(CreateResult.Success(Guid.NewGuid()))
+            .Then(_ => Task.FromResult(ChangeResult.DomainFail(new PingError()))))
+        .IsSuccess.ShouldBe(false);
 }

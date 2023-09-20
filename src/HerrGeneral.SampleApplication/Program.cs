@@ -17,40 +17,41 @@ var container = new Container(cfg =>
     cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
     cfg.For<IAggregateFactory<Person>>().Use<DefaultAggregateFactory<Person>>();
     cfg.UseHerrGeneral(scanner =>
-        scanner
-            .OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!)
-            .OnReadSide(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!))
+            scanner
+                .OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!)
+                .OnReadSide(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!))
         .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
 });
 Console.WriteLine("Initialization Ok");
 
 var mediator = container.GetInstance<Mediator>();
 
+var smithId = Guid.Empty;
+
 Console.WriteLine("Creating Smith");
 
-var result = await mediator.Send(new CreatePerson("Smith", "Adams"));
-
-var personId = Guid.Empty;
-
-var setFriendResult = await result.Match(guid =>
+await mediator
+    .Send(new CreatePerson("Smith", "Adams"))
+    .Then(personId =>
     {
-        personId = guid;
-        DisplayFriend(container, personId);
-        Console.WriteLine("Set theo as a friend");
-        return mediator.Send(new SetFriend(guid, "Theo"));
-    },
-    error => Task.FromResult(ChangeResult.DomainFail(error)),
-    exception => Task.FromResult(ChangeResult.PanicFail(exception)));
-
-setFriendResult.Match(() =>
+        smithId = personId;
+        DisplayFriend(container, smithId);
+        Console.WriteLine("Set Theo as a friend");
+        return mediator.Send(new SetFriend(personId, "Theo"));
+    })
+    .Then(() =>
     {
-        Console.WriteLine("Success");
-        DisplayFriend(container, personId);
-    },
-    _ => Console.WriteLine("Fail"),
-    _ => Console.WriteLine("Fail"));
+        DisplayFriend(container, smithId);
+        Console.WriteLine("Set Alfred as a friend");
+        return mediator.Send(new SetFriend(smithId, "Alfred"));
+    })
+    .Match(() => DisplayFriend(container, smithId),
+        _ => Console.WriteLine("Fail"),
+        _ => Console.WriteLine("Fail"));
+
 
 Console.ReadKey();
+return;
 
 void DisplayFriend(IServiceContext container1, Guid guid)
 {
