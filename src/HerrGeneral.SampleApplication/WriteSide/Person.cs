@@ -15,7 +15,7 @@ public sealed class Person : Aggregate<Person>
     }
     
     // ReSharper disable once UnusedMember.Global
-    public Person Execute(SetFriend command)
+    internal Person Execute(SetFriend command)
     {
         MyFriend = command.Friend;
         return EmitFriendChanged(command.Id);

@@ -32,6 +32,26 @@ public class DynamicHandlerHandlerShould
     }
     
     [Fact]
+    public async Task HandleASecondChangeCommandWithoutHandler()
+    {
+        var personId = await new CreatePerson("John").Send(_container);
+        await new ASecondChangeCommandWithoutHandler("Remy", personId).Send(_container);
+    }
+    
+    [Fact]
     public async Task HandleACreateCommandWithoutHandler() => 
         await new ACreateCommandWithoutHandler("John").Send(_container);
+    
+    [Fact]
+    public async Task ThrowIfExecuteMethodNotFound()
+    {
+        var personId = await new CreatePerson("John").Send(_container);
+        await new AThirdChangeCommandWithoutHandler("Remy", personId).Send(_container, false)
+            .ShouldHavePanicExceptionOfType<System.MissingMethodException>();
+    }
+    
+    [Fact]
+    public async Task ThrowIfConstructorNotFound() =>
+        await new ASecondCreateCommandWithoutHandler("John").Send(_container, false)
+            .ShouldHavePanicExceptionOfType<MissingMethodException>();
 }

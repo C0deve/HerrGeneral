@@ -1,4 +1,6 @@
-﻿namespace HerrGeneral.WriteSide.DDD;
+﻿using System.Reflection;
+
+namespace HerrGeneral.WriteSide.DDD;
 
 internal class ChangeHandlerDynamic<TAggregate, TCommand> : ChangeHandler<TAggregate, TCommand> 
     where TAggregate : Aggregate<TAggregate> where TCommand : Change<TAggregate>
@@ -12,5 +14,8 @@ internal class ChangeHandlerDynamic<TAggregate, TCommand> : ChangeHandler<TAggre
     }
 
     protected sealed override TAggregate Handle(TAggregate aggregate, TCommand command) => 
-        ((dynamic)aggregate).Execute(command);
+        (TAggregate)(typeof(TAggregate).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                         .SingleOrDefault(info => info.Name == "Execute" && info.GetParameters().Any(parameterInfo => parameterInfo.ParameterType == typeof(TCommand)))?
+                         .Invoke(aggregate, new object?[] { command })
+                     ?? throw new MissingMethodException($"{typeof(TAggregate)}.Execute({typeof(TCommand)} command) not found."));
 }

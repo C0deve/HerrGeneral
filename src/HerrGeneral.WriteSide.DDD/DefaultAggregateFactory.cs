@@ -30,8 +30,8 @@ public class DefaultAggregateFactory<TAggregate> : IAggregateFactory<TAggregate>
         }
         catch (MissingMethodException e)
         {
-            throw new InvalidOperationException(
-                $"{nameof(DefaultAggregateFactory<TAggregate>)} | Cannot find internal constructor new {typeof(TAggregate)}({command.GetType()} command, {aggregateId.GetType()} aggregateId)",
+            throw new MissingMethodException(
+                $"Constructor new {typeof(TAggregate)}({command.GetType()} command, {aggregateId.GetType()} aggregateId) not found.",
                 e);
         }
     }

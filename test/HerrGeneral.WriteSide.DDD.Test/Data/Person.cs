@@ -7,7 +7,7 @@ public class Person : Aggregate<Person>
     public Person(Guid id, string name) : base(id) => 
         Name = name;
 
-    public Person(ACreateCommandWithoutHandler command, Guid id) : this(id, command.Name)
+    internal Person(ACreateCommandWithoutHandler command, Guid id) : this(id, command.Name)
     {
     }
     
@@ -18,6 +18,10 @@ public class Person : Aggregate<Person>
         Emit(new FriendAdded(friendName, sourceCommandId, Guid.NewGuid()));
 
     // ReSharper disable once UnusedMember.Global
-    public Person Execute(AChangeCommandWithoutHandler changeCommand) =>
+    internal Person Execute(AChangeCommandWithoutHandler changeCommand) =>
+        Emit(new FriendAdded(changeCommand.Name, changeCommand.Id, Id));
+    
+    // ReSharper disable once UnusedMember.Global
+    internal Person Execute(ASecondChangeCommandWithoutHandler changeCommand) =>
         Emit(new FriendAdded(changeCommand.Name, changeCommand.Id, Id));
 }
