@@ -3,8 +3,22 @@
 namespace HerrGeneral.WriteSide.DDD;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class DefaultAggregateFactory<TAggregate> : IAggregateFactory<TAggregate> where TAggregate : IAggregate
+
+/// <summary>
+/// Default aggregate factory
+/// Call new TAggregate(Create command, Guid aggregateId)
+/// </summary>
+/// <typeparam name="TAggregate"></typeparam>
+public class DefaultAggregateFactory<TAggregate> : IAggregateFactory<TAggregate> where TAggregate : IAggregate
 {
+    /// <summary>
+    /// Call new TAggregate(Create command, Guid aggregateId)
+    /// The constructor can be private or internal
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="aggregateId"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">Throw InvalidOperationException if the constructor new TAggregate(Create command, Guid aggregateId) is not found</exception>
     public TAggregate Create(Create<TAggregate> command, Guid aggregateId)
     {
         try
