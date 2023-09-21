@@ -15,7 +15,7 @@ var container = new Container(cfg =>
         .SetMinimumLevel(LogLevel.Information)
         .AddSimpleConsole());
     cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
-    cfg.For<IAggregateFactory<Person>>().Use<DefaultAggregateFactory<Person>>();
+    cfg.AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
     cfg.UseHerrGeneral(scanner =>
             scanner
                 .OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!)
