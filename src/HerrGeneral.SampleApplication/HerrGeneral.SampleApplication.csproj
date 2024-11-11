@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\HerrGeneral.Core.DDD\HerrGeneral.Core.DDD.csproj" />
+        <ProjectReference Include="..\HerrGeneral.Core.DDD\HerrGeneral.Core.DDD.csproj" />
         <ProjectReference Include="..\HerrGeneral.Core\HerrGeneral.Core.csproj" />
         <ProjectReference Include="..\HerrGeneral.WriteSide.DDD\HerrGeneral.WriteSide.DDD.csproj" />
     </ItemGroup>

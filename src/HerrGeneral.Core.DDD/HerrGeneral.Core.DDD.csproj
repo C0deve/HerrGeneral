@@ -30,7 +30,7 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\src\HerrGeneral.WriteSide.DDD\HerrGeneral.WriteSide.DDD.csproj" />
+      <ProjectReference Include="..\HerrGeneral.WriteSide.DDD\HerrGeneral.WriteSide.DDD.csproj" />
     </ItemGroup>
 
 </Project>

@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\HerrGeneral.Core.DDD\HerrGeneral.Core.DDD.csproj" />
+        <ProjectReference Include="..\..\src\HerrGeneral.Core.DDD\HerrGeneral.Core.DDD.csproj" />
         <ProjectReference Include="..\..\src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj"/>
         <ProjectReference Include="..\..\src\HerrGeneral.WriteSide.DDD\HerrGeneral.WriteSide.DDD.csproj"/>
     </ItemGroup>
