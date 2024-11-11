@@ -1,18 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Lamar" Version="12.0.0"/>
+        <PackageReference Include="Lamar"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0"/>
-        <PackageReference Include="Shouldly" Version="4.2.1"/>
-        <PackageReference Include="xunit" Version="2.4.2"/>
+        <PackageReference Include="Shouldly"/>
+        <PackageReference Include="xunit"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -27,6 +25,15 @@
         <ProjectReference Include="..\..\src\HerrGeneral.Core.DDD\HerrGeneral.Core.DDD.csproj" />
         <ProjectReference Include="..\..\src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj"/>
         <ProjectReference Include="..\..\src\HerrGeneral.WriteSide.DDD\HerrGeneral.WriteSide.DDD.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageVersion Update="xunit" Version="2.9.2" />
+      <PackageVersion Update="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+      <PackageVersion Update="coverlet.collector" Version="6.0.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageVersion>
     </ItemGroup>
 
 
