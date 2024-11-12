@@ -2,8 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -25,14 +23,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
-        <PackageReference Include="Shouldly" Version="4.2.1" />
-        <PackageReference Include="xunit.assert" Version="2.4.2" />
+        <PackageReference Include="Divergic.Logging.Xunit"/>
+        <PackageReference Include="Shouldly"/>
+        <PackageReference Include="xunit.assert"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MinVer" Version="4.3.0" PrivateAssets="all"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        <PackageReference Include="MinVer"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" />
     </ItemGroup>
     
     <ItemGroup>

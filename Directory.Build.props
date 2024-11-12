@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-    <Import Project="Versions.props"/>
-
     <PropertyGroup>
-        <LangVersion>$(CSharpLanguageVersion)</LangVersion>
+        <TargetFrameworkVersion>net8.0</TargetFrameworkVersion>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 </Project>
