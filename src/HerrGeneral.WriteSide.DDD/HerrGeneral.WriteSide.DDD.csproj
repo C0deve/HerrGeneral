@@ -1,8 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -28,8 +26,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MinVer" Version="4.3.0" PrivateAssets="all"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        <PackageReference Include="MinVer"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub"/>
     </ItemGroup>
 </Project>
     
