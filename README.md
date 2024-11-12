@@ -1,4 +1,5 @@
-# Herr General
+# Herr General v0.1.11-rc
+
 
 Herr General is a Cqrs implementation with built in debug log for simple modular monolith.
 (strongly inspired from MediatR)
