@@ -3,8 +3,7 @@
 /// <summary>
 /// Command implementation
 /// </summary>
-/// <typeparam name="TResult"></typeparam>
-public abstract record CommandBase<TResult>
+public abstract record CommandBase
 {
     /// <summary>
     /// Id of the command

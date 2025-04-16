@@ -9,9 +9,8 @@ internal static class Extensions
 {
     private const string Indent = "      ";
 
-    public static StringBuilder StartHandlingCommand<TCommand, TResult>(this StringBuilder logger, string type, TCommand command)
-        where TCommand : CommandBase<TResult>
-        where TResult : IWithSuccess =>
+    public static StringBuilder StartHandlingCommand<TCommand>(this StringBuilder logger, string type, TCommand command)
+        where TCommand : CommandBase =>
         logger.AppendLine($"<------------------- {type} <{command.Id}> thread<{Environment.CurrentManagedThreadId}> ------------------->");
 
     public static void StopHandlingCommand(this StringBuilder logger, string type, TimeSpan elapsed) =>

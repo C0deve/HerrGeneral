@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 var container = new Container(cfg =>
 {
     cfg.AddLogging(builder => builder
-        .SetMinimumLevel(LogLevel.Information)
+        .SetMinimumLevel(LogLevel.Debug)
         .AddSimpleConsole());
     cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
     cfg.AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();

@@ -6,7 +6,7 @@ namespace HerrGeneral.WriteSide;
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="TResult"></typeparam>
 public interface ICommandHandler<in TCommand, TResult>
-    where TCommand: CommandBase<TResult> 
+    where TCommand: CommandBase 
     where TResult : IWithSuccess
 {
     /// <summary>

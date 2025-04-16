@@ -8,7 +8,7 @@ namespace HerrGeneral.WriteSide;
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="TResult"></typeparam>
 public abstract class CommandHandlerBase<TCommand, TResult> : ICommandHandler<TCommand, TResult> 
-    where TCommand : CommandBase<TResult> 
+    where TCommand : CommandBase 
     where TResult : IWithSuccess
 {
     private readonly IEventDispatcher _eventDispatcher;

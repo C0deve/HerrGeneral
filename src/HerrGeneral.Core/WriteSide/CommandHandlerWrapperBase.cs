@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace HerrGeneral.Core.WriteSide;
 
 internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandHandlerWrapper<TResult>
-    where TCommand : CommandBase<TResult> 
+    where TCommand : CommandBase 
     where TResult : IWithSuccess
 {
     public async Task<TResult> Handle(object command, IServiceProvider serviceProvider, CancellationToken cancellationToken)

@@ -39,7 +39,7 @@ public static class ServiceExtension
                 yield return (
                     Interface: type.MakeHandlerInterfaceForCreateCommand(),
                     HandlerType: type.MakeDynamicHandlerForCreateCommand());
-                continue;
+                continue; 
             }
 
             if (!type.IsChangeCommand()) 

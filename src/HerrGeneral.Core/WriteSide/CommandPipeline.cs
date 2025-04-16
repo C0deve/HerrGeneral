@@ -14,7 +14,7 @@ internal static class CommandPipeline
 
     public static HandlerDelegate<TCommand, TResult> WithLogger<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandLogger commandLogger)
-        where TCommand : CommandBase<TResult>
+        where TCommand : CommandBase
         where TResult : IWithSuccess
     {
         logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
@@ -27,7 +27,7 @@ internal static class CommandPipeline
     }
 
     private static HandlerDelegate<TCommand, TResult> WithDebugLogger<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>> logger, CommandLogger commandLogger)
-        where TCommand : CommandBase<TResult>
+        where TCommand : CommandBase
         where TResult : IWithSuccess =>
         async (command, cancellationToken) =>
         {
@@ -35,7 +35,7 @@ internal static class CommandPipeline
             var type = typeof(TCommand).GetFriendlyName();
 
             var sb = commandLogger.GetStringBuilder(command.Id)
-                .StartHandlingCommand<TCommand, TResult>(type, command);
+                .StartHandlingCommand(type, command);
 
             watch.Start();
             try
@@ -74,7 +74,7 @@ internal static class CommandPipeline
 
     private static HandlerDelegate<TCommand, TResult> WithInformationLogger<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ILogger logger)
-        where TCommand : CommandBase<TResult>
+        where TCommand : CommandBase
         where TResult : IWithSuccess =>
         async (command, cancellationToken) =>
         {
@@ -105,7 +105,7 @@ internal static class CommandPipeline
 
     public static HandlerDelegate<TCommand, TResult> WithUnitOfWork<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, IUnitOfWork? unitOfWork)
-        where TCommand : CommandBase<TResult>
+        where TCommand : CommandBase
         where TResult : IWithSuccess =>
         async (command, cancellationToken) =>
         {
@@ -164,7 +164,7 @@ internal static class CommandPipeline
 
     public static HandlerDelegate<TCommand, TResult> WithReadSideDispatching<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ReadSide.IEventDispatcher readSideEventDispatcher)
-        where TCommand : CommandBase<TResult>
+        where TCommand : CommandBase
         where TResult : IWithSuccess =>
         async (command, cancellationToken) =>
         {

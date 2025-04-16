@@ -4,7 +4,7 @@ namespace HerrGeneral.WriteSide;
 /// Command for aggregate creation.
 /// Return a CreationResult containing the id of the created aggregate.
 /// </summary>
-public abstract record Create : CommandBase<CreateResult>
+public abstract record Create : CommandBase
 {
     /// <summary>
     /// Ctor
