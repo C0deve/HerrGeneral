@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using HerrGeneral.Contracts;
 
 namespace HerrGeneral.Core;
 
@@ -10,7 +9,7 @@ internal abstract class EventDispatcherBase
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ConcurrentDictionary<Type, IEventHandlerWrapper> _eventHandlerWrappers = new();
-    
+
     /// <summary>
     /// Type of the wrapper used to dispatch events
     /// </summary>
@@ -25,10 +24,11 @@ internal abstract class EventDispatcherBase
     /// <summary>
     /// Dispatch the event using an instance of WrapperType
     /// </summary>
+    /// <param name="commandId"></param>
     /// <param name="eventToDispatch"></param>
     /// <param name="cancellationToken"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public virtual async Task Dispatch(IEvent eventToDispatch, CancellationToken cancellationToken)
+    public virtual void Dispatch(Guid commandId, object eventToDispatch, CancellationToken cancellationToken)
     {
         var wrapper = _eventHandlerWrappers.GetOrAdd(eventToDispatch.GetType(), eventTypeInput =>
         {
@@ -37,6 +37,6 @@ internal abstract class EventDispatcherBase
             return (IEventHandlerWrapper)wrapper;
         });
 
-        await wrapper.Handle(eventToDispatch, _serviceProvider, cancellationToken);
+        wrapper.Handle(eventToDispatch, _serviceProvider, cancellationToken);
     }
 }

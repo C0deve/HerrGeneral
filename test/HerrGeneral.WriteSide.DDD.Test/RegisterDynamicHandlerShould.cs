@@ -28,18 +28,18 @@ public class RegisterDynamicHandlersShould
 
     [Fact]
     public void RegisterDynamicHandlersForChangeAggregateCommandWithoutHandler() => 
-        _container.GetAllInstances<ICommandHandler<AChangeCommandWithoutHandler, ChangeResult>>().Count.ShouldBe(1);
+        _container.GetAllInstances<ICommandHandler<AChangeCommandWithoutHandler, Unit>>().Count.ShouldBe(1);
     
     [Fact]
     public void NotRegisterDynamicHandlersForChangeAggregateCommandWithHandler() => 
-        _container.GetAllInstances<ICommandHandler<AddFriend, ChangeResult>>().Count.ShouldBe(1);
+        _container.GetAllInstances<ICommandHandler<AddFriend, Unit>>().Count.ShouldBe(1);
     
     [Fact]
     public void RegisterDynamicHandlersForCreateAggregateCommandWithoutHandler() => 
-        _container.GetAllInstances<ICommandHandler<ACreateCommandWithoutHandler, CreateResult>>().Count.ShouldBe(1);
+        _container.GetAllInstances<ICommandHandler<ACreateCommandWithoutHandler, Guid>>().Count.ShouldBe(1);
     
     [Fact]
     public void NotRegisterDynamicHandlersForCreateAggregateCommandWithHandler() => 
-        _container.GetAllInstances<ICommandHandler<CreatePerson, CreateResult>>().Count.ShouldBe(1);
+        _container.GetAllInstances<ICommandHandler<CreatePerson, Guid>>().Count.ShouldBe(1);
 
 }

@@ -24,8 +24,16 @@ public class Mediator
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<CreateResult> Send(Create command, CancellationToken cancellationToken = default) =>
-        await Send<CreateResult>(command, typeof(CreateHandlerWrapper<>), cancellationToken).ConfigureAwait(false);
+    public async Task<CreateResult> Send(Create command, CancellationToken cancellationToken = default)
+    {
+        var wrapper = (ICommandHandlerWrapper<CreateResult>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
+        {
+            var wrapperType = typeof(CreateHandlerWrapper<>).MakeGenericType(commandType);
+            return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
+        });
+
+        return await wrapper.Handle(command, _serviceProvider, cancellationToken).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Send a command
@@ -33,18 +41,14 @@ public class Mediator
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<ChangeResult> Send(Change command, CancellationToken cancellationToken = default) =>
-        await Send<ChangeResult>(command, typeof(ChangeHandlerWrapper<>), cancellationToken).ConfigureAwait(false);
-
-    private async Task<TResult> Send<TResult>(CommandBase command, Type openWrapperType, CancellationToken cancellationToken) 
-        where TResult : IWithSuccess
+    public async Task<ChangeResult> Send(Change command, CancellationToken cancellationToken = default)
     {
-        var wrapper = (ICommandHandlerWrapper<TResult>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
+        var wrapper = (ICommandHandlerWrapper<ChangeResult>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
         {
-            var wrapperType = openWrapperType.MakeGenericType(commandType);
+            var wrapperType = typeof(ChangeHandlerWrapper<>).MakeGenericType(commandType);
             return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
         });
 
-        return await wrapper.Handle(command, _serviceProvider, cancellationToken);
+        return await wrapper.Handle(command, _serviceProvider, cancellationToken).ConfigureAwait(false);
     }
 }

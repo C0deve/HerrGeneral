@@ -16,7 +16,7 @@ internal static class Extensions
     public static void StopHandlingCommand(this StringBuilder logger, string type, TimeSpan elapsed) =>
         logger.AppendLine($"<------------------- {type} Finished {elapsed:c} -------------------/>");
     
-    public static void PublishEventOnWriteSide(this StringBuilder logger, IEvent @event) =>
+    public static void PublishEventOnWriteSide(this StringBuilder logger, object @event) =>
         logger
             .AppendLine($"|| Publish Write Side on thread<{Environment.CurrentManagedThreadId}>")
             .AppendLine($"{Indent}{@event.GetType()}");
@@ -53,7 +53,7 @@ internal static class Extensions
             .AppendLine($"|| Publish Read Side ({eventsToPublishCount} event{(eventsToPublishCount > 1 ? "s" : string.Empty)}) on thread<{Environment.CurrentManagedThreadId}>");
     }
 
-    public static StringBuilder PublishEventOnReadSide(this StringBuilder logger, IEvent @event) =>
+    public static StringBuilder PublishEventOnReadSide(this StringBuilder logger, object @event) =>
         logger.AppendLine($"{Indent}{@event.GetType()}");
 
 }

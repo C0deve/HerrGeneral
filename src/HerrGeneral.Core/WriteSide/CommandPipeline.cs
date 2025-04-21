@@ -10,12 +10,11 @@ namespace HerrGeneral.Core.WriteSide;
 
 internal static class CommandPipeline
 {
-    public delegate Task<TResult> HandlerDelegate<in TCommand, TResult>(TCommand command, CancellationToken cancellationToken);
+    public delegate (IEnumerable<object> Events, TResult Result) HandlerDelegate<in TCommand, TResult>(TCommand command, CancellationToken cancellationToken);
 
     public static HandlerDelegate<TCommand, TResult> WithLogger<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandLogger commandLogger)
         where TCommand : CommandBase
-        where TResult : IWithSuccess
     {
         logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
         
@@ -27,9 +26,8 @@ internal static class CommandPipeline
     }
 
     private static HandlerDelegate<TCommand, TResult> WithDebugLogger<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>> logger, CommandLogger commandLogger)
-        where TCommand : CommandBase
-        where TResult : IWithSuccess =>
-        async (command, cancellationToken) =>
+        where TCommand : CommandBase =>
+        (command, cancellationToken) =>
         {
             var watch = new Stopwatch();
             var type = typeof(TCommand).GetFriendlyName();
@@ -40,7 +38,7 @@ internal static class CommandPipeline
             watch.Start();
             try
             {
-                return await next(command, cancellationToken);
+                return next(command, cancellationToken);
             }
             catch (EventHandlerDomainException)
             {
@@ -70,18 +68,16 @@ internal static class CommandPipeline
                 commandLogger.RemoveStringBuilder(command.Id);
             }
         };
-
-
+    
     private static HandlerDelegate<TCommand, TResult> WithInformationLogger<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ILogger logger)
-        where TCommand : CommandBase
-        where TResult : IWithSuccess =>
-        async (command, cancellationToken) =>
+        where TCommand : CommandBase =>
+        (command, cancellationToken) =>
         {
             try
             {
                 logger.LogInformation("{CommandType}, {Data}", command.GetType(), JsonSerializer.Serialize(command));
-                return await next(command, cancellationToken);
+                return next(command, cancellationToken);
             }
             catch (EventHandlerDomainException)
             {
@@ -105,14 +101,13 @@ internal static class CommandPipeline
 
     public static HandlerDelegate<TCommand, TResult> WithUnitOfWork<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, IUnitOfWork? unitOfWork)
-        where TCommand : CommandBase
-        where TResult : IWithSuccess =>
-        async (command, cancellationToken) =>
+        where TCommand : CommandBase =>
+        (command, cancellationToken) =>
         {
             try
             {
                 unitOfWork?.Start(command.Id);
-                var result = await next(command, cancellationToken);
+                var result = next(command, cancellationToken);
                 unitOfWork?.Commit(command.Id);
                 return result;
             }
@@ -127,52 +122,25 @@ internal static class CommandPipeline
             }
         };
 
-    public static HandlerDelegate<TCommand, ChangeResult> WithExceptionToCommandResult<TCommand>(
-        this HandlerDelegate<TCommand, ChangeResult> next) =>
-        next.WithTryCatch(ChangeResult.PanicFail, ChangeResult.DomainFail);
-
-    public static HandlerDelegate<TCommand, CreateResult> WithExceptionToCreationResult<TCommand>(
-        this HandlerDelegate<TCommand, CreateResult> next) =>
-        next.WithTryCatch(CreateResult.PanicFail, CreateResult.DomainFail);
-
-    private static HandlerDelegate<TCommand, TResult> WithTryCatch<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> action,
-        Func<Exception, TResult> onException,
-        Func<DomainError, TResult> onDomainError) =>
-        async (command, cancellationToken) =>
+    public static HandlerDelegate<TCommand, TResult> WithWriteSideDispatching<TCommand, TResult>(
+        this HandlerDelegate<TCommand, TResult> next, IEventDispatcher eventDispatcher)
+        where TCommand : CommandBase =>
+        (command, cancellationToken) =>
         {
-            try
-            {
-                return await action(command, cancellationToken);
-            }
-            catch (EventHandlerDomainException domainException)
-            {
-                return onDomainError(domainException.DomainError);
-            }
-            catch (DomainException domainException)
-            {
-                return onDomainError(domainException.DomainError);
-            }
-            catch (EventHandlerException e)
-            {
-                return onException(e);
-            }
-            catch (Exception e)
-            {
-                return onException(e);
-            }
+            var (events, result) = next(command, cancellationToken);
+            var enumerable = events as object[] ?? events.ToArray();
+            foreach (var @event in enumerable)
+                eventDispatcher.Dispatch(command.Id, @event, CancellationToken.None);
+            return (enumerable, result);
         };
-
+    
     public static HandlerDelegate<TCommand, TResult> WithReadSideDispatching<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ReadSide.IEventDispatcher readSideEventDispatcher)
-        where TCommand : CommandBase
-        where TResult : IWithSuccess =>
-        async (command, cancellationToken) =>
+        where TCommand : CommandBase =>
+        (command, cancellationToken) =>
         {
-            var result = await next(command, cancellationToken);
-
-            if (result.IsSuccess)
-                await readSideEventDispatcher.Dispatch(command.Id, cancellationToken);
-
+            var result = next(command, cancellationToken);
+            readSideEventDispatcher.Dispatch(command.Id, cancellationToken);
             return result;
         };
 }

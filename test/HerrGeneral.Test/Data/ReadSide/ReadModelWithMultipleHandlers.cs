@@ -7,27 +7,14 @@ public class ReadModelWithMultipleHandlers
 {
     public string Message { get; private set; } = string.Empty;
 
-    public class Repository : 
+    public class Repository(ReadModelWithMultipleHandlers readModel) :
         IEventHandler<Pong>,
         IEventHandler<AnotherPong>
     {
-        private readonly ReadModelWithMultipleHandlers _readModel;
+        public void Handle(Pong notification, CancellationToken cancellationToken) => 
+            readModel.Message = notification.Message;
 
-        public Repository(ReadModelWithMultipleHandlers readModel)
-        {
-            _readModel = readModel;
-        }
-
-        public Task Handle(Pong notification, CancellationToken cancellationToken)
-        {
-            _readModel.Message = notification.Message;
-            return Task.CompletedTask;
-        }
-
-        public Task Handle(AnotherPong notification, CancellationToken cancellationToken)
-        {
-            _readModel.Message = notification.Message;
-            return Task.CompletedTask;
-        }
+        public void Handle(AnotherPong notification, CancellationToken cancellationToken) => 
+            readModel.Message = notification.Message;
     }
 }

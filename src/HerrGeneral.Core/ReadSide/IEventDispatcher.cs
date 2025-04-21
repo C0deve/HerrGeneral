@@ -2,5 +2,5 @@
 
 internal interface IEventDispatcher
 {
-    Task Dispatch(Guid commandId, CancellationToken cancellationToken);
+    void Dispatch(Guid commandId, CancellationToken cancellationToken);
 }

@@ -11,18 +11,14 @@ using Xunit.Abstractions;
 // ReSharper disable once CheckNamespace
 namespace HerrGeneral.UnitOfWork.Test;
 
-public class UnitOfWorkShould
+public class UnitOfWorkShould(ITestOutputHelper output)
 {
-    private readonly ITestOutputHelper _output;
-
-    public UnitOfWorkShould(ITestOutputHelper output) => _output = output;
-    
     [Fact]
     public async Task Not_be_mandatory()
     {
         var container = new Container(cfg =>
         {
-            cfg.AddHerrGeneralTestLogger(_output);
+            cfg.AddHerrGeneralTestLogger(output);
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
@@ -37,7 +33,7 @@ public class UnitOfWorkShould
     private Container Register(IUnitOfWork unitOfWork) =>
         new(cfg =>
         {
-            cfg.AddHerrGeneralTestLogger(_output);
+            cfg.AddHerrGeneralTestLogger(output);
             
             cfg.ForSingletonOf<IUnitOfWork>().Use(_ => unitOfWork);
             cfg.ForSingletonOf<Dependency>().Use(new Dependency());

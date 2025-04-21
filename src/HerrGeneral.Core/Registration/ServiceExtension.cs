@@ -1,6 +1,5 @@
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.WriteSide;
-using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Core.Registration;
@@ -25,12 +24,12 @@ public static class ServiceExtension
     {
         var scanner = scannerDelegate(new Scanner()).Scan();
 
-        foreach (var commandHandler in scanner.CommandHandlerTypes)
-            serviceCollection.RegisterOpenType(commandHandler, typeof(ICommandHandler<,>), ServiceLifetime.Transient);
+        foreach (var commandHandler in scanner.CommandHandlerWithReturnTypes)
+            serviceCollection.RegisterOpenType(commandHandler, Scanner.CommandHandlerInterfaceReturnType, ServiceLifetime.Transient);
         foreach (var eventHandler in scanner.EventHandlerTypes)
-            serviceCollection.RegisterOpenType(eventHandler, typeof(IEventHandler<>), ServiceLifetime.Transient);
+            serviceCollection.RegisterOpenType(eventHandler, Scanner.WriteSideEventHandlerInterface, ServiceLifetime.Transient);
         foreach (var eventHandler in scanner.ReadSideEventHandlerTypes)
-            serviceCollection.RegisterOpenType(eventHandler, typeof(HerrGeneral.ReadSide.IEventHandler<>), ServiceLifetime.Singleton);
+            serviceCollection.RegisterOpenType(eventHandler, Scanner.ReadSideEventHandlerInterface, ServiceLifetime.Singleton);
         serviceCollection.AddSingleton<CommandLogger>();
         serviceCollection.AddSingleton<ReadSideEventDispatcher>();
         serviceCollection.AddSingleton<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());

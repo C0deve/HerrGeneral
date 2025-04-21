@@ -13,14 +13,14 @@ public class ScannerShould
         new Core.Registration.Scanner()
             .OnWriteSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
-            .CommandHandlerTypes.ShouldBe(new[] { typeof(Command2Handler), typeof(Command1.Command1Handler) });
+            .CommandHandlerWithReturnTypes.ShouldBe([typeof(Command2Handler), typeof(Command1.Command1Handler)]);
 
     [Fact]
     public void Get_all_command_handlers_without_namespace_filter() =>
         new Core.Registration.Scanner()
             .OnWriteSide(typeof(Command1).Assembly)
             .Scan()
-            .CommandHandlerTypes
+            .CommandHandlerWithReturnTypes
             .ShouldNotBeEmpty();
 
     [Fact]
@@ -28,14 +28,14 @@ public class ScannerShould
         new Core.Registration.Scanner()
             .OnWriteSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
-            .EventHandlerTypes.ShouldBe(new[] { typeof(MyEventHandler), typeof(MyEventHandlerImpl) });
-    
+            .EventHandlerTypes.ShouldBe([typeof(MyEventHandler), typeof(MyEventHandlerImpl)]);
+
     [Fact]
     public void Get_all_read_event_handlers() =>
         new Core.Registration.Scanner()
             .OnReadSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
-            .ReadSideEventHandlerTypes.ShouldBe(new[] { typeof(MyReadSideEventHandlerImpl) });
+            .ReadSideEventHandlerTypes.ShouldBe([typeof(MyReadSideEventHandlerImpl)]);
 
     [Fact]
     public void Filter_ICommandHandler() =>
@@ -53,12 +53,8 @@ public class ScannerShould
     {
         public class Command1Handler : ChangeHandler<Command1>
         {
-            public Command1Handler(IEventDispatcher eventDispatcher) : base(eventDispatcher)
-            {
-            }
-
-            public override Task<ChangeResult> Handle(Command1 command, CancellationToken cancellationToken) =>
-                Task.FromResult(ChangeResult.Success);
+            public override (IEnumerable<object> Events, Unit Result) Handle(Command1 command, CancellationToken cancellationToken) =>
+                ([], Unit.Default);
         }
     }
 
@@ -66,20 +62,11 @@ public class ScannerShould
 
     private abstract class Command2HandlerBase : ChangeHandler<Command2>
     {
-        protected Command2HandlerBase(IEventDispatcher eventDispatcher) : base(eventDispatcher)
-        {
-        }
-
-        public override Task<ChangeResult> Handle(Command2 command, CancellationToken cancellationToken) => 
-            Task.FromResult(ChangeResult.Success);
+        public override (IEnumerable<object> Events, Unit Result) Handle(Command2 command, CancellationToken cancellationToken) =>
+            ([], Unit.Default);
     }
 
-    private class Command2Handler : Command2HandlerBase
-    {
-        public Command2Handler(IEventDispatcher eventDispatcher) : base(eventDispatcher)
-        {
-        }
-    }
+    private class Command2Handler : Command2HandlerBase;
 
     private record MyEvent : EventBase
     {
@@ -90,12 +77,16 @@ public class ScannerShould
 
     private class MyEventHandler : IEventHandler<MyEvent>
     {
-        public Task Handle(MyEvent notification, CancellationToken cancellationToken) => Task.CompletedTask;
+        public void Handle(MyEvent notification, CancellationToken cancellationToken)
+        {
+        }
     }
 
     private abstract class MyEventHandlerAbstract : IEventHandler<MyEvent>
     {
-        public Task Handle(MyEvent notification, CancellationToken cancellationToken) => Task.CompletedTask;
+        public void Handle(MyEvent notification, CancellationToken cancellationToken)
+        {
+        }
     }
 
     private class MyEventHandlerImpl : MyEventHandlerAbstract
@@ -104,6 +95,6 @@ public class ScannerShould
 
     private class MyReadSideEventHandlerImpl : ReadSide.IEventHandler<MyEvent>
     {
-        public Task Handle(MyEvent notification, CancellationToken cancellationToken) => Task.CompletedTask;
+        public void Handle(MyEvent notification, CancellationToken cancellationToken) {}
     }
 }

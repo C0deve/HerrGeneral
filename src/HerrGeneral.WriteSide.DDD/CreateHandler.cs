@@ -1,5 +1,3 @@
-using HerrGeneral.WriteSide.DDD.Utils;
-
 namespace HerrGeneral.WriteSide.DDD;
 
 /// <summary>
@@ -7,26 +5,25 @@ namespace HerrGeneral.WriteSide.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class CreateHandler<TAggregate, TCommand> : CreateHandler<TCommand>
+public abstract class CreateHandler<TAggregate, TCommand> : ICommandHandler<TCommand, Guid>
     where TAggregate : Aggregate<TAggregate>
     where TCommand : Create<TAggregate>
 {
     private readonly IAggregateRepository<TAggregate> _repository;
 
     // ReSharper disable once ClassNeverInstantiated.Global
-    
+
     /// <summary>
     /// Parameters injected in the constructor
     /// </summary>
-    /// <param name="EventDispatcher"></param>
     /// <param name="Repository"></param>
-    public record CtorParams(IEventDispatcher EventDispatcher, IAggregateRepository<TAggregate> Repository);
+    public record CtorParams(IAggregateRepository<TAggregate> Repository);
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="params"></param>
-    protected CreateHandler(CtorParams @params) : base(@params.EventDispatcher) =>
+    protected CreateHandler(CtorParams @params) =>
         _repository = @params.Repository;
 
     /// <summary>
@@ -35,12 +32,14 @@ public abstract class CreateHandler<TAggregate, TCommand> : CreateHandler<TComma
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public sealed override async Task<CreateResult> Handle(TCommand command, CancellationToken cancellationToken)
+    public (IEnumerable<object> Events, Guid Result) Handle(TCommand command, CancellationToken cancellationToken)
     {
         var id = Guid.NewGuid();
         var aggregate = Handle(command, id);
-        await aggregate.SaveAndDispatch(command.Id, Publish, _repository);
-        return CreateResult.Success(aggregate.Id);
+        _repository.Save(aggregate, command.Id);
+        var result = (aggregate.NewEvents, aggregate.Id);
+        aggregate.ClearNewEvents();
+        return result;
     }
 
 

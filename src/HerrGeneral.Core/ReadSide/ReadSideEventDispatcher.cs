@@ -15,55 +15,54 @@ internal class ReadSideEventDispatcher : EventDispatcherBase, IEventDispatcher, 
     private readonly CommandLogger _commandLogger;
     protected override Type WrapperOpenType => typeof(EventHandlerWrapper<>);
 
-    private readonly ConcurrentDictionary<Guid, List<IEvent>> _eventsToDispatch = new();
-    
+    private readonly ConcurrentDictionary<Guid, List<object>> _eventsToDispatch = new();
+
     public ReadSideEventDispatcher(IServiceProvider serviceProvider, ILogger<ReadSideEventDispatcher> logger, CommandLogger commandLogger) : base(serviceProvider)
     {
         _logger = logger;
         _commandLogger = commandLogger;
     }
-    
+
     public ReadSideEventDispatcher(IServiceProvider serviceProvider, CommandLogger commandLogger) : base(serviceProvider)
     {
         _logger = NullLogger<ReadSideEventDispatcher>.Instance;
         _commandLogger = commandLogger;
     }
 
-    public void AddEventToDispatch(IEvent @event)
+    public void AddEventToDispatch(Guid commandId, object @event)
     {
-        if (@event == null)
-            throw new ArgumentNullException(nameof(@event));
+        ArgumentNullException.ThrowIfNull(@event);
 
         _eventsToDispatch
-            .AddOrUpdate(@event.SourceCommandId, new List<IEvent> { @event }, (commandIdUpdate, events) =>
+            .AddOrUpdate(commandId, [@event], (commandIdUpdate, events) =>
             {
                 events.Add(@event);
                 return events;
             });
     }
 
-    private IEnumerable<IEvent> GetAndRemove(Guid commandId)
+    private IEnumerable<object> GetAndRemove(Guid commandId)
     {
         if (commandId.IsEmpty())
             throw new ArgumentNullException(nameof(commandId));
 
         return _eventsToDispatch.TryRemove(commandId, out var events)
             ? events
-            : Enumerable.Empty<IEvent>();
+            : Enumerable.Empty<object>();
     }
 
-    public async Task Dispatch(Guid commandId, CancellationToken cancellationToken)
+    public void Dispatch(Guid commandId, CancellationToken cancellationToken)
     {
         var stringBuilder = _logger.IsEnabled(LogLevel.Debug)
             ? _commandLogger.GetStringBuilder(commandId)
             : null;
 
-        var eventsToPublish = GetAndRemove(commandId).OrderBy(@event => @event.DateTimeEventOccurred).ToList();
+        var eventsToPublish = GetAndRemove(commandId).ToList();
         stringBuilder?.StartPublishEventsOnReadSide(eventsToPublish.Count);
         foreach (var eventToDispatch in eventsToPublish)
         {
             stringBuilder?.PublishEventOnReadSide(eventToDispatch);
-            await Dispatch(eventToDispatch, cancellationToken);
+            Dispatch(commandId, eventToDispatch, cancellationToken);
         }
     }
 }

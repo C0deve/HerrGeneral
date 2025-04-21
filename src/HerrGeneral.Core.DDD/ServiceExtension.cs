@@ -56,7 +56,7 @@ public static class ServiceExtension
         type.BaseType.GetGenericTypeDefinition() == typeof(Create<>);
 
     private static Type MakeHandlerInterfaceForCreateCommand(this Type commandType) =>
-        typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(CreateResult));
+        typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(Guid));
 
     private static Type MakeDynamicHandlerForCreateCommand(this Type commandType) =>
         typeof(CreateHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);
@@ -66,7 +66,7 @@ public static class ServiceExtension
         type.BaseType.GetGenericTypeDefinition() == typeof(Change<>);
 
     private static Type MakeHandlerInterfaceForChangeCommand(this Type commandType) =>
-        typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(ChangeResult));
+        typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(Unit));
 
     private static Type MakeDynamicHandlerForChangeCommand(this Type commandType) =>
         typeof(ChangeHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);

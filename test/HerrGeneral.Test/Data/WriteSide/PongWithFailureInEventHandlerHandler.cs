@@ -5,6 +5,6 @@ namespace HerrGeneral.Test.Data.WriteSide;
 
 public class PongWithFailureInEventHandlerHandler : IEventHandler<PongWithFailureInEventHandlerEvent>
 {
-    public Task Handle(PongWithFailureInEventHandlerEvent notification, CancellationToken cancellationToken) => 
+    public void Handle(PongWithFailureInEventHandlerEvent notification, CancellationToken cancellationToken) => 
         throw new PingError().ToException();
 }

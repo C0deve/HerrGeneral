@@ -7,7 +7,6 @@ namespace HerrGeneral.WriteSide;
 /// <typeparam name="TResult"></typeparam>
 public interface ICommandHandler<in TCommand, TResult>
     where TCommand: CommandBase 
-    where TResult : IWithSuccess
 {
     /// <summary>
     /// Handle the command
@@ -15,5 +14,5 @@ public interface ICommandHandler<in TCommand, TResult>
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<TResult> Handle(TCommand command, CancellationToken cancellationToken);
+    (IEnumerable<object> Events, TResult Result) Handle(TCommand command, CancellationToken cancellationToken);
 }

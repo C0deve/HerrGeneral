@@ -1,5 +1,3 @@
-using HerrGeneral.Contracts;
-
 namespace HerrGeneral.WriteSide;
 
 /// <summary>
@@ -10,8 +8,9 @@ public interface IEventDispatcher
     /// <summary>
     /// Dispatch an event
     /// </summary>
+    /// <param name="commandId"></param>
     /// <param name="eventToDispatch"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task Dispatch(IEvent eventToDispatch, CancellationToken cancellationToken);
+    void Dispatch(Guid commandId, object eventToDispatch, CancellationToken cancellationToken);
 }

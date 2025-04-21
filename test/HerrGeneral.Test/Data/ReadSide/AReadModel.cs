@@ -7,22 +7,11 @@ public class ReadModel
 {
     public string Message { get; private set; } = string.Empty;
 
-    public class Repository : IEventHandler<Pong>
+    public class Repository(ReadModel readModel) : IEventHandler<Pong>
     {
-        private readonly ReadModel _readModel;
+        public readonly Guid Id = Guid.NewGuid();
 
-        public readonly Guid Id;
-
-        public Repository(ReadModel readModel)
-        {
-            _readModel = readModel;
-            Id = Guid.NewGuid();
-        }
-
-        public Task Handle(Pong notification, CancellationToken cancellationToken)
-        {
-            _readModel.Message = notification.Message;
-            return Task.CompletedTask;
-        }
+        public void Handle(Pong notification, CancellationToken cancellationToken) => 
+            readModel.Message = notification.Message;
     }
 }

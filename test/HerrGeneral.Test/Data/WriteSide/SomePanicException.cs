@@ -1,8 +1,3 @@
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class SomePanicException : Exception
-{
-    public SomePanicException() : base("Houston we have a problem...")
-    {
-    }
-}
+public class SomePanicException() : Exception("Houston we have a problem...");

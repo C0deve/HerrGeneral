@@ -9,15 +9,24 @@ namespace HerrGeneral.Core.Registration;
 /// </summary>
 public class Scanner
 {
-    private readonly Type _commandHandlerInterface = typeof(ICommandHandler<,>);
-    private readonly Type _writeSideEventHandlerInterface = typeof(IEventHandler<>);
-    private readonly Type _readSideEventHandlerInterface = typeof(HerrGeneral.ReadSide.IEventHandler<>);
-    private readonly HashSet<ScanParam> _writeSideSearchParams = new();
-    private readonly HashSet<ScanParam> _readSideSearchParams = new();
+    /// <summary>
+    /// 
+    /// </summary>
+    public static readonly Type CommandHandlerInterfaceReturnType = typeof(ICommandHandler<,>);
+    /// <summary>
+    /// 
+    /// </summary>
+    public static readonly Type WriteSideEventHandlerInterface = typeof(IEventHandler<>);
+    /// <summary>
+    /// 
+    /// </summary>
+    public static readonly Type ReadSideEventHandlerInterface = typeof(HerrGeneral.ReadSide.IEventHandler<>);
+    private readonly HashSet<ScanParam> _writeSideSearchParams = [];
+    private readonly HashSet<ScanParam> _readSideSearchParams = [];
 
-    internal IReadOnlyCollection<Type> CommandHandlerTypes => _writeSideResult[_commandHandlerInterface];
-    internal IReadOnlyCollection<Type> EventHandlerTypes => _writeSideResult[_writeSideEventHandlerInterface];
-    internal IReadOnlyCollection<Type> ReadSideEventHandlerTypes => _readSideResult[_readSideEventHandlerInterface];
+    internal IReadOnlyCollection<Type> CommandHandlerWithReturnTypes => _writeSideResult[CommandHandlerInterfaceReturnType];
+    internal IReadOnlyCollection<Type> EventHandlerTypes => _writeSideResult[WriteSideEventHandlerInterface];
+    internal IReadOnlyCollection<Type> ReadSideEventHandlerTypes => _readSideResult[ReadSideEventHandlerInterface];
 
     private ReadOnlyDictionary<Type, HashSet<Type>> _writeSideResult = new(new Dictionary<Type, HashSet<Type>>());
     private ReadOnlyDictionary<Type, HashSet<Type>> _readSideResult = new(new Dictionary<Type, HashSet<Type>>());
@@ -57,12 +66,12 @@ public class Scanner
 
         _writeSideResult = Scan(
             _writeSideSearchParams,
-            _commandHandlerInterface,
-            _writeSideEventHandlerInterface);
+            CommandHandlerInterfaceReturnType,
+            WriteSideEventHandlerInterface);
 
         _readSideResult = Scan(
             _readSideSearchParams,
-            _readSideEventHandlerInterface);
+            ReadSideEventHandlerInterface);
 
         return this;
     }
@@ -82,5 +91,5 @@ public class Scanner
     private static ReadOnlyDictionary<Type, HashSet<Type>> ScanForOpenTypes(ScanParam scanParam, params Type[] openTypes) =>
         scanParam.Assembly.ScanForOpenTypes(
             scanParam.Namespaces,
-            new HashSet<Type>(openTypes));
+            [..openTypes]);
 }

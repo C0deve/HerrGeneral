@@ -2,18 +2,10 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class PongMiddleHandler : IEventHandler<Pong>
+public class PongMiddleHandler(Dependency dependency) : IEventHandler<Pong>
 {
-    private readonly Dependency _dependency;
-
-    public PongMiddleHandler(Dependency dependency)
+    public void Handle(Pong notification, CancellationToken cancellationToken)
     {
-        _dependency = dependency;
-    }
-
-    public Task Handle(Pong notification, CancellationToken cancellationToken)
-    {
-        _dependency.Called = true;
-        return Task.CompletedTask;
+        dependency.Called = true;
     }
 }

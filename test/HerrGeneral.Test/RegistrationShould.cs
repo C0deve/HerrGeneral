@@ -20,7 +20,7 @@ public class RegistrationShould
     private record Ping : Change;
 
 
-    private class PingHandler : ChangeHandler<Ping>
+    private class PingHandler(Dependency dependency, IEventDispatcher eventDispatcher) : ChangeHandler<Ping>()
     {
         private readonly Dependency _dependency;
 
@@ -33,14 +33,12 @@ public class RegistrationShould
             return Task.FromResult(ChangeResult.Success);
         }
     }
-
-
+    
     private class Dependency
     {
         public bool Called { get; set; }
     }
-
-
+    
     [Fact]
     public async Task Resolve_main_handler()
     {
@@ -62,8 +60,7 @@ public class RegistrationShould
         response.ShouldBe(ChangeResult.Success);
         container.GetInstance<Dependency>().Called.ShouldBe(true);
     }
-
-
+    
     [Fact]
     public async Task Raise_exception_if_no_command_handler_registered()
     {

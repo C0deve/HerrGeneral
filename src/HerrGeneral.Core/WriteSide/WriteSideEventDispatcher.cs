@@ -21,20 +21,20 @@ internal class WriteSideEventDispatcher : EventDispatcherBase, HerrGeneral.Write
     public WriteSideEventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, CommandLogger commandLogger) : base(serviceProvider)
     {
         _readSideEventDispatcher = readSideEventDispatcher;
-        _logger =  NullLogger<WriteSideEventDispatcher>.Instance;;
+        _logger =  NullLogger<WriteSideEventDispatcher>.Instance;
         _commandLogger = commandLogger;
     }
 
     protected override Type WrapperOpenType => typeof(WriteSideEventHandlerWrapper<>);
 
-    public override async Task Dispatch(IEvent eventToDispatch, CancellationToken cancellationToken)
+    public override void Dispatch(Guid commandId, object eventToDispatch, CancellationToken cancellationToken)
     {
         if(_logger.IsEnabled(LogLevel.Debug))
             _commandLogger
-                .GetStringBuilder(eventToDispatch.SourceCommandId)
+                .GetStringBuilder(commandId)
                 .PublishEventOnWriteSide(eventToDispatch);
                 
-        await base.Dispatch(eventToDispatch, cancellationToken);
-        _readSideEventDispatcher.AddEventToDispatch(eventToDispatch);
+        base.Dispatch(commandId, eventToDispatch, cancellationToken);
+        _readSideEventDispatcher.AddEventToDispatch(commandId, eventToDispatch);
     }
 }

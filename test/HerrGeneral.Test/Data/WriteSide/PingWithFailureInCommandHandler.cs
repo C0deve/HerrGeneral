@@ -7,14 +7,8 @@ public record PingWithFailureInCommandHandler : Change
 {
     public class Handler : ChangeHandler<PingWithFailureInCommandHandler>
     {
-        public Handler(IEventDispatcher eventDispatcher) : base(eventDispatcher)
-        {
-        }
-
-        public override async Task<ChangeResult> Handle(PingWithFailureInCommandHandler command, CancellationToken cancellationToken)
-        {
-            await Publish(new Pong("Command received", command.Id, Guid.NewGuid()), cancellationToken);
+        public override (IEnumerable<object> Events, Unit Result) Handle(PingWithFailureInCommandHandler command,
+            CancellationToken cancellationToken) => 
             throw new PingError().ToException();
-        }
     }
 }

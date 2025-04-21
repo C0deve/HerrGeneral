@@ -4,21 +4,15 @@ namespace HerrGeneral.Test.Data.WriteSide;
 
 public record CreatePing : Create
 {
-    public static readonly Guid AggregateId  = Guid.NewGuid();
+    public static readonly Guid AggregateId = Guid.NewGuid();
 
     public string Message { get; set; } = string.Empty;
-
-    public class Handler : CreateHandler<CreatePing>
+    
+    public class Handler() : CreateHandler<CreatePing>
     {
-        public Handler(IEventDispatcher eventDispatcher) : base(eventDispatcher)
-        {
-        }
-
-        public override async Task<CreateResult> Handle(CreatePing command, CancellationToken cancellationToken)
-        {
-            await Publish(new Pong($"{command.Message} received", command.Id, AggregateId), cancellationToken);
-            return CreateResult.Success(AggregateId);
-        }
-
+        public override (IEnumerable<object> Events, Guid Result) Handle(CreatePing command, CancellationToken cancellationToken) =>
+            ([new Pong($"{command.Message} received", command.Id, AggregateId)],
+                AggregateId);
     }
 }
+
