@@ -37,7 +37,7 @@ public class Scanner
     /// <param name="assembly"></param>
     /// <param name="namespaces"></param>
     /// <returns></returns>
-    public Scanner OnReadSide(Assembly assembly, params string[] namespaces)
+    public Scanner AddReadSideAssembly(Assembly assembly, params string[] namespaces)
     {
         _readSideSearchParams.Add(new ScanParam(assembly, namespaces));
         return this;
@@ -49,7 +49,7 @@ public class Scanner
     /// <param name="assembly"></param>
     /// <param name="namespaces"></param>
     /// <returns></returns>
-    public Scanner OnWriteSide(Assembly assembly, params string[] namespaces)
+    public Scanner AddWriteSideAssembly(Assembly assembly, params string[] namespaces)
     {
         _writeSideSearchParams.Add(new ScanParam(assembly, namespaces));
         return this;
@@ -87,7 +87,7 @@ public class Scanner
                     return dictionary;
                 })
             .AsReadonly();
-    
+
     private static ReadOnlyDictionary<Type, HashSet<Type>> ScanForOpenTypes(ScanParam scanParam, params Type[] openTypes) =>
         scanParam.Assembly.ScanForOpenTypes(
             scanParam.Namespaces,

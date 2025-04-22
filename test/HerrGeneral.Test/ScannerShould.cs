@@ -11,14 +11,14 @@ public class ScannerShould
     [Fact]
     public void Get_all_command_handlers() =>
         new Core.Registration.Scanner()
-            .OnWriteSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
+            .AddWriteSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
             .CommandHandlerWithReturnTypes.ShouldBe([typeof(Command2Handler), typeof(Command1.Command1Handler)]);
 
     [Fact]
     public void Get_all_command_handlers_without_namespace_filter() =>
         new Core.Registration.Scanner()
-            .OnWriteSide(typeof(Command1).Assembly)
+            .AddWriteSideAssembly(typeof(Command1).Assembly)
             .Scan()
             .CommandHandlerWithReturnTypes
             .ShouldNotBeEmpty();
@@ -26,14 +26,14 @@ public class ScannerShould
     [Fact]
     public void Get_all_event_handlers() =>
         new Core.Registration.Scanner()
-            .OnWriteSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
+            .AddWriteSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
             .EventHandlerTypes.ShouldBe([typeof(MyEventHandler), typeof(MyEventHandlerImpl)]);
 
     [Fact]
     public void Get_all_read_event_handlers() =>
         new Core.Registration.Scanner()
-            .OnReadSide(typeof(Command1).Assembly, typeof(Command1).Namespace!)
+            .AddReadSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!)
             .Scan()
             .ReadSideEventHandlerTypes.ShouldBe([typeof(MyReadSideEventHandlerImpl)]);
 
@@ -89,12 +89,12 @@ public class ScannerShould
         }
     }
 
-    private class MyEventHandlerImpl : MyEventHandlerAbstract
-    {
-    }
+    private class MyEventHandlerImpl : MyEventHandlerAbstract;
 
     private class MyReadSideEventHandlerImpl : ReadSide.IEventHandler<MyEvent>
     {
-        public void Handle(MyEvent notification, CancellationToken cancellationToken) {}
+        public void Handle(MyEvent notification, CancellationToken cancellationToken)
+        {
+        }
     }
 }

@@ -17,7 +17,7 @@ public class CreateAggregateShould
             cfg.AddHerrGeneralTestLogger(output);
             cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
             cfg.UseHerrGeneral(scanner =>
-                scanner.OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!));
+                scanner.AddWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!));
         });
     }
     

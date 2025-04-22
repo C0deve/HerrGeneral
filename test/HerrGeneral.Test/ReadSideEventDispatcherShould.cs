@@ -21,8 +21,8 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
 
                 cfg.UseHerrGeneral(scanner =>
                     scanner
-                        .OnWriteSide(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!)
-                        .OnReadSide(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!));
+                        .AddWriteSideAssembly(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!)
+                        .AddReadSideAssembly(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!));
             });
             var sourceCommandId = Guid.NewGuid();
 

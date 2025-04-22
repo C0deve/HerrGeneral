@@ -50,7 +50,7 @@ public class RegistrationShould
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .OnWriteSide(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!));
+                    .AddWriteSideAssembly(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!));
         });
 
         var mediator = container.GetInstance<Mediator>();
@@ -70,7 +70,7 @@ public class RegistrationShould
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .OnWriteSide(typeof(PingHandler).Assembly, "empty.namespace"));
+                    .AddWriteSideAssembly(typeof(PingHandler).Assembly, "empty.namespace"));
         });
 
         var mediator = container.GetInstance<Mediator>();
@@ -86,7 +86,7 @@ public class RegistrationShould
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .OnReadSide(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!));
+                    .AddReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!));
         });
 
         container
@@ -107,7 +107,7 @@ public class RegistrationShould
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .OnReadSide(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!));
+                    .AddReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!));
         });
         
         container.GetInstance<ReadModel.Repository>().Id.ShouldBe(container.GetInstance<ReadModel.Repository>().Id);

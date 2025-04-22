@@ -22,8 +22,8 @@ public class SendWithErrorShould
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .OnWriteSide(typeof(Ping).Assembly, typeof(Ping).Namespace!)
-                    .OnReadSide(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
+                    .AddWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
+                    .AddReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
         });
     }
 

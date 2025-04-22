@@ -18,8 +18,8 @@ var container = new Container(cfg =>
     cfg.AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
     cfg.UseHerrGeneral(scanner =>
             scanner
-                .OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!)
-                .OnReadSide(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!))
+                .AddWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!)
+                .AddReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!))
         .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
 });
 Console.WriteLine("Initialization Ok");
