@@ -3,19 +3,19 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal class ChangeHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, ChangeResult> where TCommand : Change
+internal class ChangeHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, ChangeResult>
 {
     public override Task<ChangeResult> Handle(object command, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
-        WithExceptionToCommandResult(BuildPipeline<Unit>(serviceProvider))((TCommand)command, cancellationToken);
+        WithExceptionToCommandResult(BuildPipeline<Unit>(serviceProvider))(Guid.NewGuid(), (TCommand)command, cancellationToken);
 
     private static HandlerWrapperDelegate<TCommand, ChangeResult> WithExceptionToCommandResult(
         CommandPipeline.HandlerDelegate<TCommand, Unit> next) =>
-        (command, cancellationToken) =>
+        (operationId, command, cancellationToken) =>
             Task.Run(() =>
             {
                 try
                 {
-                    var _ = next(command, cancellationToken);
+                    var _ = next(operationId, command, cancellationToken);
                     return ChangeResult.Success;
                 }
                 catch (EventHandlerDomainException domainException)

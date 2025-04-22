@@ -7,16 +7,16 @@ internal class CreateHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TComma
     where TCommand : Create
 {
     public override Task<CreateResult> Handle(object command, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
-        WithExceptionToCommandResult(BuildPipeline<Guid>(serviceProvider))((TCommand)command, cancellationToken);
+        WithExceptionToCommandResult(BuildPipeline<Guid>(serviceProvider))(Guid.NewGuid(), (TCommand)command, cancellationToken);
 
     private static HandlerWrapperDelegate<TCommand, CreateResult> WithExceptionToCommandResult(
         CommandPipeline.HandlerDelegate<TCommand, Guid> next) =>
-        (command, cancellationToken) =>
+        (operationId, command, cancellationToken) =>
             Task.Run(() =>
             {
                 try
                 {
-                    var result = next(command, cancellationToken);
+                    var result = next(operationId, command, cancellationToken);
                     return CreateResult.Success(result.Result);
                 }
                 catch (EventHandlerDomainException domainException)

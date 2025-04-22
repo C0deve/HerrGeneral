@@ -10,74 +10,72 @@ namespace HerrGeneral.Core.WriteSide;
 
 internal static class CommandPipeline
 {
-    public delegate (IEnumerable<object> Events, TResult Result) HandlerDelegate<in TCommand, TResult>(TCommand command, CancellationToken cancellationToken);
+    public delegate (IEnumerable<object> Events, TResult Result) HandlerDelegate<in TCommand, TResult>(Guid operationId, TCommand command, CancellationToken cancellationToken);
 
     public static HandlerDelegate<TCommand, TResult> WithLogger<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandLogger commandLogger)
-        where TCommand : CommandBase
     {
         logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
-        
+
         if (logger.IsEnabled(LogLevel.Debug))
             return WithDebugLogger(next, logger, commandLogger);
-        return logger.IsEnabled(LogLevel.Information) 
-            ? WithInformationLogger(next, logger) 
+        return logger.IsEnabled(LogLevel.Information)
+            ? WithInformationLogger(next, logger)
             : next;
     }
 
     private static HandlerDelegate<TCommand, TResult> WithDebugLogger<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>> logger, CommandLogger commandLogger)
-        where TCommand : CommandBase =>
-        (command, cancellationToken) =>
-        {
-            var watch = new Stopwatch();
-            var type = typeof(TCommand).GetFriendlyName();
+        =>
+            (operationId, command, cancellationToken) =>
+            {
+                var watch = new Stopwatch();
+                var commandType = typeof(TCommand).GetFriendlyName();
 
-            var sb = commandLogger.GetStringBuilder(command.Id)
-                .StartHandlingCommand(type, command);
+                var sb = commandLogger.GetStringBuilder(operationId)
+                    .StartHandlingCommand(commandType, operationId);
 
-            watch.Start();
-            try
-            {
-                return next(command, cancellationToken);
-            }
-            catch (EventHandlerDomainException)
-            {
-                throw;
-            }
-            catch (DomainException e)
-            {
-                commandLogger.GetStringBuilder(command.Id).OnException(e, 2);
-                throw;
-            }
-            catch (EventHandlerException)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                commandLogger.GetStringBuilder(command.Id).OnException(e, 2);
-                throw;
-            }
-            finally
-            {
-                watch.Stop();
+                watch.Start();
+                try
+                {
+                    return next(operationId, command, cancellationToken);
+                }
+                catch (EventHandlerDomainException)
+                {
+                    throw;
+                }
+                catch (DomainException e)
+                {
+                    commandLogger.GetStringBuilder(operationId).OnException(e, 2);
+                    throw;
+                }
+                catch (EventHandlerException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    commandLogger.GetStringBuilder(operationId).OnException(e, 2);
+                    throw;
+                }
+                finally
+                {
+                    watch.Stop();
 
-                sb.StopHandlingCommand(type, watch.Elapsed);
+                    sb.StopHandlingCommand(commandType, watch.Elapsed);
 
-                logger.LogDebug("{Message}", sb.ToString());
-                commandLogger.RemoveStringBuilder(command.Id);
-            }
-        };
-    
+                    logger.LogDebug("{Message}", sb.ToString());
+                    commandLogger.RemoveStringBuilder(operationId);
+                }
+            };
+
     private static HandlerDelegate<TCommand, TResult> WithInformationLogger<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ILogger logger)
-        where TCommand : CommandBase =>
-        (command, cancellationToken) =>
+        this HandlerDelegate<TCommand, TResult> next, ILogger logger) =>
+        (operationId, command, cancellationToken) =>
         {
             try
             {
-                logger.LogInformation("{CommandType}, {Data}", command.GetType(), JsonSerializer.Serialize(command));
-                return next(command, cancellationToken);
+                logger.LogInformation("{CommandType}, {Data}", command?.GetType(), JsonSerializer.Serialize(command));
+                return next(operationId, command, cancellationToken);
             }
             catch (EventHandlerDomainException)
             {
@@ -100,47 +98,44 @@ internal static class CommandPipeline
         };
 
     public static HandlerDelegate<TCommand, TResult> WithUnitOfWork<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, IUnitOfWork? unitOfWork)
-        where TCommand : CommandBase =>
-        (command, cancellationToken) =>
+        this HandlerDelegate<TCommand, TResult> next, IUnitOfWork? unitOfWork) =>
+        (operationId, command, cancellationToken) =>
         {
             try
             {
-                unitOfWork?.Start(command.Id);
-                var result = next(command, cancellationToken);
-                unitOfWork?.Commit(command.Id);
+                unitOfWork?.Start(operationId);
+                var result = next(operationId, command, cancellationToken);
+                unitOfWork?.Commit(operationId);
                 return result;
             }
             catch (Exception)
             {
-                unitOfWork?.RollBack(command.Id);
+                unitOfWork?.RollBack(operationId);
                 throw;
             }
             finally
             {
-                unitOfWork?.Dispose(command.Id);
+                unitOfWork?.Dispose(operationId);
             }
         };
 
     public static HandlerDelegate<TCommand, TResult> WithWriteSideDispatching<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, IEventDispatcher eventDispatcher)
-        where TCommand : CommandBase =>
-        (command, cancellationToken) =>
+        this HandlerDelegate<TCommand, TResult> next, IEventDispatcher eventDispatcher) =>
+        (operationId, command, cancellationToken) =>
         {
-            var (events, result) = next(command, cancellationToken);
+            var (events, result) = next(operationId, command, cancellationToken);
             var enumerable = events as object[] ?? events.ToArray();
             foreach (var @event in enumerable)
-                eventDispatcher.Dispatch(command.Id, @event, CancellationToken.None);
+                eventDispatcher.Dispatch(operationId, @event, CancellationToken.None);
             return (enumerable, result);
         };
-    
+
     public static HandlerDelegate<TCommand, TResult> WithReadSideDispatching<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ReadSide.IEventDispatcher readSideEventDispatcher)
-        where TCommand : CommandBase =>
-        (command, cancellationToken) =>
+        this HandlerDelegate<TCommand, TResult> next, ReadSide.IEventDispatcher readSideEventDispatcher) =>
+        (operationId, command, cancellationToken) =>
         {
-            var result = next(command, cancellationToken);
-            readSideEventDispatcher.Dispatch(command.Id, cancellationToken);
+            var result = next(operationId, command, cancellationToken);
+            readSideEventDispatcher.Dispatch(operationId, cancellationToken);
             return result;
         };
 }

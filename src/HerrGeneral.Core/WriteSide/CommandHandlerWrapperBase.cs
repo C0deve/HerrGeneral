@@ -5,14 +5,12 @@ using Microsoft.Extensions.Logging;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal delegate Task<TResult> HandlerWrapperDelegate<in TCommand, TResult>(TCommand command, CancellationToken cancellationToken);
+internal delegate Task<TResult> HandlerWrapperDelegate<in TCommand, TResult>(Guid operationId, TCommand command, CancellationToken cancellationToken);
 
 internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandHandlerWrapper<TResult>
-    where TCommand : CommandBase
 {
     public abstract Task<TResult> Handle(object command, IServiceProvider serviceProvider, CancellationToken cancellationToken);
     
-   
     protected static CommandPipeline.HandlerDelegate<TCommand, TReturn> BuildPipeline<TReturn>(IServiceProvider serviceProvider)
     {
         var commandHandler = GetHandler<TReturn>(serviceProvider);
@@ -31,7 +29,7 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
     }
 
     private static CommandPipeline.HandlerDelegate<TCommand, TReturn> Start<TReturn>(ICommandHandler<TCommand, TReturn> commandHandler) =>
-        commandHandler.Handle;
+        (_, command, token) => commandHandler.Handle(command, token);
 
     private static ICommandHandler<TCommand, TId> GetHandler<TId>(IServiceProvider serviceProvider) =>
         serviceProvider.GetService<ICommandHandler<TCommand, TId>>() ?? 

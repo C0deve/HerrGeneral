@@ -1,7 +1,5 @@
 using System.Text;
-using HerrGeneral.Contracts;
 using HerrGeneral.Core.Error;
-using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.Logger;
 
@@ -9,9 +7,8 @@ internal static class Extensions
 {
     private const string Indent = "      ";
 
-    public static StringBuilder StartHandlingCommand<TCommand>(this StringBuilder logger, string type, TCommand command)
-        where TCommand : CommandBase =>
-        logger.AppendLine($"<------------------- {type} <{command.Id}> thread<{Environment.CurrentManagedThreadId}> ------------------->");
+    public static StringBuilder StartHandlingCommand(this StringBuilder logger, string type, Guid operationId) =>
+        logger.AppendLine($"<------------------- {type} <{operationId}> thread<{Environment.CurrentManagedThreadId}> ------------------->");
 
     public static void StopHandlingCommand(this StringBuilder logger, string type, TimeSpan elapsed) =>
         logger.AppendLine($"<------------------- {type} Finished {elapsed:c} -------------------/>");
