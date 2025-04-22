@@ -10,17 +10,20 @@ namespace HerrGeneral.Core.Registration;
 public class Scanner
 {
     /// <summary>
-    /// 
+    /// Command handler interface
     /// </summary>
     public static readonly Type CommandHandlerInterfaceReturnType = typeof(ICommandHandler<,>);
+
     /// <summary>
-    /// 
+    /// Event handler interface from write side 
     /// </summary>
     public static readonly Type WriteSideEventHandlerInterface = typeof(IEventHandler<>);
+
     /// <summary>
-    /// 
+    /// Event handler interface from read side
     /// </summary>
     public static readonly Type ReadSideEventHandlerInterface = typeof(HerrGeneral.ReadSide.IEventHandler<>);
+
     private readonly HashSet<ScanParam> _writeSideSearchParams = [];
     private readonly HashSet<ScanParam> _readSideSearchParams = [];
 

@@ -30,7 +30,7 @@ internal static class TypeExtensions
             return closeInterfaces;
         
         if (type.BaseType == null || type.BaseType == typeof(object))
-            return Enumerable.Empty<Type>();
+            return [];
 
         return GetCloseInterfacesFromOpenInterface(type.BaseType, openTypeInterface);
     }

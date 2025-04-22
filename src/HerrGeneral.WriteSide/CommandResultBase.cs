@@ -52,7 +52,7 @@ public abstract record CommandResultBase : IWithSuccess
     /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
     public void MatchDomainError(Action<DomainError> onDomainError)
     {
-        if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
+        ArgumentNullException.ThrowIfNull(onDomainError);
 
         if (IsDomainError) onDomainError(DomainError ?? throw new InvalidOperationException($"{nameof(DomainError)}  is null"));
     }
@@ -65,7 +65,7 @@ public abstract record CommandResultBase : IWithSuccess
     /// <exception cref="InvalidOperationException"></exception>
     public void MatchPanicException(Action<Exception> onPanicException)
     {
-        if (onPanicException == null) throw new ArgumentNullException(nameof(onPanicException));
+        ArgumentNullException.ThrowIfNull(onPanicException);
 
         if (IsPanicError) onPanicException(PanicException ?? throw new InvalidOperationException($"{nameof(PanicException)}  is null"));
     }

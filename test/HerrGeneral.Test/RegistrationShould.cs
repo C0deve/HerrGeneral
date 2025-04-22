@@ -11,26 +11,17 @@ using Xunit.Abstractions;
 // ReSharper disable once CheckNamespace
 namespace HerrGeneral.Registration.Test;
 
-public class RegistrationShould
+public class RegistrationShould(ITestOutputHelper output)
 {
-    private readonly ITestOutputHelper _output;
-
-    public RegistrationShould(ITestOutputHelper output) => _output = output;
-
     private record Ping : Change;
 
 
     private class PingHandler(Dependency dependency, IEventDispatcher eventDispatcher) : ChangeHandler<Ping>()
     {
-        private readonly Dependency _dependency;
-
-        public PingHandler(Dependency dependency, IEventDispatcher eventDispatcher) : base(eventDispatcher) =>
-            _dependency = dependency;
-
-        public override Task<ChangeResult> Handle(Ping command, CancellationToken cancellationToken)
+        public override (IEnumerable<object> Events, Unit Result) Handle(Ping command, CancellationToken cancellationToken)
         {
-            _dependency.Called = true;
-            return Task.FromResult(ChangeResult.Success);
+            dependency.Called = true;
+            return ([], Unit.Default);
         }
     }
     
@@ -46,7 +37,7 @@ public class RegistrationShould
         {
             cfg.ForSingletonOf<Dependency>().Use(new Dependency());
 
-            cfg.AddHerrGeneralTestLogger(_output);
+            cfg.AddHerrGeneralTestLogger(output);
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
@@ -82,7 +73,7 @@ public class RegistrationShould
     public void Resolve_handlers_when_a_class_implements_multiple_handlers() {
         var container = new Container(cfg =>
         {
-            cfg.AddHerrGeneralTestLogger(_output);
+            cfg.AddHerrGeneralTestLogger(output);
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
@@ -103,7 +94,7 @@ public class RegistrationShould
     {
         var container = new Container(cfg =>
         {
-            cfg.AddHerrGeneralTestLogger(_output);
+            cfg.AddHerrGeneralTestLogger(output);
 
             cfg.UseHerrGeneral(scanner =>
                 scanner

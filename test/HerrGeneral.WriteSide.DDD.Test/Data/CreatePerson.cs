@@ -2,12 +2,9 @@
 
 public record CreatePerson(string Name) : Create<Person>
 {
-    public class Handler: CreateHandler<Person,CreatePerson>
+    public class Handler(CreateHandler<Person, CreatePerson>.CtorParams @params) : 
+        CreateHandler<Person, CreatePerson>(@params)
     {
-        public Handler(CtorParams @params) : base(@params)
-        {
-        }
-
         protected override Person Handle(CreatePerson command, Guid aggregateId) => 
             new(aggregateId, command.Name);
     }
