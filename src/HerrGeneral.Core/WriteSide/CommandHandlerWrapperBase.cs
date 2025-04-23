@@ -1,11 +1,12 @@
 using HerrGeneral.Core.Error;
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal delegate Task<TResult> HandlerWrapperDelegate<in TCommand, TResult>(Guid operationId, TCommand command, CancellationToken cancellationToken);
+internal delegate Task<TResult> HandlerWrapperDelegate<in TCommand, TResult>(UnitOfWorkId operationId, TCommand command, CancellationToken cancellationToken);
 
 internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandHandlerWrapper<TResult>
 {
@@ -15,8 +16,8 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
     {
         var commandHandler = GetHandler<TReturn>(serviceProvider);
         var logger = GetLogger<TReturn>(serviceProvider);
-        var writeSideEventDispatcher = serviceProvider.GetRequiredService<IEventDispatcher>();
-        var readSideEventDispatcher = serviceProvider.GetRequiredService<ReadSide.IEventDispatcher>();
+        var writeSideEventDispatcher = serviceProvider.GetRequiredService<WriteSideEventDispatcher>();
+        var readSideEventDispatcher = serviceProvider.GetRequiredService<ReadSideEventDispatcher>();
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
         var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
         

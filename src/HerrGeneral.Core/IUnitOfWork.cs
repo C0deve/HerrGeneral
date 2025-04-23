@@ -10,23 +10,23 @@ public interface IUnitOfWork
     /// Starts the transaction associated with command(sourceCommandId)
     /// </summary>
     /// <param name="sourceCommandId">Unique id of the command</param>
-    void Start(Guid sourceCommandId);
-        
+    void Start(UnitOfWorkId sourceCommandId);
+
     /// <summary>
     /// Commits the transaction associated with command(sourceCommandId)
     /// </summary>
     /// <param name="sourceCommandId">Unique id of the command</param>
-    void Commit(Guid sourceCommandId);
+    void Commit(UnitOfWorkId sourceCommandId);
 
     /// <summary>
     /// RollBack the transaction associated with command(sourceCommandId)
     /// </summary>
     /// <param name="sourceCommandId">Unique id of the command</param>
-    void RollBack(Guid sourceCommandId);
-        
+    void RollBack(UnitOfWorkId sourceCommandId);
+
     /// <summary>
     /// RollBack the transaction associated with command(sourceCommandId)
     /// </summary>
     /// <param name="sourceCommandId">Unique id of the command</param>
-    void Dispose(Guid sourceCommandId);
+    void Dispose(UnitOfWorkId sourceCommandId);
 }

@@ -7,7 +7,7 @@ namespace HerrGeneral.Core.ReadSide;
 
 internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
 {
-    private static void Handle(Guid operationId, TEvent @event, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    private static void Handle(UnitOfWorkId operationId, TEvent @event, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
         var stringBuilderLogger = serviceProvider.GetRequiredService<CommandLogger>().GetStringBuilder(operationId);
@@ -20,7 +20,7 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
         }
     }
 
-    public void Handle(Guid operationId, object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
+    public void Handle(UnitOfWorkId operationId, object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
         Handle(operationId, (TEvent)@event, serviceProvider, cancellationToken);
     
     private static ReadSidePipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> handler) =>

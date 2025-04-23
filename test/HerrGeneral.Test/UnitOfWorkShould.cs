@@ -54,7 +54,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         
         await ping.Send(container);
         
-        A.CallTo(() => unitOfWork.Commit(A<Guid>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Commit(A<UnitOfWorkId>._)).MustHaveHappened();
     }
     
     [Fact]
@@ -66,7 +66,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         
         await ping.Send(container);
         
-        A.CallTo(() => unitOfWork.Dispose(A<Guid>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
     
     [Fact]
@@ -78,7 +78,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         
         await ping.Send(container, false);
         
-        A.CallTo(() => unitOfWork.Dispose(A<Guid>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         
         await ping.Send(container, false);
         
-        A.CallTo(() => unitOfWork.Dispose(A<Guid>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
     
     [Fact]
@@ -102,7 +102,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         
         await ping.Send(container, false);
         
-        A.CallTo(() => unitOfWork.Dispose(A<Guid>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
     
     [Fact]
@@ -114,7 +114,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         
         await ping.Send(container, false);
         
-        A.CallTo(() => unitOfWork.RollBack(A<Guid>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }
     
     [Fact]
@@ -126,7 +126,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         
         await ping.Send(container, false);
         
-        A.CallTo(() => unitOfWork.RollBack(A<Guid>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }
        
     [Fact]
@@ -138,6 +138,6 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         
         await ping.Send(container, false);
         
-        A.CallTo(() => unitOfWork.RollBack(A<Guid>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }
 }

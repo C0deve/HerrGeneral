@@ -6,7 +6,7 @@ namespace HerrGeneral.Core.WriteSide;
 internal class CommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, Result>
 {
     public override Task<Result> Handle(object command, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
-        WithExceptionToCommandResult(BuildPipeline<Unit>(serviceProvider))(Guid.NewGuid(), (TCommand)command, cancellationToken);
+        WithExceptionToCommandResult(BuildPipeline<Unit>(serviceProvider))(UnitOfWorkId.New(), (TCommand)command, cancellationToken);
 
     private static HandlerWrapperDelegate<TCommand, Result> WithExceptionToCommandResult(
         CommandPipeline.HandlerDelegate<TCommand, Unit> next) =>
@@ -40,7 +40,7 @@ internal class CommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TComm
 internal class CommandHandlerWrapper<TCommand, TResult> : CommandHandlerWrapperBase<TCommand, Result<TResult>>
 {
     public override Task<Result<TResult>> Handle(object command, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
-        WithExceptionToCommandResult(BuildPipeline<TResult>(serviceProvider))(Guid.NewGuid(), (TCommand)command, cancellationToken);
+        WithExceptionToCommandResult(BuildPipeline<TResult>(serviceProvider))(UnitOfWorkId.New(), (TCommand)command, cancellationToken);
 
     private static HandlerWrapperDelegate<TCommand, Result<TResult>> WithExceptionToCommandResult(
         CommandPipeline.HandlerDelegate<TCommand, TResult> next) =>

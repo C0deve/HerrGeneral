@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal class WriteSideEventDispatcher : EventDispatcherBase, HerrGeneral.WriteSide.IEventDispatcher
+internal class WriteSideEventDispatcher : EventDispatcherBase
 {
     private readonly IAddEventToDispatch _readSideEventDispatcher;
     private readonly ILogger<WriteSideEventDispatcher> _logger;
@@ -26,7 +26,7 @@ internal class WriteSideEventDispatcher : EventDispatcherBase, HerrGeneral.Write
 
     protected override Type WrapperOpenType => typeof(WriteSideEventHandlerWrapper<>);
 
-    public override void Dispatch(Guid commandId, object eventToDispatch, CancellationToken cancellationToken)
+    public override void Dispatch(UnitOfWorkId commandId, object eventToDispatch, CancellationToken cancellationToken)
     {
         if(_logger.IsEnabled(LogLevel.Debug))
             _commandLogger

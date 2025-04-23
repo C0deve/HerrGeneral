@@ -33,8 +33,7 @@ public static class ServiceExtension
         serviceCollection.AddSingleton<CommandLogger>();
         serviceCollection.AddSingleton<ReadSideEventDispatcher>();
         serviceCollection.AddSingleton<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
-        serviceCollection.AddSingleton<ReadSide.IEventDispatcher>(x => x.GetRequiredService<ReadSideEventDispatcher>());
-        serviceCollection.AddSingleton<HerrGeneral.WriteSide.IEventDispatcher, WriteSideEventDispatcher>();
+        serviceCollection.AddSingleton<WriteSideEventDispatcher>();
         serviceCollection.AddSingleton<Mediator>();
 
         return serviceCollection;

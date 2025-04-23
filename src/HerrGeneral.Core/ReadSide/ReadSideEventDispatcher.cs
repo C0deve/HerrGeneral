@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HerrGeneral.Core.ReadSide;
 
-internal class ReadSideEventDispatcher : EventDispatcherBase, IEventDispatcher, IAddEventToDispatch
+internal class ReadSideEventDispatcher : EventDispatcherBase, IAddEventToDispatch
 {
     private readonly ILogger<ReadSideEventDispatcher> _logger;
     private readonly CommandLogger _commandLogger;
     protected override Type WrapperOpenType => typeof(EventHandlerWrapper<>);
 
-    private readonly ConcurrentDictionary<Guid, List<object>> _eventsToDispatch = new();
+    private readonly ConcurrentDictionary<UnitOfWorkId, List<object>> _eventsToDispatch = new();
 
     public ReadSideEventDispatcher(IServiceProvider serviceProvider, ILogger<ReadSideEventDispatcher> logger, CommandLogger commandLogger) : base(serviceProvider)
     {
@@ -28,7 +28,7 @@ internal class ReadSideEventDispatcher : EventDispatcherBase, IEventDispatcher, 
         _commandLogger = commandLogger;
     }
 
-    public void AddEventToDispatch(Guid commandId, object @event)
+    public void AddEventToDispatch(UnitOfWorkId commandId, object @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
@@ -40,17 +40,12 @@ internal class ReadSideEventDispatcher : EventDispatcherBase, IEventDispatcher, 
             });
     }
 
-    private IEnumerable<object> GetAndRemove(Guid commandId)
-    {
-        if (commandId.IsEmpty())
-            throw new ArgumentNullException(nameof(commandId));
-
-        return _eventsToDispatch.TryRemove(commandId, out var events)
+    private IEnumerable<object> GetAndRemove(UnitOfWorkId commandId) =>
+        _eventsToDispatch.TryRemove(commandId, out var events)
             ? events
             : Enumerable.Empty<object>();
-    }
 
-    public void Dispatch(Guid commandId, CancellationToken cancellationToken)
+    public void Dispatch(UnitOfWorkId commandId, CancellationToken cancellationToken)
     {
         var stringBuilder = _logger.IsEnabled(LogLevel.Debug)
             ? _commandLogger.GetStringBuilder(commandId)

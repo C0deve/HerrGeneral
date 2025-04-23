@@ -1,3 +1,4 @@
+using HerrGeneral.Core;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
@@ -24,13 +25,13 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
                         .AddWriteSideAssembly(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!)
                         .AddReadSideAssembly(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!));
             });
-            var sourceCommandId = Guid.NewGuid();
+            var operationId = UnitOfWorkId.New();
 
-            container.GetInstance<IAddEventToDispatch>().AddEventToDispatch(sourceCommandId, new Pong(
+            container.GetInstance<IAddEventToDispatch>().AddEventToDispatch(operationId, new Pong(
                 "Pong received",
-                sourceCommandId,
+                Guid.NewGuid(),
                 Guid.NewGuid()));
-            container.GetInstance<IEventDispatcher>().Dispatch(sourceCommandId, CancellationToken.None);
+            container.GetInstance<Core.ReadSide.ReadSideEventDispatcher>().Dispatch(operationId, CancellationToken.None);
 
             container.GetInstance<ReadModel>().Message.ShouldBe("Pong received");
         }
@@ -56,19 +57,6 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
 
             public void Handle(Pong notification, CancellationToken cancellationToken) => 
                 _readModel.Message = notification.Message;
-        }
-
-        private record PongWithFailure : EventBase
-        {
-            public PongWithFailure(Guid sourceCommandId, Guid aggregateId) : base(sourceCommandId, aggregateId)
-            {
-            }
-        }
-
-        private class PongWithFailureHandler : ReadSide.IEventHandler<PongWithFailure>
-        {
-            public void Handle(PongWithFailure notification, CancellationToken cancellationToken) =>
-                throw new Exception("Exception from ReadSide handler");
         }
     }
 }

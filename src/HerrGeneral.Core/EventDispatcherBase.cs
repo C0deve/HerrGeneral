@@ -28,7 +28,7 @@ internal abstract class EventDispatcherBase
     /// <param name="eventToDispatch"></param>
     /// <param name="cancellationToken"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public virtual void Dispatch(Guid commandId, object eventToDispatch, CancellationToken cancellationToken)
+    public virtual void Dispatch(UnitOfWorkId commandId, object eventToDispatch, CancellationToken cancellationToken)
     {
         var wrapper = _eventHandlerWrappers.GetOrAdd(eventToDispatch.GetType(), eventTypeInput =>
         {

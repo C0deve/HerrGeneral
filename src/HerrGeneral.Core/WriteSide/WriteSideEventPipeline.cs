@@ -9,7 +9,7 @@ namespace HerrGeneral.Core.WriteSide;
 
 internal static class WriteSideEventPipeline
 {
-    public delegate void EventHandlerDelegate<in TEvent>(Guid operationId, TEvent @event, CancellationToken cancellationToken);
+    public delegate void EventHandlerDelegate<in TEvent>(UnitOfWorkId operationId, TEvent @event, CancellationToken cancellationToken);
 
     public static EventHandlerDelegate<TEvent> WithHandlerLogging<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, IEventHandler<TEvent> handler, StringBuilder stringBuilderLogger) =>
         (operationId, @event, cancellationToken) =>

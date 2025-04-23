@@ -5,12 +5,13 @@ using HerrGeneral.WriteSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Text.Json;
+using HerrGeneral.Core.ReadSide;
 
 namespace HerrGeneral.Core.WriteSide;
 
 internal static class CommandPipeline
 {
-    public delegate (IEnumerable<object> Events, TResult Result) HandlerDelegate<in TCommand, TResult>(Guid operationId, TCommand command, CancellationToken cancellationToken);
+    public delegate (IEnumerable<object> Events, TResult Result) HandlerDelegate<in TCommand, TResult>(UnitOfWorkId operationId, TCommand command, CancellationToken cancellationToken);
 
     public static HandlerDelegate<TCommand, TResult> WithLogger<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandLogger commandLogger)
@@ -120,7 +121,7 @@ internal static class CommandPipeline
         };
 
     public static HandlerDelegate<TCommand, TResult> WithWriteSideDispatching<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, IEventDispatcher eventDispatcher) =>
+        this HandlerDelegate<TCommand, TResult> next, WriteSideEventDispatcher eventDispatcher) =>
         (operationId, command, cancellationToken) =>
         {
             var (events, result) = next(operationId, command, cancellationToken);
@@ -131,7 +132,7 @@ internal static class CommandPipeline
         };
 
     public static HandlerDelegate<TCommand, TResult> WithReadSideDispatching<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ReadSide.IEventDispatcher readSideEventDispatcher) =>
+        this HandlerDelegate<TCommand, TResult> next, ReadSideEventDispatcher readSideEventDispatcher) =>
         (operationId, command, cancellationToken) =>
         {
             var result = next(operationId, command, cancellationToken);
