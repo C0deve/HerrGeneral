@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using HerrGeneral.Contracts;
 using HerrGeneral.Core.Logger;
 using HerrGeneral.Core.WriteSide;
 using Microsoft.Extensions.Logging;
@@ -34,7 +33,7 @@ internal class ReadSideEventDispatcher : EventDispatcherBase, IEventDispatcher, 
         ArgumentNullException.ThrowIfNull(@event);
 
         _eventsToDispatch
-            .AddOrUpdate(commandId, [@event], (commandIdUpdate, events) =>
+            .AddOrUpdate(commandId, [@event], (_, events) =>
             {
                 events.Add(@event);
                 return events;

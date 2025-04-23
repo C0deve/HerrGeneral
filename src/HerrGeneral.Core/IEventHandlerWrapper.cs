@@ -2,5 +2,5 @@ namespace HerrGeneral.Core;
 
 internal interface IEventHandlerWrapper
 {
-    void Handle(object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken);
+    void Handle(Guid operationId, object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken);
 }

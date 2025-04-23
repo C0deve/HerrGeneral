@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Core", "src\HerrGeneral.Core\HerrGeneral.Core.csproj", "{A3FF80D0-6D34-49DE-B599-13E26F15DE6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Contracts", "src\HerrGeneral.Contracts\HerrGeneral.Contracts.csproj", "{AC8C1C87-765A-4C2D-B5A6-DD3159C2DEF5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Test", "test\HerrGeneral.Test\HerrGeneral.Test.csproj", "{ACC3D7D1-1E3D-48C2-B0DC-6D14519D225A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerrGeneral.Test.Extension", "src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj", "{A061D5F3-2F73-4297-98D6-9F0923C14C2A}"
@@ -38,10 +36,6 @@ Global
 		{A3FF80D0-6D34-49DE-B599-13E26F15DE6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3FF80D0-6D34-49DE-B599-13E26F15DE6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3FF80D0-6D34-49DE-B599-13E26F15DE6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC8C1C87-765A-4C2D-B5A6-DD3159C2DEF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC8C1C87-765A-4C2D-B5A6-DD3159C2DEF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC8C1C87-765A-4C2D-B5A6-DD3159C2DEF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC8C1C87-765A-4C2D-B5A6-DD3159C2DEF5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ACC3D7D1-1E3D-48C2-B0DC-6D14519D225A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ACC3D7D1-1E3D-48C2-B0DC-6D14519D225A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACC3D7D1-1E3D-48C2-B0DC-6D14519D225A}.Release|Any CPU.ActiveCfg = Release|Any CPU

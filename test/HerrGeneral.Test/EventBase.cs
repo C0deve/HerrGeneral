@@ -1,11 +1,9 @@
-using HerrGeneral.Contracts;
-
 namespace HerrGeneral.Test;
 
 /// <summary>
 /// Event implementation.
 /// </summary>
-public abstract record EventBase : IEvent
+public abstract record EventBase
 {
     /// <summary>
     /// Ctor

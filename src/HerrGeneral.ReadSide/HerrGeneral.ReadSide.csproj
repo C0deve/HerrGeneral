@@ -21,10 +21,6 @@
         <Description>Read side interface for HerrGeneral</Description>
         <PackageTags>.Net;HerrGeneral</PackageTags>
     </PropertyGroup>
-    
-    <ItemGroup>
-      <ProjectReference Include="..\HerrGeneral.Contracts\HerrGeneral.Contracts.csproj" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="MinVer"/>

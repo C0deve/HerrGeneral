@@ -1,5 +1,3 @@
-using HerrGeneral.Contracts;
-
 namespace HerrGeneral.WriteSide;
 
 /// <summary>
@@ -7,7 +5,6 @@ namespace HerrGeneral.WriteSide;
 /// </summary>
 /// <typeparam name="TEvent">The type of notification being handled</typeparam>
 public interface IEventHandler<in TEvent>
-    where TEvent : IEvent
 {
     /// <summary>
     /// Handle a notification

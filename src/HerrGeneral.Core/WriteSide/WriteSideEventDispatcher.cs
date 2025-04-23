@@ -1,4 +1,3 @@
-using HerrGeneral.Contracts;
 using HerrGeneral.Core.Logger;
 using HerrGeneral.Core.ReadSide;
 using Microsoft.Extensions.Logging;

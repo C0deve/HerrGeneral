@@ -37,6 +37,6 @@ internal abstract class EventDispatcherBase
             return (IEventHandlerWrapper)wrapper;
         });
 
-        wrapper.Handle(eventToDispatch, _serviceProvider, cancellationToken);
+        wrapper.Handle(commandId, eventToDispatch, _serviceProvider, cancellationToken);
     }
 }

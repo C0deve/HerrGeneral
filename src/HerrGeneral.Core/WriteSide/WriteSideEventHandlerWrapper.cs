@@ -1,4 +1,3 @@
-using HerrGeneral.Contracts;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -6,12 +5,11 @@ using Microsoft.Extensions.Logging;
 namespace HerrGeneral.Core.WriteSide;
 
 internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
-    where TEvent : IEvent
 {
-    private static void Handle(TEvent @event, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    private static void Handle(Guid operationId, TEvent @event, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
-        var stringBuilderLogger = serviceProvider.GetRequiredService<CommandLogger>().GetStringBuilder(@event.SourceCommandId);
+        var stringBuilderLogger = serviceProvider.GetRequiredService<CommandLogger>().GetStringBuilder(operationId);
 
         foreach (var handler in serviceProvider.GetServices<IEventHandler<TEvent>>())
         {
@@ -19,13 +17,13 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
                 .WithErrorLogger(logger, stringBuilderLogger)
                 .WithErrorMapping()
                 .WithHandlerLogging(logger, handler, stringBuilderLogger)
-                (@event, cancellationToken);
+                (operationId, @event, cancellationToken);
         }
     }
 
-    public void Handle(object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
-        Handle((TEvent)@event, serviceProvider, cancellationToken);
+    public void Handle(Guid operationId, object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
+        Handle(operationId, (TEvent)@event, serviceProvider, cancellationToken);
 
     private static WriteSideEventPipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> eventHandler) =>
-        eventHandler.Handle;
+        (_, @event, token) => eventHandler.Handle(@event, token);
 }
