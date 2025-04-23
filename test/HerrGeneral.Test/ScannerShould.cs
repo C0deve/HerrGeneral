@@ -49,21 +49,21 @@ public class ScannerShould
     public void Filter_IReadSideEventHandler() =>
         typeof(MyReadSideEventHandlerImpl).IsAssignableFromOpenType(typeof(ReadSide.IEventHandler<>)).ShouldBe(true);
 
-    public record Command1 : Change
+    public record Command1
     {
-        public class Command1Handler : ChangeHandler<Command1>
+        public class Command1Handler : CommandHandler<Command1>
         {
-            public override (IEnumerable<object> Events, Unit Result) Handle(Command1 command, CancellationToken cancellationToken) =>
-                ([], Unit.Default);
+            protected override IEnumerable<object> Handle(Command1 command) =>
+                [];
         }
     }
 
-    private record Command2 : Change;
+    private record Command2;
 
-    private abstract class Command2HandlerBase : ChangeHandler<Command2>
+    private abstract class Command2HandlerBase : CommandHandler<Command2>
     {
-        public override (IEnumerable<object> Events, Unit Result) Handle(Command2 command, CancellationToken cancellationToken) =>
-            ([], Unit.Default);
+        protected override IEnumerable<object> Handle(Command2 command) =>
+            [];
     }
 
     private class Command2Handler : Command2HandlerBase;

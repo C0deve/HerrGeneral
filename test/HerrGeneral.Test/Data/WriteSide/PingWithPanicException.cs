@@ -2,11 +2,11 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public record PingWithPanicException : Change
+public record PingWithPanicException
 {
-    public class Handler : ChangeHandler<PingWithPanicException>
+    public class Handler : CommandHandler<PingWithPanicException>
     {
-        public override (IEnumerable<object> Events, Unit Result) Handle(PingWithPanicException command, CancellationToken cancellationToken) 
+        protected override IEnumerable<object> Handle(PingWithPanicException command) 
             => throw new SomePanicException();
     }
 }

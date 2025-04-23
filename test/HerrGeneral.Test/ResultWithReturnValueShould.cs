@@ -3,9 +3,9 @@ using HerrGeneral.WriteSide;
 using Shouldly;
 
 // ReSharper disable once CheckNamespace
-namespace HerrGeneral.Result.Test;
+namespace HerrGeneral.CommandResult.Test;
 
-public class CreationResultShould
+public class ResultWithReturnValueShould
 {
     [Fact]
     public void MatchActionOnSuccess()
@@ -13,7 +13,7 @@ public class CreationResultShould
         var message = "";
         var expected = Guid.NewGuid();
         
-        CreateResult
+        Result
             .Success(expected)
             .Match(
                 id => message = id.ToString(),
@@ -28,7 +28,7 @@ public class CreationResultShould
     {
         var message = "";
 
-        CreateResult
+        Result<Guid>
             .DomainFail(new PingError())
             .Match(
                 _ => message = "success",
@@ -43,7 +43,7 @@ public class CreationResultShould
     {
         var message = "";
 
-        CreateResult
+        Result<Guid>
             .PanicFail(new Exception())
             .Match(
                 _ => message = "success",
@@ -55,7 +55,7 @@ public class CreationResultShould
 
     [Fact]
     public void MatchFunctionOnSuccess() =>
-        CreateResult
+        Result
             .Success(Guid.NewGuid())
             .Match(
                 _ => "success",
@@ -65,7 +65,7 @@ public class CreationResultShould
 
     [Fact]
     public void MatchFunctionOnDomainError() =>
-        CreateResult
+        Result<Guid>
             .DomainFail(new PingError())
             .Match(
                 _ => "success",
@@ -75,7 +75,7 @@ public class CreationResultShould
 
     [Fact]
     public void MatchFunctionOnPanicException() =>
-        CreateResult
+        Result<Guid>
             .PanicFail(new Exception())
             .Match(
                 _ => "success",
@@ -89,7 +89,7 @@ public class CreationResultShould
         var message = "";
         var expected = Guid.NewGuid();
 
-        CreateResult
+        Result
             .Success(expected)
             .MatchSuccess(id => message = id.ToString());
 
@@ -101,7 +101,7 @@ public class CreationResultShould
     {
         var message = "";
 
-        CreateResult
+        Result<Guid>
             .DomainFail(new PingError())
             .MatchDomainError(_ => message = "domainError");
 
@@ -113,7 +113,7 @@ public class CreationResultShould
     {
         var message = "";
 
-        CreateResult
+        Result<Guid>
             .PanicFail(new Exception())
             .MatchPanicException(_ => message = "panicException");
 

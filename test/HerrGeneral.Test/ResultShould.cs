@@ -3,17 +3,17 @@ using HerrGeneral.WriteSide;
 using Shouldly;
 
 // ReSharper disable once CheckNamespace
-namespace HerrGeneral.Result.Test;
+namespace HerrGeneral.CommandResult.Test;
 
-public class CommandResultShould
+public class ResultShould
 {
     [Fact]
     public void MatchActionOnSuccess()
     {
         var message = "";
 
-        ChangeResult
-            .Success
+        Result
+            .Success()
             .Match(
                 () => message = "success",
                 _ => message = "domainError",
@@ -27,7 +27,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        ChangeResult
+        Result
             .DomainFail(new PingError())
             .Match(
                 () => message = "success",
@@ -42,7 +42,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        ChangeResult
+        Result
             .PanicFail(new Exception())
             .Match(
                 () => message = "success",
@@ -54,8 +54,8 @@ public class CommandResultShould
 
     [Fact]
     public void MatchFunctionOnSuccess() =>
-        ChangeResult
-            .Success
+        Result
+            .Success()
             .Match(
                 () => "success",
                 _ => "domainError",
@@ -64,7 +64,7 @@ public class CommandResultShould
 
     [Fact]
     public void MatchFunctionOnDomainError() =>
-        ChangeResult
+        Result
             .DomainFail(new PingError())
             .Match(
                 () => "success",
@@ -74,7 +74,7 @@ public class CommandResultShould
 
     [Fact]
     public void MatchFunctionOnPanicException() =>
-        ChangeResult
+        Result
             .PanicFail(new Exception())
             .Match(
                 () => "success",
@@ -87,7 +87,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        ChangeResult.Success.MatchSuccess(() => message = "success");
+        Result.Success().MatchSuccess(_ => message = "success");
 
         message.ShouldBe("success");
     }
@@ -97,7 +97,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        ChangeResult
+        Result
             .DomainFail(new PingError())
             .MatchDomainError(_ => message = "domainError");
 
@@ -109,7 +109,7 @@ public class CommandResultShould
     {
         var message = "";
 
-        ChangeResult
+        Result
             .PanicFail(new Exception())
             .MatchPanicException(_ => message = "panicException");
 
@@ -118,49 +118,49 @@ public class CommandResultShould
 
     [Fact]
     public void ChangeResultRailwaySuccess() =>
-        ChangeResult.Success
-            .Then(() => ChangeResult.Success)
-            .ShouldBe(ChangeResult.Success);
+        Result.Success()
+            .Then(Result.Success)
+            .ShouldBe(Result.Success());
 
     [Fact]
     public void ChangeResultRailwayDomainError() =>
-        ChangeResult.DomainFail(new PingError())
-            .Then(() => ChangeResult.Success)
+        Result.DomainFail(new PingError())
+            .Then(Result.Success)
             .IsSuccess.ShouldBe(false);
 
     [Fact]
     public void ChangeResultRailwayDomainError2() =>
-        ChangeResult.Success
-            .Then(() => ChangeResult.DomainFail(new PingError()))
+        Result.Success()
+            .Then(() => Result.DomainFail(new PingError()))
             .IsSuccess.ShouldBe(false);
 
     [Fact]
     public async Task ChangeResultRailwayDomainError3() =>
-        (await Task.FromResult(ChangeResult.Success)
-            .Then(() => Task.FromResult(ChangeResult.DomainFail(new PingError()))))
+        (await Task.FromResult(Result.Success())
+            .Then(() => Task.FromResult(Result.DomainFail(new PingError()))))
         .IsSuccess.ShouldBe(false);
 
     [Fact]
     public async Task ChangeResultRailwayDomainError4() =>
-        (await Task.FromResult(ChangeResult.DomainFail(new PingError()))
-            .Then(() => Task.FromResult(ChangeResult.Success)))
+        (await Task.FromResult(Result.DomainFail(new PingError()))
+            .Then(() => Task.FromResult(Result.Success())))
         .IsSuccess.ShouldBe(false);
 
     [Fact]
     public async Task CreateResultRailwaySuccess() =>
-        (await Task.FromResult(CreateResult.Success(Guid.NewGuid()))
-            .Then(_ => Task.FromResult(ChangeResult.Success)))
-        .ShouldBe(ChangeResult.Success);
+        (await Task.FromResult(Result.Success(Guid.NewGuid()))
+            .Then(_ => Task.FromResult(Result.Success())))
+        .ShouldBe(Result.Success());
     
     [Fact]
     public async Task CreateResultRailwayDomainError() =>
-        (await Task.FromResult(CreateResult.DomainFail(new PingError()))
-            .Then(_ => Task.FromResult(ChangeResult.Success)))
+        (await Task.FromResult(Result<Guid>.DomainFail(new PingError()))
+            .Then(_ => Task.FromResult(Result.Success())))
         .IsSuccess.ShouldBe(false);
     
     [Fact]
     public async Task CreateResultRailwayDomainError2() =>
-        (await Task.FromResult(CreateResult.Success(Guid.NewGuid()))
-            .Then(_ => Task.FromResult(ChangeResult.DomainFail(new PingError()))))
+        (await Task.FromResult(Result<Guid>.Success(Guid.NewGuid()))
+            .Then(_ => Task.FromResult(Result.DomainFail(new PingError()))))
         .IsSuccess.ShouldBe(false);
 }

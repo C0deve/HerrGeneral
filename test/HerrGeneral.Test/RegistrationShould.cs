@@ -13,23 +13,23 @@ namespace HerrGeneral.Registration.Test;
 
 public class RegistrationShould(ITestOutputHelper output)
 {
-    private record Ping : Change;
+    private record Ping;
 
 
-    private class PingHandler(Dependency dependency, IEventDispatcher eventDispatcher) : ChangeHandler<Ping>()
+    private class PingHandler(Dependency dependency) : CommandHandler<Ping>
     {
-        public override (IEnumerable<object> Events, Unit Result) Handle(Ping command, CancellationToken cancellationToken)
+        protected override IEnumerable<object> Handle(Ping command)
         {
             dependency.Called = true;
-            return ([], Unit.Default);
+            return [];
         }
     }
-    
+
     private class Dependency
     {
         public bool Called { get; set; }
     }
-    
+
     [Fact]
     public async Task Resolve_main_handler()
     {
@@ -48,10 +48,10 @@ public class RegistrationShould(ITestOutputHelper output)
 
         var response = await mediator.Send(new Ping());
 
-        response.ShouldBe(ChangeResult.Success);
+        response.ShouldBe(Result.Success());
         container.GetInstance<Dependency>().Called.ShouldBe(true);
     }
-    
+
     [Fact]
     public async Task Raise_exception_if_no_command_handler_registered()
     {
@@ -66,11 +66,12 @@ public class RegistrationShould(ITestOutputHelper output)
 
         var mediator = container.GetInstance<Mediator>();
 
-        await Should.ThrowAsync<MissingCommandHandlerRegistrationException>(async () => await mediator.Send(new Ping ()));
+        await Should.ThrowAsync<MissingCommandHandlerRegistrationException>(async () => await mediator.Send(new Ping()));
     }
-    
+
     [Fact]
-    public void Resolve_handlers_when_a_class_implements_multiple_handlers() {
+    public void Resolve_handlers_when_a_class_implements_multiple_handlers()
+    {
         var container = new Container(cfg =>
         {
             cfg.AddHerrGeneralTestLogger(output);
@@ -83,12 +84,12 @@ public class RegistrationShould(ITestOutputHelper output)
         container
             .GetInstance<ReadSide.IEventHandler<AnotherPong>>()
             .ShouldBeOfType<ReadModelWithMultipleHandlers.Repository>();
-        
+
         container
             .GetInstance<ReadSide.IEventHandler<Pong>>()
             .ShouldBeOfType<ReadModelWithMultipleHandlers.Repository>();
     }
-    
+
     [Fact]
     public void Register_read_side_repositories_as_singleton()
     {
@@ -100,7 +101,7 @@ public class RegistrationShould(ITestOutputHelper output)
                 scanner
                     .AddReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!));
         });
-        
+
         container.GetInstance<ReadModel.Repository>().Id.ShouldBe(container.GetInstance<ReadModel.Repository>().Id);
     }
 }

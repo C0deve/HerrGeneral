@@ -2,17 +2,17 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public record CreatePing : Create
+public record CreatePing : CommandBase
 {
-    public static readonly Guid AggregateId = Guid.NewGuid();
-
-    public string Message { get; set; } = string.Empty;
+    public required Guid AggregateId  { get; init; }
+    public required string Message { get; init; }
     
-    public class Handler() : CreateHandler<CreatePing>
+    public class Handler : CommandHandler<CreatePing, Guid>
     {
         public override (IEnumerable<object> Events, Guid Result) Handle(CreatePing command, CancellationToken cancellationToken) =>
-            ([new Pong($"{command.Message} received", command.Id, AggregateId)],
-                AggregateId);
+            ([new Pong($"{command.Message} received", command.Id, command.AggregateId)],
+                command.AggregateId);
     }
+
 }
 

@@ -23,5 +23,5 @@ public class CreateAggregateShould
     
     [Fact]
     public async Task Create() => 
-        await new CreatePerson("John").Send(_container);
+        await new CreatePerson("John").Send<Guid>(_container);
 }

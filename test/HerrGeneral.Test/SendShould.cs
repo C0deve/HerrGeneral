@@ -33,13 +33,15 @@ public class SendShould
     public async Task Resolve_main_handler() =>
         (await new Ping { Message = "Ping" }
             .Send(_container, false))
-        .ShouldBe(ChangeResult.Success);
+        .ShouldBe(Result.Success());
 
+    private static readonly Guid AggregateId = Guid.NewGuid();
+    
     [Fact]
     public async Task Resolve_main_handler_for_creation_command() =>
-        (await new CreatePing { Message = "Ping" }
-            .Send(_container, false))
-        .ShouldBe(CreateResult.Success(CreatePing.AggregateId));
+        (await new CreatePing { AggregateId = AggregateId, Message = "Ping" }
+            .Send<Guid>(_container, false))
+        .ShouldBe(Result.Success(AggregateId));
 
     [Fact]
     public async Task Dispatch_events_on_write_side()

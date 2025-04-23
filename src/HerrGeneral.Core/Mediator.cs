@@ -24,11 +24,11 @@ public class Mediator
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<CreateResult> Send(Create command, CancellationToken cancellationToken = default)
+    public async Task<Result<T>> Send<T>(object command, CancellationToken cancellationToken = default)
     {
-        var wrapper = (ICommandHandlerWrapper<CreateResult>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
+        var wrapper = (ICommandHandlerWrapper<Result<T>>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
         {
-            var wrapperType = typeof(CreateHandlerWrapper<>).MakeGenericType(commandType);
+            var wrapperType = typeof(CommandHandlerWrapper<,>).MakeGenericType(commandType, typeof(T));
             return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
         });
 
@@ -41,11 +41,11 @@ public class Mediator
     /// <param name="command"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<ChangeResult> Send(Change command, CancellationToken cancellationToken = default)
+    public async Task<Result> Send(object command, CancellationToken cancellationToken = default)
     {
-        var wrapper = (ICommandHandlerWrapper<ChangeResult>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
+        var wrapper = (ICommandHandlerWrapper<Result>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
         {
-            var wrapperType = typeof(ChangeHandlerWrapper<>).MakeGenericType(commandType);
+            var wrapperType = typeof(CommandHandlerWrapper<>).MakeGenericType(commandType);
             return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
         });
 

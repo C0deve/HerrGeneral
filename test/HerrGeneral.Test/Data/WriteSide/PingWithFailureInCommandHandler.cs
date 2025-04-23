@@ -3,12 +3,11 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public record PingWithFailureInCommandHandler : Change
+public record PingWithFailureInCommandHandler
 {
-    public class Handler : ChangeHandler<PingWithFailureInCommandHandler>
+    public class Handler : CommandHandler<PingWithFailureInCommandHandler>
     {
-        public override (IEnumerable<object> Events, Unit Result) Handle(PingWithFailureInCommandHandler command,
-            CancellationToken cancellationToken) => 
+        protected override IEnumerable<object> Handle(PingWithFailureInCommandHandler command) => 
             throw new PingError().ToException();
     }
 }

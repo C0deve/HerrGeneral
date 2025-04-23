@@ -27,7 +27,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
         
         var result = await new Ping { Message = "Ping" }.Send(container, false);
-        result.ShouldBe(ChangeResult.Success);
+        result.ShouldBe(Result.Success());
     }
     
     private Container Register(IUnitOfWork unitOfWork) =>

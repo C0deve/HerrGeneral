@@ -2,11 +2,11 @@
 
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public record PingWithFailureInReadSideEventHandler : Change
+public record PingWithFailureInReadSideEventHandler : CommandBase
 {
-    public class Handler : ChangeHandler<PingWithFailureInReadSideEventHandler>
+    public class Handler : CommandHandler<PingWithFailureInReadSideEventHandler>
     {
-        public override (IEnumerable<object> Events, Unit Result) Handle(PingWithFailureInReadSideEventHandler command, CancellationToken cancellationToken) => 
-            ([new PongWithReadSideFailure(command.Id, Guid.NewGuid())], Unit.Default);
+        protected override IEnumerable<object> Handle(PingWithFailureInReadSideEventHandler command) =>
+            [new PongWithReadSideFailure(command.Id, Guid.NewGuid())];
     }
 }

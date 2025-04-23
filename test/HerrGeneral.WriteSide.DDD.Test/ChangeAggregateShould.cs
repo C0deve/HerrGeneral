@@ -23,7 +23,7 @@ public class ChangeAggregateShould
     [Fact]
     public async Task Change()
     {
-        var personId = await new CreatePerson("John").Send(_container);
+        var personId = await new CreatePerson("John").Send<Guid>(_container);
         await new AddFriend(personId).Send(_container);
     }
 }

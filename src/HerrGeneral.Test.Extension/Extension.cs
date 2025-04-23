@@ -22,7 +22,7 @@ public static class Extension
     /// <param name="serviceProvider"></param>
     /// <param name="withResultAssertion"></param>
     /// <returns></returns>
-    public static async Task<ChangeResult> Send(this Change request, IServiceProvider serviceProvider, bool withResultAssertion = true)
+    public static async Task<Result> Send(this object request, IServiceProvider serviceProvider, bool withResultAssertion = true)
     {
         var res = await serviceProvider.GetRequiredService<Mediator>().Send(request);
 
@@ -38,10 +38,10 @@ public static class Extension
     /// <param name="request"></param>
     /// <param name="serviceProvider"></param>
     /// <returns></returns>
-    public static async Task<Guid> Send(this Create request, IServiceProvider serviceProvider) =>
+    public static async Task<TResult> Send<TResult>(this object request, IServiceProvider serviceProvider) =>
         (await serviceProvider
             .GetRequiredService<Mediator>()
-            .Send(request))
+            .Send<TResult>(request))
         .Match(id => id,
             domainError => throw new XunitException($"Command have a domain error of type<{domainError.GetType()}>. {domainError.Message}"),
             exception => throw new XunitException($"Command have a panic exception of type<{exception.GetType()}>. {exception.Message}", exception));
@@ -53,9 +53,9 @@ public static class Extension
     /// <param name="serviceProvider"></param>
     /// <param name="withResultAssertion"></param>
     /// <returns></returns>
-    public static async Task<CreateResult> Send(this Create request, IServiceProvider serviceProvider, bool withResultAssertion)
+    public static async Task<Result<TResult>> Send<TResult>(this object request, IServiceProvider serviceProvider, bool withResultAssertion)
     {
-        var res = await serviceProvider.GetRequiredService<Mediator>().Send(request);
+        var res = await serviceProvider.GetRequiredService<Mediator>().Send<TResult>(request);
 
         if (withResultAssertion)
             res.IsSuccess.ShouldBeTrue($"{request.GetType().FullName}: {res}");
@@ -69,25 +69,26 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TDomainError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<ChangeResult> task) where TDomainError : DomainError
+    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<Result> task) where TDomainError : DomainError
     {
-        if (task == null) throw new ArgumentNullException(nameof(task));
+        ArgumentNullException.ThrowIfNull(task);
         (await task)
             .Match(
                 () => Assert.Fail($"Command is successful but should have a domain error of type<{typeof(TDomainError)}>."),
                 error => error.ShouldBeOfType<TDomainError>($"DomainError<{error.GetType()} is not of type<{typeof(TDomainError)}>."),
                 exception => Assert.Fail($"Command should have a domain error of type<{typeof(TDomainError)}> but has panic exception. {exception}"));
     }
-    
+
     /// <summary>
     /// Assert for domain exception
     /// </summary>
     /// <param name="task"></param>
     /// <typeparam name="TDomainError"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<CreateResult> task) where TDomainError : DomainError
+    public static async Task ShouldHaveDomainErrorOfType<TResult,TDomainError>(this Task<Result<TResult>> task) where TDomainError : DomainError
     {
-        if (task == null) throw new ArgumentNullException(nameof(task));
+        ArgumentNullException.ThrowIfNull(task);
         (await task)
             .Match(
                 _ => Assert.Fail($"Command is successful but should have a domain error of type<{typeof(TDomainError)}>."),
@@ -102,25 +103,26 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<ChangeResult> task) where TError : Exception
+    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<Result> task) where TError : Exception
     {
-        if (task == null) throw new ArgumentNullException(nameof(task));
+        ArgumentNullException.ThrowIfNull(task);
         (await task)
             .Match(
                 () => Assert.Fail($"Command is successful but should have a panic exception of type<{typeof(TError)}>."),
                 error => Assert.Fail($"Command should have a panic exception of type<{typeof(TError)}> but has panic error. {error}"),
                 exception => exception.ShouldBeOfType<TError>($"{exception.GetType()} is not of type<{typeof(TError)}>."));
     }
-    
+
     /// <summary>
     /// Assert for panic exception
     /// </summary>
     /// <param name="task"></param>
     /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHavePanicExceptionOfType<TError>(this Task<CreateResult> task) where TError : Exception
+    public static async Task ShouldHavePanicExceptionOfType<TError, TResult>(this Task<Result<TResult>> task) where TError : Exception
     {
-        if (task == null) throw new ArgumentNullException(nameof(task));
+        ArgumentNullException.ThrowIfNull(task);
         (await task)
             .Match(
                 _ => Assert.Fail($"Command is successful but should have a panic exception of type<{typeof(TError)}>."),

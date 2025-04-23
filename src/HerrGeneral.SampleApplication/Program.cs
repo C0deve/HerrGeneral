@@ -31,7 +31,7 @@ var smithId = Guid.Empty;
 Console.WriteLine("Creating Smith");
 
 await mediator
-    .Send(new CreatePerson("Smith", "Adams"))
+    .Send<Guid>(new CreatePerson("Smith", "Adams"))
     .Then(personId =>
     {
         smithId = personId;

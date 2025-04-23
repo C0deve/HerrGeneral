@@ -31,10 +31,10 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
     private static CommandPipeline.HandlerDelegate<TCommand, TReturn> Start<TReturn>(ICommandHandler<TCommand, TReturn> commandHandler) =>
         (_, command, token) => commandHandler.Handle(command, token);
 
-    private static ICommandHandler<TCommand, TId> GetHandler<TId>(IServiceProvider serviceProvider) =>
-        serviceProvider.GetService<ICommandHandler<TCommand, TId>>() ?? 
+    private static ICommandHandler<TCommand, T> GetHandler<T>(IServiceProvider serviceProvider) =>
+        serviceProvider.GetService<ICommandHandler<TCommand, T>>() ?? 
         throw new MissingCommandHandlerRegistrationException(typeof(TCommand));
 
-    private static ILogger<ICommandHandler<TCommand, TId>>? GetLogger<TId>(IServiceProvider serviceProvider) =>
-        serviceProvider.GetService<ILogger<ICommandHandler<TCommand, TId>>>();
+    private static ILogger<ICommandHandler<TCommand, T>>? GetLogger<T>(IServiceProvider serviceProvider) =>
+        serviceProvider.GetService<ILogger<ICommandHandler<TCommand, T>>>();
 }

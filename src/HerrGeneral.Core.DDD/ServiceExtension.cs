@@ -20,7 +20,7 @@ public static class ServiceExtension
     /// <returns></returns>
     public static IServiceCollection RegisterDynamicHandlers(this IServiceCollection serviceCollection, Assembly assembly)
     {
-        var types = Select(assembly);
+        var types = Select<Guid>(assembly);
 
         foreach (var (@interface, type) in types)
             serviceCollection.TryAddTransient(
@@ -30,14 +30,14 @@ public static class ServiceExtension
         return serviceCollection;
     }
 
-    private static IEnumerable<(Type Interface, Type HandlerType)> Select(Assembly assembly)
+    private static IEnumerable<(Type Interface, Type HandlerType)> Select<TResult>(Assembly assembly)
     {
         foreach (var type in assembly.GetTypes())
         {
             if (type.IsCreateCommand())
             {
                 yield return (
-                    Interface: type.MakeHandlerInterfaceForCreateCommand(),
+                    Interface: type.MakeHandlerInterfaceForCreateCommand<TResult>(),
                     HandlerType: type.MakeDynamicHandlerForCreateCommand());
                 continue; 
             }
@@ -55,8 +55,8 @@ public static class ServiceExtension
         type.BaseType?.IsGenericType == true &&
         type.BaseType.GetGenericTypeDefinition() == typeof(Create<>);
 
-    private static Type MakeHandlerInterfaceForCreateCommand(this Type commandType) =>
-        typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(Guid));
+    private static Type MakeHandlerInterfaceForCreateCommand<TResult>(this Type commandType) =>
+        typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(TResult));
 
     private static Type MakeDynamicHandlerForCreateCommand(this Type commandType) =>
         typeof(CreateHandlerDynamic<,>).MakeGenericType(commandType.GetAggregateTypeFromCommand(), commandType);

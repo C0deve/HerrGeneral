@@ -8,11 +8,11 @@ public static class CommandResultExtensions
     /// <summary>
     /// Chaining operations returning a result 
     /// </summary>
-    /// <param name="changeResult"></param>
+    /// <param name="result"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    public static ChangeResult Then(this ChangeResult changeResult, Func<ChangeResult> func) =>
-        changeResult.Match(func, _ => changeResult, _ => changeResult);
+    public static Result Then(this Result result, Func<Result> func) =>
+        result.Match(func, _ => result, _ => result);
 
     /// <summary>
     /// Chaining async operations returning a result 
@@ -20,7 +20,7 @@ public static class CommandResultExtensions
     /// <param name="task"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    public static async Task<ChangeResult> Then(this Task<ChangeResult> task, Func<Task<ChangeResult>> func)
+    public static async Task<Result> Then(this Task<Result> task, Func<Task<Result>> func)
     {
         var changeResult = await task;
         return await changeResult
@@ -36,14 +36,14 @@ public static class CommandResultExtensions
     /// <param name="task"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    public static async Task<ChangeResult> Then(this Task<CreateResult> task, Func<Guid, Task<ChangeResult>> func)
+    public static async Task<Result> Then<TResult>(this Task<Result<TResult>> task, Func<TResult, Task<Result>> func)
     {
         var createResult = await task;
         return await createResult
             .Match(
                 func,
-                domainError => Task.FromResult(ChangeResult.DomainFail(domainError)),
-                exception => Task.FromResult(ChangeResult.PanicFail(exception)));
+                domainError => Task.FromResult(Result.DomainFail(domainError)),
+                exception => Task.FromResult(Result.PanicFail(exception)));
     }
 
     /// <summary>
@@ -54,11 +54,11 @@ public static class CommandResultExtensions
     /// <param name="onDomainError"></param>
     /// <param name="onPanicError"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task Match(this Task<ChangeResult> task, Action onSuccess, Action<DomainError> onDomainError, Action<Exception> onPanicError)
+    public static async Task Match(this Task<Result> task, Action onSuccess, Action<DomainError> onDomainError, Action<Exception> onPanicError)
     {
-        if (onSuccess == null) throw new ArgumentNullException(nameof(onSuccess));
-        if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
-        if (onPanicError == null) throw new ArgumentNullException(nameof(onPanicError));
+        ArgumentNullException.ThrowIfNull(onSuccess);
+        ArgumentNullException.ThrowIfNull(onDomainError);
+        ArgumentNullException.ThrowIfNull(onPanicError);
 
         (await task).Match(onSuccess, onDomainError, onPanicError);
     }
@@ -71,11 +71,11 @@ public static class CommandResultExtensions
     /// <param name="onDomainError">The function to evaluate on domain error.</param>
     /// <param name="onPanicError">The function to evaluate on panic error.</param>
     /// <returns>The result of the evaluated function.</returns>
-    public static async Task<TResult> Match<TResult>(this Task<ChangeResult> task, Func<TResult> onSuccess, Func<DomainError, TResult> onDomainError, Func<Exception, TResult> onPanicError)
+    public static async Task<TResult> Match<TResult>(this Task<Result> task, Func<TResult> onSuccess, Func<DomainError, TResult> onDomainError, Func<Exception, TResult> onPanicError)
     {
-        if (onSuccess == null) throw new ArgumentNullException(nameof(onSuccess));
-        if (onDomainError == null) throw new ArgumentNullException(nameof(onDomainError));
-        if (onPanicError == null) throw new ArgumentNullException(nameof(onPanicError));
+        ArgumentNullException.ThrowIfNull(onSuccess);
+        ArgumentNullException.ThrowIfNull(onDomainError);
+        ArgumentNullException.ThrowIfNull(onPanicError);
 
         return (await task).Match(onSuccess, onDomainError, onPanicError);
     }
