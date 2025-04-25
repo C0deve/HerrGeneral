@@ -32,7 +32,7 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
     }
 
     private static CommandPipeline.HandlerDelegate<TCommand, TReturn> Start<TReturn>(ICommandHandler<TCommand, TReturn> commandHandler) =>
-        (_, command, token) => commandHandler.Handle(command, token);
+        (_, command, token) => commandHandler.Handle(command);
 
     private static ICommandHandler<TCommand, T> GetHandler<T>(IServiceProvider serviceProvider) =>
         serviceProvider.GetService<ICommandHandler<TCommand, T>>() ?? 

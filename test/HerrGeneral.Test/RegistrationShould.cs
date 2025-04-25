@@ -18,7 +18,7 @@ public class RegistrationShould(ITestOutputHelper output)
 
     private class PingHandler(Dependency dependency) : CommandHandler<Ping>
     {
-        protected override IEnumerable<object> Handle(Ping command)
+        protected override IEnumerable<object> InnerHandle(Ping command)
         {
             dependency.Called = true;
             return [];

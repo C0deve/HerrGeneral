@@ -27,5 +27,5 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
         Handle(operationId, (TEvent)@event, serviceProvider, cancellationToken);
 
     private static EventHandlerPipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> eventHandler) =>
-        (_, @event, token) => eventHandler.Handle(@event, token);
+        (_, @event, token) => eventHandler.Handle(@event);
 }

@@ -30,9 +30,8 @@ public abstract class CreateHandler<TAggregate, TCommand> : ICommandHandler<TCom
     /// 
     /// </summary>
     /// <param name="command"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public (IEnumerable<object> Events, Guid Result) Handle(TCommand command, CancellationToken cancellationToken)
+    public (IEnumerable<object> Events, Guid Result) Handle(TCommand command)
     {
         var id = Guid.NewGuid();
         var aggregate = Handle(command, id);

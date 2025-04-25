@@ -8,7 +8,7 @@ public record Ping : CommandBase
 
     public class Handler : CommandHandler<Ping>
     {
-        protected override IEnumerable<object> Handle(Ping command) => 
+        protected override IEnumerable<object> InnerHandle(Ping command) => 
             [new Pong($"{command.Message} received", command.Id, Guid.NewGuid())];
     }
 }

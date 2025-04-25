@@ -6,7 +6,7 @@ public record PingWithPanicException
 {
     public class Handler : CommandHandler<PingWithPanicException>
     {
-        protected override IEnumerable<object> Handle(PingWithPanicException command) 
+        protected override IEnumerable<object> InnerHandle(PingWithPanicException command) 
             => throw new SomePanicException();
     }
 }

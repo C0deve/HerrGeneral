@@ -57,7 +57,7 @@ public class ScannerShould
     {
         public class Command1Handler : CommandHandler<Command1>
         {
-            protected override IEnumerable<object> Handle(Command1 command) =>
+            protected override IEnumerable<object> InnerHandle(Command1 command) =>
                 [];
         }
     }
@@ -66,7 +66,7 @@ public class ScannerShould
 
     private abstract class Command2HandlerBase : CommandHandler<Command2>
     {
-        protected override IEnumerable<object> Handle(Command2 command) =>
+        protected override IEnumerable<object> InnerHandle(Command2 command) =>
             [];
     }
 
@@ -81,14 +81,14 @@ public class ScannerShould
 
     private class MyEventHandler : IEventHandler<MyEvent>
     {
-        public void Handle(MyEvent notification, CancellationToken cancellationToken)
+        public void Handle(MyEvent notification)
         {
         }
     }
 
     private abstract class MyEventHandlerAbstract : IEventHandler<MyEvent>
     {
-        public void Handle(MyEvent notification, CancellationToken cancellationToken)
+        public void Handle(MyEvent notification)
         {
         }
     }

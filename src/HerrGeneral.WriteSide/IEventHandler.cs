@@ -10,6 +10,5 @@ public interface IEventHandler<in TEvent>
     /// Handle a notification
     /// </summary>
     /// <param name="notification">The notification</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    void Handle(TEvent notification, CancellationToken cancellationToken);
+    void Handle(TEvent notification);
 }

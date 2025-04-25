@@ -30,12 +30,11 @@ public abstract class ChangeHandler<TAggregate, TCommand> : ICommandHandler<TCom
 
 
     /// <summary>
-    ///
+    /// 
     /// </summary>
     /// <param name="command"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public (IEnumerable<object> Events, Unit Result) Handle(TCommand command, CancellationToken cancellationToken)
+    public (IEnumerable<object> Events, Unit Result) Handle(TCommand command)
     {
         var aggregate = GetAggregate(command);
         aggregate = Handle(aggregate, command);

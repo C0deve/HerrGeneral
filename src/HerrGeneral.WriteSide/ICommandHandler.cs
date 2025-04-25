@@ -11,7 +11,6 @@ public interface ICommandHandler<in TCommand, TResult>
     /// Handle the command
     /// </summary>
     /// <param name="command"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    (IEnumerable<object> Events, TResult Result) Handle(TCommand command, CancellationToken cancellationToken);
+    (IEnumerable<object> Events, TResult Result) Handle(TCommand command);
 }
