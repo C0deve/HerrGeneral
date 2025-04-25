@@ -1,3 +1,4 @@
+using HerrGeneral.Core.Error;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,14 +16,16 @@ public static class ServiceExtension
     /// Add required services 
     /// </summary>
     /// <param name="serviceCollection"></param>
-    /// <param name="scannerDelegate"></param>
+    /// <param name="configurationDelegate"></param>
     /// <returns></returns>
     public static IServiceCollection UseHerrGeneral(
         this IServiceCollection serviceCollection,
-        Func<Scanner, Scanner> scannerDelegate
+        Func<Configuration, Configuration> configurationDelegate
     )
     {
-        var scanner = scannerDelegate(new Scanner()).Scan();
+        var configuration = configurationDelegate(new Configuration());
+        var scanner = new Scanner(configuration);
+        scanner.Scan();
 
         foreach (var commandHandler in scanner.CommandHandlerWithReturnTypes)
             serviceCollection.RegisterOpenType(commandHandler, Scanner.CommandHandlerInterfaceReturnType, ServiceLifetime.Transient);
@@ -35,6 +38,7 @@ public static class ServiceExtension
         serviceCollection.AddSingleton<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
         serviceCollection.AddSingleton<WriteSideEventDispatcher>();
         serviceCollection.AddSingleton<Mediator>();
+        serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
 
         return serviceCollection;
     }

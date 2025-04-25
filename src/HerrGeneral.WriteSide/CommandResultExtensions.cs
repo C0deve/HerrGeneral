@@ -54,7 +54,7 @@ public static class CommandResultExtensions
     /// <param name="onDomainError"></param>
     /// <param name="onPanicError"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task Match(this Task<Result> task, Action onSuccess, Action<DomainError> onDomainError, Action<Exception> onPanicError)
+    public static async Task Match(this Task<Result> task, Action onSuccess, Action<object> onDomainError, Action<Exception> onPanicError)
     {
         ArgumentNullException.ThrowIfNull(onSuccess);
         ArgumentNullException.ThrowIfNull(onDomainError);
@@ -71,7 +71,7 @@ public static class CommandResultExtensions
     /// <param name="onDomainError">The function to evaluate on domain error.</param>
     /// <param name="onPanicError">The function to evaluate on panic error.</param>
     /// <returns>The result of the evaluated function.</returns>
-    public static async Task<TResult> Match<TResult>(this Task<Result> task, Func<TResult> onSuccess, Func<DomainError, TResult> onDomainError, Func<Exception, TResult> onPanicError)
+    public static async Task<TResult> Match<TResult>(this Task<Result> task, Func<TResult> onSuccess, Func<object, TResult> onDomainError, Func<Exception, TResult> onPanicError)
     {
         ArgumentNullException.ThrowIfNull(onSuccess);
         ArgumentNullException.ThrowIfNull(onDomainError);

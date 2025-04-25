@@ -20,10 +20,11 @@ public class SendWithErrorShould
             cfg.ForSingletonOf<Dependency>().Use(new Dependency());
             cfg.ForSingletonOf<ReadModel>().Use(new ReadModel());
 
-            cfg.UseHerrGeneral(scanner =>
-                scanner
-                    .AddWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
-                    .AddReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
+            cfg.UseHerrGeneral(x =>
+                x
+                    .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
+                    .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
+                    .UseDomainException<MyDomainException>());
         });
     }
 

@@ -20,9 +20,11 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
         var readSideEventDispatcher = serviceProvider.GetRequiredService<ReadSideEventDispatcher>();
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
         var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
+        var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
         
         return
             Start(commandHandler)
+                .WithDomainExceptionMapping(domainExceptionMapper)
                 .WithWriteSideDispatching(writeSideEventDispatcher)
                 .WithReadSideDispatching(readSideEventDispatcher)
                 .WithUnitOfWork(unitOfWork)

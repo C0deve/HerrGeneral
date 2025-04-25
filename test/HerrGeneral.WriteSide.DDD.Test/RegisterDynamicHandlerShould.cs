@@ -21,7 +21,7 @@ public class RegisterDynamicHandlersShould
             cfg.For<IAggregateFactory<Person>>().Use<DefaultAggregateFactory<Person>>();
             cfg
                 .UseHerrGeneral(scanner =>
-                    scanner.AddWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!))
+                    scanner.UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!))
                 .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly);
         });
     }

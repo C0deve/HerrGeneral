@@ -13,6 +13,22 @@ internal static class CommandPipeline
 {
     public delegate (IEnumerable<object> Events, TResult Result) HandlerDelegate<in TCommand, TResult>(UnitOfWorkId operationId, TCommand command, CancellationToken cancellationToken);
 
+    public static HandlerDelegate<TCommand, TResult> WithDomainExceptionMapping<TCommand, TResult>(
+        this HandlerDelegate<TCommand, TResult> next, DomainExceptionMapper mapper) =>
+        (operationId, command, cancellationToken) =>
+        {
+            try
+            {
+                return next(operationId, command, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                throw mapper.Map(e,
+                    exception => new DomainException(exception),
+                    exception => exception);
+            }
+        };
+
     public static HandlerDelegate<TCommand, TResult> WithLogger<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandLogger commandLogger)
     {
@@ -42,6 +58,7 @@ internal static class CommandPipeline
                 }
                 catch (EventHandlerDomainException)
                 {
+                    // already logged
                     throw;
                 }
                 catch (DomainException e)
@@ -51,6 +68,7 @@ internal static class CommandPipeline
                 }
                 catch (EventHandlerException)
                 {
+                    // already logged
                     throw;
                 }
                 catch (Exception e)
@@ -80,6 +98,7 @@ internal static class CommandPipeline
             }
             catch (EventHandlerDomainException)
             {
+                // already logged
                 throw;
             }
             catch (DomainException e)
@@ -89,6 +108,7 @@ internal static class CommandPipeline
             }
             catch (EventHandlerException)
             {
+                // already logged
                 throw;
             }
             catch (Exception e)

@@ -20,11 +20,11 @@ internal class CommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TComm
                 }
                 catch (EventHandlerDomainException domainException)
                 {
-                    return Result.DomainFail(domainException.DomainError);
+                    return Result.DomainFail(domainException.InnerException!);
                 }
                 catch (DomainException domainException)
                 {
-                    return Result.DomainFail(domainException.DomainError);
+                    return Result.DomainFail(domainException.InnerException!);
                 }
                 catch (EventHandlerException e)
                 {
@@ -54,11 +54,11 @@ internal class CommandHandlerWrapper<TCommand, TResult> : CommandHandlerWrapperB
                 }
                 catch (EventHandlerDomainException domainException)
                 {
-                    return Result<TResult>.DomainFail(domainException.DomainError);
+                    return Result<TResult>.DomainFail(domainException.InnerException!);
                 }
                 catch (DomainException domainException)
                 {
-                    return Result<TResult>.DomainFail(domainException.DomainError);
+                    return Result<TResult>.DomainFail(domainException.InnerException!);
                 }
                 catch (EventHandlerException e)
                 {

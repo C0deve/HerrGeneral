@@ -16,8 +16,8 @@ public class ChangeAggregateShould
         {
             cfg.AddHerrGeneralTestLogger(output);
             cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
-            cfg.UseHerrGeneral(scanner =>
-                scanner.AddWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!));
+            cfg.UseHerrGeneral(configuration =>
+                configuration.UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!));
         });
     }
     [Fact]

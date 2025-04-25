@@ -1,6 +1,4 @@
-﻿using HerrGeneral.WriteSide;
-
-namespace HerrGeneral.Core.Error;
+﻿namespace HerrGeneral.WriteSide.DDD.Exception;
 
 internal static class Extension
 {
@@ -9,5 +7,5 @@ internal static class Extension
     /// </summary>
     /// <param name="domainError"></param>
     /// <returns></returns>
-    internal static DomainException ToException(this DomainError domainError) => new(domainError);
+    internal static DomainException ToDomainException(this DomainError domainError) => new(domainError);
 }

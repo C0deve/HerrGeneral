@@ -10,30 +10,34 @@ public class ScannerShould
 {
     [Fact]
     public void Get_all_command_handlers() =>
-        new Core.Registration.Scanner()
-            .AddWriteSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!)
+        new Core.Registration.Scanner(
+                new Configuration()
+                    .UseWriteSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!))
             .Scan()
             .CommandHandlerWithReturnTypes.ShouldBe([typeof(Command2Handler), typeof(Command1.Command1Handler)]);
 
     [Fact]
     public void Get_all_command_handlers_without_namespace_filter() =>
-        new Core.Registration.Scanner()
-            .AddWriteSideAssembly(typeof(Command1).Assembly)
+        new Core.Registration.Scanner(
+                new Configuration()
+                    .UseWriteSideAssembly(typeof(Command1).Assembly))
             .Scan()
             .CommandHandlerWithReturnTypes
             .ShouldNotBeEmpty();
-
+    
     [Fact]
     public void Get_all_event_handlers() =>
-        new Core.Registration.Scanner()
-            .AddWriteSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!)
+        new Core.Registration.Scanner(
+                new Configuration()
+                    .UseWriteSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!))
             .Scan()
             .EventHandlerTypes.ShouldBe([typeof(MyEventHandler), typeof(MyEventHandlerImpl)]);
 
     [Fact]
     public void Get_all_read_event_handlers() =>
-        new Core.Registration.Scanner()
-            .AddReadSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!)
+        new Core.Registration.Scanner(
+                new Configuration()
+                    .UseReadSideAssembly(typeof(Command1).Assembly, typeof(Command1).Namespace!))
             .Scan()
             .ReadSideEventHandlerTypes.ShouldBe([typeof(MyReadSideEventHandlerImpl)]);
 

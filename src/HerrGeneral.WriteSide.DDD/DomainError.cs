@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral.WriteSide;
+﻿namespace HerrGeneral.WriteSide.DDD;
 
 /// <summary>
 /// Error coming from the domain 

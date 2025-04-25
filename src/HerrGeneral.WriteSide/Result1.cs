@@ -15,7 +15,7 @@ public record Result<TResult>
     /// <summary>
     /// A domain exception
     /// </summary>
-    internal readonly DomainError? DomainError;
+    internal readonly object? DomainError;
    
     internal bool IsPanicError => PanicException != null;
 
@@ -39,7 +39,7 @@ public record Result<TResult>
     /// Ctor for domain exception
     /// </summary>
     /// <param name="error"></param>
-    protected Result(DomainError error) => DomainError = error;
+    protected Result(object error) => DomainError = error;
 
     /// <summary>
     /// Ctor for panic exception
@@ -57,7 +57,7 @@ public record Result<TResult>
     /// </summary>
     /// <param name="error"></param>
     /// <returns></returns>
-    public static Result<TResult> DomainFail(DomainError error) => new(error);
+    public static Result<TResult> DomainFail(object error) => new(error);
 
     /// <summary>
     /// Factory for panic exception
@@ -73,7 +73,7 @@ public record Result<TResult>
     /// <param name="onDomainError">The function to evaluate on domain error.</param>
     /// <param name="onPanicError">The function to evaluate on panic error.</param>
     /// <returns>The result of the evaluated function.</returns>
-    public TResultOut Match<TResultOut>(Func<TResult, TResultOut> onSuccess, Func<DomainError, TResultOut> onDomainError, Func<Exception, TResultOut> onPanicError)
+    public TResultOut Match<TResultOut>(Func<TResult, TResultOut> onSuccess, Func<object, TResultOut> onDomainError, Func<Exception, TResultOut> onPanicError)
     {
         ArgumentNullException.ThrowIfNull(onSuccess);
         ArgumentNullException.ThrowIfNull(onDomainError);
@@ -94,7 +94,7 @@ public record Result<TResult>
     /// <param name="onSuccess">The action to evaluate if the value is present.</param>
     /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
     /// <param name="onPanicError"></param>
-    public void Match(Action<TResult> onSuccess, Action<DomainError> onDomainError, Action<Exception> onPanicError)
+    public void Match(Action<TResult> onSuccess, Action<object> onDomainError, Action<Exception> onPanicError)
     {
         ArgumentNullException.ThrowIfNull(onSuccess);
         ArgumentNullException.ThrowIfNull(onDomainError);
@@ -125,7 +125,7 @@ public record Result<TResult>
     /// Evaluates a specified action on domain error.
     /// </summary>
     /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
-    public void MatchDomainError(Action<DomainError> onDomainError)
+    public void MatchDomainError(Action<object> onDomainError)
     {
         ArgumentNullException.ThrowIfNull(onDomainError);
 
@@ -159,7 +159,7 @@ public record Result<TResult>
     public override string ToString() =>
         Match(
             id => $"Result<{id}>",
-            error => error.Message,
+            error => error.ToString(),
             exception => exception.Message
-        );
+        ) ?? string.Empty;
 }

@@ -22,7 +22,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .AddWriteSideAssembly(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!));
+                    .UseWriteSideAssembly(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!));
         });
 
         
@@ -41,8 +41,8 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .AddWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
-                    .AddReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
+                    .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
+                    .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
         });
     
     [Fact]

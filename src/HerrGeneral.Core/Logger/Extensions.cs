@@ -24,8 +24,8 @@ internal static class Extensions
     public static void OnException(this StringBuilder logger, DomainException e, int indentCount = 0)
     {
         var indent = BuildIndent(indentCount);
-        logger.AppendLine($"{indent}!! {e.DomainError.GetType()} (DomainException)")
-            .AppendLine($"{indent}-- Message : {e.DomainError.Message}");
+        logger.AppendLine($"{indent}!! {e.InnerException?.GetType()} (DomainException)")
+            .AppendLine($"{indent}-- Message : {e.InnerException?.Message}");
     }
 
     public static void OnException(this StringBuilder logger, Exception e, int indentCount = 0)

@@ -24,8 +24,8 @@ public class SendShould
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .AddWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
-                    .AddReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
+                    .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
+                    .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
         });
     }
 

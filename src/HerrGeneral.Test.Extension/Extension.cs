@@ -43,7 +43,7 @@ public static class Extension
             .GetRequiredService<Mediator>()
             .Send<TResult>(request))
         .Match(id => id,
-            domainError => throw new XunitException($"Command have a domain error of type<{domainError.GetType()}>. {domainError.Message}"),
+            domainError => throw new XunitException($"Command have a domain error of type<{domainError.GetType()}>. {domainError}"),
             exception => throw new XunitException($"Command have a panic exception of type<{exception.GetType()}>. {exception.Message}", exception));
 
     /// <summary>
@@ -69,7 +69,7 @@ public static class Extension
     /// <param name="task"></param>
     /// <typeparam name="TDomainError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<Result> task) where TDomainError : DomainError
+    public static async Task ShouldHaveDomainErrorOfType<TDomainError>(this Task<Result> task)
     {
         ArgumentNullException.ThrowIfNull(task);
         (await task)
@@ -86,7 +86,7 @@ public static class Extension
     /// <typeparam name="TDomainError"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldHaveDomainErrorOfType<TResult,TDomainError>(this Task<Result<TResult>> task) where TDomainError : DomainError
+    public static async Task ShouldHaveDomainErrorOfType<TResult,TDomainError>(this Task<Result<TResult>> task)
     {
         ArgumentNullException.ThrowIfNull(task);
         (await task)

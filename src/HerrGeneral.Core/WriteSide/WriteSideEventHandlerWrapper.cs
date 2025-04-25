@@ -1,3 +1,4 @@
+using HerrGeneral.Core.Error;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,13 +11,14 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
     {
         var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
         var stringBuilderLogger = serviceProvider.GetRequiredService<CommandLogger>().GetStringBuilder(operationId);
+        var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
 
         foreach (var handler in serviceProvider.GetServices<IEventHandler<TEvent>>())
         {
             Start(handler)
+                .WithDomainExceptionMapping(domainExceptionMapper)
                 .WithErrorLogger(logger, stringBuilderLogger)
-                .WithErrorMapping()
-                .WithHandlerLogging(logger, handler, stringBuilderLogger)
+                .WithLogging(logger, handler, stringBuilderLogger)
                 (operationId, @event, cancellationToken);
         }
     }
@@ -24,6 +26,6 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
     public void Handle(UnitOfWorkId operationId, object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
         Handle(operationId, (TEvent)@event, serviceProvider, cancellationToken);
 
-    private static WriteSideEventPipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> eventHandler) =>
+    private static EventHandlerPipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> eventHandler) =>
         (_, @event, token) => eventHandler.Handle(@event, token);
 }
