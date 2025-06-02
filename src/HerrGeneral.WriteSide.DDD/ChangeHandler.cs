@@ -30,7 +30,7 @@ public abstract class ChangeHandler<TAggregate, TCommand>
 
 
     /// <summary>
-    /// 
+    /// Handle incoming command and produces events
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>

@@ -16,10 +16,11 @@ var container = new Container(cfg =>
         .AddSimpleConsole());
     cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
     cfg.AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
-    cfg.UseHerrGeneral(scanner =>
-            scanner
+    cfg.UseHerrGeneral(configuration =>
+            configuration
                 .UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!)
-                .UseReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!))
+                .UseReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
+        )
         .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
 });
 Console.WriteLine("Initialization Ok");

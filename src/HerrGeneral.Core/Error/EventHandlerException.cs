@@ -1,6 +1,10 @@
+using HerrGeneral.WriteSide;
+
 namespace HerrGeneral.Core.Error;
 
-internal class EventHandlerException : Exception
-{
-    public EventHandlerException(Exception exception) : base(exception.Message, exception) { }
-}
+/// <summary>
+/// Exception wrapper for a panic exception thrown from an <see cref="IEventHandler{TEvent}"/>
+/// Used for logging purpose
+/// </summary>
+/// <param name="exception"></param>
+internal class EventHandlerException(Exception exception) : Exception(exception.Message, exception);
