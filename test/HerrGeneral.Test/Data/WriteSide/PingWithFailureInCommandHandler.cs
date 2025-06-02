@@ -1,8 +1,6 @@
-using HerrGeneral.WriteSide;
-
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public record PingWithFailureInCommandHandler
+public record PingWithFailureInCommandHandler : CommandBase
 {
     public class Handler : CommandHandler<PingWithFailureInCommandHandler>
     {

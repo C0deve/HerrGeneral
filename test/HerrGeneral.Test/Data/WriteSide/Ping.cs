@@ -1,5 +1,3 @@
-using HerrGeneral.WriteSide;
-
 namespace HerrGeneral.Test.Data.WriteSide;
 
 public record Ping : CommandBase
@@ -8,7 +6,12 @@ public record Ping : CommandBase
 
     public class Handler : CommandHandler<Ping>
     {
-        protected override IEnumerable<object> InnerHandle(Ping command) => 
-            [new Pong($"{command.Message} received", command.Id, Guid.NewGuid())];
+        public static Pong? LastPong { get; private set; }
+
+        protected override IEnumerable<object> InnerHandle(Ping command)
+        {
+            LastPong = new Pong($"{command.Message} received", command.Id, Guid.NewGuid());
+            return [LastPong];
+        }
     }
 }

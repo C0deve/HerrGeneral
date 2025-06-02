@@ -1,4 +1,5 @@
-﻿using HerrGeneral.Core.Registration;
+﻿using HerrGeneral.Core.DDD;
+using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using Xunit.Abstractions;
@@ -17,11 +18,13 @@ public class CreateAggregateShould
             cfg.AddHerrGeneralTestLogger(output);
             cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
             cfg.UseHerrGeneral(configuration =>
-                configuration.UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!));
+                configuration
+                    .UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!)
+                    .MapAllDDDHandlers<Person>());
         });
     }
-    
+
     [Fact]
-    public async Task Create() => 
+    public async Task Create() =>
         await new CreatePerson("John").Send<Guid>(_container);
 }

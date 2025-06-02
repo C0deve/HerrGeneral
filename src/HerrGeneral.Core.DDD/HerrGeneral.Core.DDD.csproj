@@ -29,7 +29,9 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub"/>
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\HerrGeneral.Core\HerrGeneral.Core.csproj" />
       <ProjectReference Include="..\HerrGeneral.WriteSide.DDD\HerrGeneral.WriteSide.DDD.csproj" />
+      <ProjectReference Include="..\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj" />
     </ItemGroup>
 
 </Project>

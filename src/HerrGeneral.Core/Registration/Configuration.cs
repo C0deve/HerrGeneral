@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using HerrGeneral.Core.WriteSide;
 
 namespace HerrGeneral.Core.Registration;
 
@@ -14,18 +15,23 @@ public class Configuration
     /// <summary>
     /// Write side assemblies to scan
     /// </summary>
-    public IEnumerable<ScanParam> WriteSideSearchParams => _writeSideSearchParams.AsEnumerable();
+    internal IEnumerable<ScanParam> WriteSideSearchParams => _writeSideSearchParams.AsEnumerable();
 
     /// <summary>
     /// Read side assemblies to scan
     /// </summary>
-    public IEnumerable<ScanParam> ReadSideSearchParams => _readSideSearchParams.AsEnumerable();
+    internal IEnumerable<ScanParam> ReadSideSearchParams => _readSideSearchParams.AsEnumerable();
 
     /// <summary>
     /// List of domain exception types
     /// </summary>
-    public IReadOnlySet<Type> DomainExceptionTypes => _domainExceptionInterfaces;
+    internal IReadOnlySet<Type> DomainExceptionTypes => _domainExceptionInterfaces;
 
+    /// <summary>
+    /// List of mapping of external handlers
+    /// </summary>
+    internal HandlerMappings HandlerMappings { get; } = new();
+    
     internal Configuration()
     {
     }
@@ -70,6 +76,50 @@ public class Configuration
     internal void ThrowIfNotValid()
     {
         if (_writeSideSearchParams.Count == 0 && _readSideSearchParams.Count == 0)
-            throw new InvalidOperationException($"No assembly. Use {nameof(UseWriteSideAssembly)} or {nameof(UseReadSideAssembly)} to specify on which assemblies to scan");
+            throw new InvalidOperationException($"No assembly to scan. Use {nameof(UseWriteSideAssembly)} or {nameof(UseReadSideAssembly)} to specify on which assemblies to scan");
+    }
+    
+    /// <summary>
+    /// Map an external command handler returning events
+    /// </summary>
+    /// <param name="mapEvents"></param>
+    /// <typeparam name="TCommand"></typeparam>
+    /// <typeparam name="THandler"></typeparam>
+    /// <typeparam name="TReturn"></typeparam>
+    /// <returns></returns>
+    public Configuration MapHandler<TCommand, THandler, TReturn>(Func<TReturn, IEnumerable<object>> mapEvents)
+    {
+        HandlerMappings.AddMapping<TCommand, THandler, TReturn>(mapEvents);
+        return this;
+    }
+
+    /// <summary>
+    /// Map an external command handler returning events and value
+    /// </summary>
+    /// <param name="mapEvents"></param>
+    /// <param name="mapValue"></param>
+    /// <typeparam name="TCommand"></typeparam>
+    /// <typeparam name="THandler"></typeparam>
+    /// <typeparam name="TReturn"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <returns></returns>
+    public Configuration MapHandler<TCommand, THandler, TReturn, TValue>(
+        Func<TReturn, IEnumerable<object>> mapEvents,
+        Func<TReturn, TValue>? mapValue) where TValue : notnull
+    {
+        HandlerMappings.AddMapping<TCommand, THandler, TReturn, TValue>(mapEvents, mapValue);
+        return this;
+    }
+
+    /// <summary>
+    /// Map an external command handler returning <see cref="IEnumerable{T}"/>
+    /// </summary>
+    /// <typeparam name="TCommand"></typeparam>
+    /// <typeparam name="THandler"></typeparam>
+    /// <returns></returns>
+    public Configuration MapHandler<TCommand, THandler>()
+    {
+        HandlerMappings.AddMapping<TCommand, THandler, IEnumerable<object>>(x => x);
+        return this;
     }
 }

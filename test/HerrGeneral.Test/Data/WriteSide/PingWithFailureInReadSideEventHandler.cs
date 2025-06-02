@@ -1,6 +1,4 @@
-﻿using HerrGeneral.WriteSide;
-
-namespace HerrGeneral.Test.Data.WriteSide;
+﻿namespace HerrGeneral.Test.Data.WriteSide;
 
 public record PingWithFailureInReadSideEventHandler : CommandBase
 {

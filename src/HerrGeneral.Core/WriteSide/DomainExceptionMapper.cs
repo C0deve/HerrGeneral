@@ -1,5 +1,11 @@
-﻿namespace HerrGeneral.Core.Error;
+﻿using HerrGeneral.Core.Error;
 
+namespace HerrGeneral.Core.WriteSide;
+
+/// <summary>
+/// Map external exception to internal <see cref="DomainException"/>
+/// </summary>
+/// <param name="mappings"></param>
 internal class DomainExceptionMapper(params Type[] mappings)
 {
     public Exception Map(Exception exception) => 

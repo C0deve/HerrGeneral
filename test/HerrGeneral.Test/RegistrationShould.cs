@@ -15,16 +15,15 @@ public class RegistrationShould(ITestOutputHelper output)
 {
     private record Ping;
 
-
-    private class PingHandler(Dependency dependency) : CommandHandler<Ping>
+    private class PingHandler(Dependency dependency) : ICommandHandler<Ping, Unit>
     {
-        protected override IEnumerable<object> InnerHandle(Ping command)
+        public (IEnumerable<object> Events, Unit Result) Handle(Ping command)
         {
             dependency.Called = true;
-            return [];
+            return ( [], Unit.Default);
         }
     }
-
+    
     private class Dependency
     {
         public bool Called { get; set; }

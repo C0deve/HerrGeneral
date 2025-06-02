@@ -1,12 +1,10 @@
-using HerrGeneral.WriteSide;
-
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public record PingWithPanicException
+public record PingWithPanicException : CommandBase
 {
     public class Handler : CommandHandler<PingWithPanicException>
     {
-        protected override IEnumerable<object> InnerHandle(PingWithPanicException command) 
+        protected override IEnumerable<object> InnerHandle(PingWithPanicException command)
             => throw new SomePanicException();
     }
 }

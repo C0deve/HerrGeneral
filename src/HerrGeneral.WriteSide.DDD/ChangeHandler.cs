@@ -7,7 +7,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class ChangeHandler<TAggregate, TCommand> : ICommandHandler<TCommand, Unit>
+public abstract class ChangeHandler<TAggregate, TCommand>
     where TAggregate : Aggregate<TAggregate>
     where TCommand : Change<TAggregate>
 {
@@ -34,14 +34,13 @@ public abstract class ChangeHandler<TAggregate, TCommand> : ICommandHandler<TCom
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public (IEnumerable<object> Events, Unit Result) Handle(TCommand command)
+    public IEnumerable<object> Handle(TCommand command)
     {
         var aggregate = GetAggregate(command);
         aggregate = Handle(aggregate, command);
         _repository.Save(aggregate, command.Id);
-        var result = (aggregate.NewEvents, Unit.Default);
         aggregate.ClearNewEvents();
-        return result;
+        return aggregate.NewEvents;
     }
 
     private TAggregate GetAggregate(TCommand command) =>

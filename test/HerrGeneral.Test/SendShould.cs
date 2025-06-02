@@ -22,8 +22,10 @@ public class SendShould
             cfg.ForSingletonOf<ReadModel>().Use<ReadModel>();
             cfg.ForSingletonOf<Dependency>().Use<Dependency>();
 
-            cfg.UseHerrGeneral(scanner =>
-                scanner
+            cfg.UseHerrGeneral(configuration =>
+                configuration
+                    .MapHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                    .MapHandler<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(result => result.Events, x => x.Result)
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
         });
@@ -36,7 +38,7 @@ public class SendShould
         .ShouldBe(Result.Success());
 
     private static readonly Guid AggregateId = Guid.NewGuid();
-    
+
     [Fact]
     public async Task Resolve_main_handler_for_creation_command() =>
         (await new CreatePing { AggregateId = AggregateId, Message = "Ping" }

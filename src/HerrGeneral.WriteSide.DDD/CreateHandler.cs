@@ -5,7 +5,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public abstract class CreateHandler<TAggregate, TCommand> : ICommandHandler<TCommand, Guid>
+public abstract class CreateHandler<TAggregate, TCommand>
     where TAggregate : Aggregate<TAggregate>
     where TCommand : Create<TAggregate>
 {

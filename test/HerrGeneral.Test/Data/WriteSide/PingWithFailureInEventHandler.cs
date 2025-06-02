@@ -1,5 +1,3 @@
-using HerrGeneral.WriteSide;
-
 namespace HerrGeneral.Test.Data.WriteSide;
 
 public record PingWithFailureInEventHandler : CommandBase

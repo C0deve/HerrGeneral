@@ -21,10 +21,6 @@
         <Description>Write side implementation for HerrGeneral. Allow to create or update aggregate</Description>
         <PackageTags>.Net;HerrGeneral</PackageTags>
     </PropertyGroup>
-    
-    <ItemGroup>
-        <ProjectReference Include="..\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj"/>
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="MinVer"/>

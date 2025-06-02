@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
+using HerrGeneral.WriteSide;
+using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.WriteSide.DDD;
+namespace HerrGeneral.Core.DDD;
 
-internal class ChangeHandlerDynamic<TAggregate, TCommand> : ChangeHandler<TAggregate, TCommand> 
+internal class ChangeHandlerDynamic<TAggregate, TCommand> : ChangeHandler<TAggregate, TCommand> , ICommandHandler<TCommand, Unit>
     where TAggregate : Aggregate<TAggregate> where TCommand : Change<TAggregate>
 {
     /// <summary>
@@ -15,7 +17,10 @@ internal class ChangeHandlerDynamic<TAggregate, TCommand> : ChangeHandler<TAggre
 
     protected sealed override TAggregate Handle(TAggregate aggregate, TCommand command) => 
         (TAggregate)(typeof(TAggregate).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                         .SingleOrDefault(info => info.Name == "Execute" && info.GetParameters().Any(parameterInfo => parameterInfo.ParameterType == typeof(TCommand)))?
-                         .Invoke(aggregate, new object?[] { command })
+                         .SingleOrDefault(info => info.Name == "Execute" && info.GetParameters().Count(parameterInfo => parameterInfo.ParameterType == typeof(TCommand)) == 1)?
+                         .Invoke(aggregate, [command])
                      ?? throw new MissingMethodException($"{typeof(TAggregate)}.Execute({typeof(TCommand)} command) not found."));
+
+    public new (IEnumerable<object> Events, Unit Result) Handle(TCommand command) => 
+        (base.Handle(command), Unit.Default);
 }

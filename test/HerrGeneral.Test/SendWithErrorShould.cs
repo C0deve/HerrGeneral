@@ -1,6 +1,7 @@
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
+using HerrGeneral.WriteSide;
 using Lamar;
 using Xunit.Abstractions;
 
@@ -21,16 +22,18 @@ public class SendWithErrorShould
             cfg.ForSingletonOf<ReadModel>().Use(new ReadModel());
 
             cfg.UseHerrGeneral(x =>
-                x
-                    .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
-                    .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
-                    .UseDomainException<MyDomainException>());
+                    x
+                        .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
+                        .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
+                        .UseDomainException<MyDomainException>()
+                        .MapHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                );
         });
     }
 
 
     [Fact]
-    public async Task Return_result_failure_on_domain_error_thrown_from_command_handler() => 
+    public async Task Return_result_failure_on_domain_error_thrown_from_command_handler() =>
         await new PingWithFailureInCommandHandler()
             .Send(_container, false)
             .ShouldHaveDomainErrorOfType<PingError>();
@@ -40,14 +43,15 @@ public class SendWithErrorShould
         await new PingWithFailureInEventHandler()
             .Send(_container, false)
             .ShouldHaveDomainErrorOfType<PingError>();
-    
+
     [Fact]
-    public async Task Return_result_failure_on_panic_exception() => 
+    public async Task Return_result_failure_on_panic_exception() =>
         await new PingWithPanicException()
             .Send(_container, false)
             .ShouldHavePanicExceptionOfType<SomePanicException>();
+
     [Fact]
-    public async Task Return_result_failure_on_panic_exception_from_read_side() => 
+    public async Task Return_result_failure_on_panic_exception_from_read_side() =>
         await new PingWithFailureInReadSideEventHandler()
             .Send(_container, false)
             .ShouldHavePanicExceptionOfType<SomePanicException>();

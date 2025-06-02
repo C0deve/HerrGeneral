@@ -1,5 +1,5 @@
-using HerrGeneral.Core.Error;
 using HerrGeneral.Core.ReadSide;
+using HerrGeneral.Core.Registration.Policy;
 using HerrGeneral.Core.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,39 +24,73 @@ public static class ServiceExtension
     )
     {
         var configuration = configurationDelegate(new Configuration());
-        var scanner = new Scanner(configuration);
-        scanner.Scan();
+        RegisterWriteSide(serviceCollection, configuration);
+        RegisterReadSide(serviceCollection, configuration);
 
-        foreach (var commandHandler in scanner.CommandHandlerWithReturnTypes)
-            serviceCollection.RegisterOpenType(commandHandler, Scanner.CommandHandlerInterfaceReturnType, ServiceLifetime.Transient);
-        foreach (var eventHandler in scanner.EventHandlerTypes)
-            serviceCollection.RegisterOpenType(eventHandler, Scanner.WriteSideEventHandlerInterface, ServiceLifetime.Transient);
-        foreach (var eventHandler in scanner.ReadSideEventHandlerTypes)
-            serviceCollection.RegisterOpenType(eventHandler, Scanner.ReadSideEventHandlerInterface, ServiceLifetime.Singleton);
         serviceCollection.AddSingleton<CommandLogger>();
         serviceCollection.AddSingleton<ReadSideEventDispatcher>();
         serviceCollection.AddSingleton<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
         serviceCollection.AddSingleton<WriteSideEventDispatcher>();
         serviceCollection.AddSingleton<Mediator>();
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
+        serviceCollection.AddSingleton<HandlerMappings>(_ => configuration.HandlerMappings);
 
         return serviceCollection;
     }
 
-    private static void RegisterOpenType(this IServiceCollection serviceCollection, Type tHandler, Type openTypeInterface, ServiceLifetime serviceLifetime)
+    private static void RegisterWriteSide(IServiceCollection serviceCollection, Configuration configuration)
     {
+        IRegistrationPolicy[] policies = [
+            new RegisterMappedCommandHandlers(configuration.HandlerMappings),
+            new RegisterICommandHandler(),
+            new RegisterWriteSideEventHandler()
+        ];
+        
+        Register(serviceCollection, policies, configuration.WriteSideSearchParams);
+    }
+
+    private static void RegisterReadSide(IServiceCollection serviceCollection, Configuration configuration)
+    {
+        IRegistrationPolicy[] policies = [
+            new RegisterReadSideEventHandler()
+        ];
+
+        Register(serviceCollection, policies, configuration.ReadSideSearchParams);
+    }
+    
+    private static void Register(IServiceCollection serviceCollection, IRegistrationPolicy[] policies, IEnumerable<ScanParam> scanParams)
+    {
+        var openTypesToScan = policies
+            .SelectMany(policy => policy.GetOpenTypes())
+            .ToHashSet();
+        var externalHandlers = Scanner.Scan(scanParams, openTypesToScan);
+
+        foreach (var policy in policies) 
+            policy.Register(serviceCollection, externalHandlers);
+    }
+
+    internal static void RegisterOpenType(this IServiceCollection serviceCollection, Type tHandler, Type openTypeInterface, ServiceLifetime serviceLifetime)
+    {
+        var interfacesToRegister = tHandler.GetInterfacesHavingGenericOpenType(openTypeInterface);
         if (serviceLifetime == ServiceLifetime.Singleton)
         {
             serviceCollection.AddSingleton(tHandler);
-            serviceCollection.RegisterOpenTypeInternal(tHandler, openTypeInterface, ServiceLifetime.Transient);
+            serviceCollection.RegisterOpenTypeInternal(tHandler, ServiceLifetime.Transient, interfacesToRegister);
         }
         else
-            serviceCollection.RegisterOpenTypeInternal(tHandler, openTypeInterface, serviceLifetime);
+            serviceCollection.RegisterOpenTypeInternal(tHandler, serviceLifetime, interfacesToRegister);
     }
 
-    private static void RegisterOpenTypeInternal(this IServiceCollection serviceCollection, Type tHandler, Type openTypeInterface, ServiceLifetime serviceLifetime)
+    /// <summary>
+    /// Register <see cref="tHandler"/> for all his interfaces/>  
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <param name="tHandler"></param>
+    /// <param name="serviceLifetime"></param>
+    /// <param name="interfaces"></param>
+    private static void RegisterOpenTypeInternal(this IServiceCollection serviceCollection, Type tHandler, ServiceLifetime serviceLifetime, IEnumerable<Type> interfaces)
     {
-        foreach (var @interface in tHandler.GetCloseInterfacesFromOpenInterface(openTypeInterface))
+        foreach (var @interface in interfaces)
             serviceCollection.Add(new ServiceDescriptor(
                 @interface,
                 provider => provider.GetRequiredService(tHandler),
