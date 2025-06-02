@@ -3,6 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
+        <LangVersion>$(LangVersion)</LangVersion>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 

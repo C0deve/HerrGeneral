@@ -8,7 +8,7 @@ namespace HerrGeneral.WriteSide.DDD;
 /// <typeparam name="T"></typeparam>
 public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
 {
-    private readonly List<IDomainEvent<T>> _newEvents = new();
+    private readonly List<IDomainEvent<T>> _newEvents = [];
 
     /// <summary>
     /// Constructor

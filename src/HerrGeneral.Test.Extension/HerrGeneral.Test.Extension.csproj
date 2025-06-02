@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
+        <LangVersion>$(LangVersion)</LangVersion>
     </PropertyGroup>
     
     <PropertyGroup>
