@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
+using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.WriteSide.DDD;
+namespace HerrGeneral.Core.DDD;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 
@@ -25,7 +26,7 @@ public class DefaultAggregateFactory<TAggregate> : IAggregateFactory<TAggregate>
         {
             return (TAggregate)(Activator.CreateInstance(typeof(TAggregate),
                                     BindingFlags.NonPublic |BindingFlags.Public | BindingFlags.Instance, null,
-                                    new object[] { command, aggregateId }, null) ??
+                                    [command, aggregateId], null) ??
                                 throw new InvalidOperationException());
         }
         catch (MissingMethodException e)

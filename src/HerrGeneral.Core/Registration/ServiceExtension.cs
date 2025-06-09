@@ -58,7 +58,7 @@ public static class ServiceExtension
         Register(serviceCollection, policies, configuration.ReadSideSearchParams);
     }
     
-    private static void Register(IServiceCollection serviceCollection, IRegistrationPolicy[] policies, IEnumerable<ScanParam> scanParams)
+    internal static void Register(IServiceCollection serviceCollection, IRegistrationPolicy[] policies, IEnumerable<ScanParam> scanParams)
     {
         var openTypesToScan = policies
             .SelectMany(policy => policy.GetOpenTypes())

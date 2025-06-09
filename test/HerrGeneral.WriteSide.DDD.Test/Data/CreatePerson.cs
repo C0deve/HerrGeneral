@@ -1,11 +1,10 @@
 ﻿namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
-public record CreatePerson(string Name) : Create<Person>
+public record CreatePerson(string Name, string Friend) : Create<Person>
 {
-    public class Handler(CreateHandler<Person, CreatePerson>.CtorParams @params) : 
-        CreateHandler<Person, CreatePerson>(@params)
+    public class Handler : ICreateHandler<Person, CreatePerson>
     {
-        protected override Person Handle(CreatePerson command, Guid aggregateId) => 
-            new(aggregateId, command.Name);
+        public Person Handle(CreatePerson command, Guid aggregateId) => 
+            new(aggregateId, command.Name, command.Friend, command.Id);
     }
 }

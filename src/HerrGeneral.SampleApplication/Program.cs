@@ -18,7 +18,6 @@ var container = new Container(cfg =>
     cfg.AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
     cfg.UseHerrGeneral(configuration =>
             configuration
-                .UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!)
                 .UseReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
         )
         .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);

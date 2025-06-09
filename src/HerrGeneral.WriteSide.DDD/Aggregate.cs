@@ -60,10 +60,9 @@ public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="IdMismatchOnEventEmit{T}"></exception>
-    protected virtual T Emit(IDomainEvent<T> @event)
+    protected T Emit(IDomainEvent<T> @event)
     {
-        if (@event == null)
-            throw new ArgumentNullException(nameof(@event));
+        ArgumentNullException.ThrowIfNull(@event);
 
         if (@event.AggregateId != Id)
             throw new IdMismatchOnEventEmit<T>(this, @event);

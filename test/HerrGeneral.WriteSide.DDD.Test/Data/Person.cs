@@ -1,12 +1,19 @@
 ﻿namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
-public class Person(Guid id, string name) : Aggregate<Person>(id)
+public class Person : Aggregate<Person>
 {
-    public Person(ACreateCommandWithoutHandler command, Guid aggregateId) : this(aggregateId, command.Name)
+    public Person(ACreateCommandWithoutHandler command, Guid aggregateId)
+        : this(aggregateId, command.Name, command.Friend, command.Id)
     {
     }
 
-    public string Name { get; } = name;
+    public Person(Guid id, string name, string friend, Guid commandId) : base(id)
+    {
+        Name = name;
+        Emit(new FriendAdded(friend, commandId, Id));
+    }
+
+    public string Name { get; }
 
     public Person AddFriend(string friendName, Guid sourceCommandId) =>
         Emit(new FriendAdded(friendName, sourceCommandId, Id));

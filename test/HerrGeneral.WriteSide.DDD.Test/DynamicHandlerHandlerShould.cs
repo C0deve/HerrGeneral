@@ -18,8 +18,8 @@ public class DynamicHandlerHandlerShould
             cfg.AddHerrGeneralTestLogger(output);
             cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
             cfg.For<IAggregateFactory<Person>>().Use<DefaultAggregateFactory<Person>>();
-            cfg.UseHerrGeneral(configuration =>
-                    configuration.UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!))
+            cfg
+                .UseHerrGeneral(configuration => configuration)
                 .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly);
         });
     }
@@ -27,31 +27,31 @@ public class DynamicHandlerHandlerShould
     [Fact]
     public async Task HandleAChangeCommandWithoutHandler()
     {
-        var personId = await new ACreateCommandWithoutHandler("John").Send<Guid>(_container);
+        var personId = await new ACreateCommandWithoutHandler("John", "Alfred").Send<Guid>(_container);
         await new AChangeCommandWithoutHandler("Remy", personId).Send(_container);
     }
     
     [Fact]
     public async Task HandleASecondChangeCommandWithoutHandler()
     {
-        var personId = await new ACreateCommandWithoutHandler("John").Send<Guid>(_container);
+        var personId = await new ACreateCommandWithoutHandler("John", "Alfred").Send<Guid>(_container);
         await new ASecondChangeCommandWithoutHandler("Remy", personId).Send(_container);
     }
     
     [Fact]
     public async Task HandleACreateCommandWithoutHandler() => 
-        await new ACreateCommandWithoutHandler("John").Send<Guid>(_container);
+        await new ACreateCommandWithoutHandler("John", "Alfred").Send<Guid>(_container);
     
     [Fact]
     public async Task ThrowIfExecuteMethodNotFound()
     {
-        var personId = await new ACreateCommandWithoutHandler("John").Send<Guid>(_container);
+        var personId = await new ACreateCommandWithoutHandler("John", "Alfred").Send<Guid>(_container);
         await new AThirdChangeCommandWithoutHandler("Remy", personId).Send(_container, false)
             .ShouldHavePanicExceptionOfType<MissingMethodException>();
     }
     
     [Fact]
     public async Task ThrowIfConstructorNotFound() =>
-        await new ASecondCreateCommandWithoutHandler("John").Send<Guid>(_container, false)
+        await new ASecondCreateCommandWithoutHandler().Send<Guid>(_container, false)
             .ShouldHavePanicExceptionOfType<MissingMethodException, Guid>();
 }
