@@ -1,4 +1,3 @@
-using HerrGeneral.Core.Error;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

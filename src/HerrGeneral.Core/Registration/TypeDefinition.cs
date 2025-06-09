@@ -1,5 +1,4 @@
-﻿using HerrGeneral.Core.WriteSide;
-using HerrGeneral.WriteSide;
+﻿using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.Registration;
 
