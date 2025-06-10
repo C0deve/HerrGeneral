@@ -11,7 +11,7 @@ public class CommandHandlerWithMappingShould
     [Fact]
     public void ReturnEvents()
     {
-        var mappers = new HandlerMappings();
+        var mappers = new CommandHandlerMappings();
         mappers.AddMapping<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(x => x.Events);
 
         var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(), mappers);
@@ -24,7 +24,7 @@ public class CommandHandlerWithMappingShould
     [Fact]
     public void ReturnEventsWhenMappingBaseClass()
     {
-        var mappers = new HandlerMappings();
+        var mappers = new CommandHandlerMappings();
         mappers.AddMapping<CommandBase,
             ILocalCommandHandler<CommandBase, Unit>,
             MyResult<Unit>>(x => x.Events);
@@ -39,7 +39,7 @@ public class CommandHandlerWithMappingShould
     [Fact]
     public void ReturnValue()
     {
-        var mappers = new HandlerMappings();
+        var mappers = new CommandHandlerMappings();
         
         mappers.AddMapping<
             CommandBase,

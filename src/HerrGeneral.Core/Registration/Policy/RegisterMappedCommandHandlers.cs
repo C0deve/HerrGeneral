@@ -7,11 +7,11 @@ namespace HerrGeneral.Core.Registration.Policy;
 /// <summary>
 /// Registers all external command handlers present in the mappings
 /// </summary>
-/// <param name="handlerMappings"></param>
-internal class RegisterMappedCommandHandlers(HandlerMappings handlerMappings) : IRegistrationPolicy
+/// <param name="commandHandlerMappings"></param>
+internal class RegisterMappedCommandHandlers(CommandHandlerMappings commandHandlerMappings) : IRegistrationPolicy
 {
     public HashSet<Type> GetOpenTypes() =>
-        handlerMappings
+        commandHandlerMappings
             .All()
             .Select(mapping => mapping.HandlerGenericType)
             .ToHashSet();
@@ -19,7 +19,7 @@ internal class RegisterMappedCommandHandlers(HandlerMappings handlerMappings) : 
     public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlers)
     {
         var scanResults =
-            from mapping in handlerMappings.All()
+            from mapping in commandHandlerMappings.All()
             from externalHandler in externalHandlers[mapping.HandlerGenericType]
             let commandType = externalHandler
                 .GetMethod(mapping.MethodInfo.Name)!

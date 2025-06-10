@@ -43,7 +43,7 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
             cfg.UseHerrGeneral(configuration =>
             {
                 configuration
-                    .MapHandler<Ping, ICommandHandler<Ping>>()
+                    .MapCommandHandler<Ping, ICommandHandler<Ping>>()
                     .UseWriteSideAssembly(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!);
                 
                 return configuration;

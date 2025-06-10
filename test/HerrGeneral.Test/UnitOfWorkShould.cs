@@ -23,7 +23,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
             cfg.UseHerrGeneral(scanner =>
                 scanner
                     .UseWriteSideAssembly(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!)
-                    .MapHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
                 );
         });
 
@@ -45,7 +45,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
                 scanner
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
-                    .MapHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events));
+                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events));
         });
     
     [Fact]

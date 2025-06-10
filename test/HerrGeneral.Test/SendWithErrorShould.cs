@@ -26,7 +26,7 @@ public class SendWithErrorShould
                         .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                         .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
                         .UseDomainException<MyDomainException>()
-                        .MapHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                        .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
                 );
         });
     }

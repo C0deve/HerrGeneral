@@ -30,7 +30,7 @@ public class Configuration
     /// <summary>
     /// List of mapping of external handlers
     /// </summary>
-    internal HandlerMappings HandlerMappings { get; } = new();
+    internal CommandHandlerMappings CommandHandlerMappings { get; } = new();
     
     internal Configuration()
     {
@@ -87,9 +87,9 @@ public class Configuration
     /// <typeparam name="THandler"></typeparam>
     /// <typeparam name="TReturn"></typeparam>
     /// <returns></returns>
-    public Configuration MapHandler<TCommand, THandler, TReturn>(Func<TReturn, IEnumerable<object>> mapEvents)
+    public Configuration MapCommandHandler<TCommand, THandler, TReturn>(Func<TReturn, IEnumerable<object>> mapEvents)
     {
-        HandlerMappings.AddMapping<TCommand, THandler, TReturn>(mapEvents);
+        CommandHandlerMappings.AddMapping<TCommand, THandler, TReturn>(mapEvents);
         return this;
     }
 
@@ -103,11 +103,11 @@ public class Configuration
     /// <typeparam name="TReturn"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
-    public Configuration MapHandler<TCommand, THandler, TReturn, TValue>(
+    public Configuration MapCommandHandler<TCommand, THandler, TReturn, TValue>(
         Func<TReturn, IEnumerable<object>> mapEvents,
         Func<TReturn, TValue>? mapValue) where TValue : notnull
     {
-        HandlerMappings.AddMapping<TCommand, THandler, TReturn, TValue>(mapEvents, mapValue);
+        CommandHandlerMappings.AddMapping<TCommand, THandler, TReturn, TValue>(mapEvents, mapValue);
         return this;
     }
 
@@ -117,9 +117,9 @@ public class Configuration
     /// <typeparam name="TCommand"></typeparam>
     /// <typeparam name="THandler"></typeparam>
     /// <returns></returns>
-    public Configuration MapHandler<TCommand, THandler>()
+    public Configuration MapCommandHandler<TCommand, THandler>()
     {
-        HandlerMappings.AddMapping<TCommand, THandler, IEnumerable<object>>(x => x);
+        CommandHandlerMappings.AddMapping<TCommand, THandler, IEnumerable<object>>(x => x);
         return this;
     }
 }

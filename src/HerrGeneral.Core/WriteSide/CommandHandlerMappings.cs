@@ -5,14 +5,14 @@ using HerrGeneral.WriteSide;
 namespace HerrGeneral.Core.WriteSide;
 
 /// <summary>
-/// Register mapping between client handler and internal <see cref="ICommandHandler{TCommand,TResult}"/>*
+/// Register mapping between client command handler and internal <see cref="ICommandHandler{TCommand,TResult}"/>*
 /// Used by internal CommandHandler to return ((IEnumerable{object Events, TResult Result)}) from a client handler
 /// </summary>
-internal class HandlerMappings
+internal class CommandHandlerMappings
 {
-    private readonly Dictionary<(Type TCommand, Type TResult), HandlerMapping> _handlerMappers = new();
+    private readonly Dictionary<(Type TCommand, Type TResult), CommandHandlerMapping> _handlerMappers = new();
 
-    public HandlerMappings AddMapping<TCommand, THandler, THandlerReturn, TValue>(
+    public CommandHandlerMappings AddMapping<TCommand, THandler, THandlerReturn, TValue>(
         Func<THandlerReturn, IEnumerable<object>> mapEvents,
         Func<THandlerReturn, TValue>? mapValue) where TValue : notnull
     {
@@ -35,7 +35,7 @@ internal class HandlerMappings
         
         _handlerMappers.Add(
             (typeof(TCommand), typeof(TValue)),
-            new HandlerMapping(
+            new CommandHandlerMapping(
                 methodInfo,
                 handlerType.GetGenericTypeDefinition(),
                 typeof(TValue),
@@ -47,7 +47,7 @@ internal class HandlerMappings
         return this;
     }
 
-    public HandlerMappings AddMapping<TCommand, THandler, THandlerReturn>(
+    public CommandHandlerMappings AddMapping<TCommand, THandler, THandlerReturn>(
         Func<THandlerReturn, IEnumerable<object>> mapEvents) =>
         AddMapping<TCommand, THandler, THandlerReturn, Unit>(mapEvents, _ => Unit.Default);
    
@@ -57,7 +57,7 @@ internal class HandlerMappings
     /// <param name="command"></param>
     /// <param name="returnType"></param>
     /// <returns></returns>
-    public HandlerMapping GetFromCommand(object command, Type? returnType = null)
+    public CommandHandlerMapping GetFromCommand(object command, Type? returnType = null)
     {
         returnType ??= typeof(Unit);
         foreach (var key in _handlerMappers.Keys.Reverse())
@@ -69,5 +69,5 @@ internal class HandlerMappings
         throw new MissingCommandHandlerMapperException(command.GetType(), returnType);
     }
     
-    public IEnumerable<HandlerMapping> All() => _handlerMappers.Values;
+    public IEnumerable<CommandHandlerMapping> All() => _handlerMappers.Values;
 }

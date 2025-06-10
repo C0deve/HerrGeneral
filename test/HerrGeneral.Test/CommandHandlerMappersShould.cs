@@ -6,13 +6,13 @@ using Unit = HerrGeneral.WriteSide.Unit;
 // ReSharper disable once CheckNamespace
 namespace HerrGeneral.HandlerMappers.Test;
 
-public class HandlerMappersShould
+public class CommandHandlerMappersShould
 {
     [Fact]
     public void ThrowExceptionWhenNoHandlerRegistered() =>
         Should.Throw<MissingCommandHandlerMapperException>(() =>
         {
-            var sut = new Core.WriteSide.HandlerMappings();
+            var sut = new Core.WriteSide.CommandHandlerMappings();
             sut.GetFromCommand(new Ping());
         });
     
@@ -20,14 +20,14 @@ public class HandlerMappersShould
     public void ThrowExceptionWhenHandlerInterfaceIsNotGeneric() =>
         Should.Throw<HandlerTypeMustBeGenericMappingDefinitionException>(() =>
         {
-            var sut = new Core.WriteSide.HandlerMappings();
+            var sut = new Core.WriteSide.CommandHandlerMappings();
             sut.AddMapping<object, object, bool>(o => [o]);
         });
 
     [Fact]
     public void AddMultipleMappings()
     {
-        var sut = new Core.WriteSide.HandlerMappings();
+        var sut = new Core.WriteSide.CommandHandlerMappings();
         sut.AddMapping<CommandBase,
             ILocalCommandHandler<CommandBase>,
             MyResult<Unit>>(x => x.Events);
@@ -43,7 +43,7 @@ public class HandlerMappersShould
     [Fact]
     public void ReturnMapperFromCommandAndResultType()
     {
-        var sut = new Core.WriteSide.HandlerMappings();
+        var sut = new Core.WriteSide.CommandHandlerMappings();
         sut.AddMapping<CommandBase,
             ILocalCommandHandler<CommandBase, Guid>,
             MyResult<Guid>,

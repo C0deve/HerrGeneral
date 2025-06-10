@@ -33,7 +33,7 @@ public static class ServiceExtension
         serviceCollection.AddSingleton<WriteSideEventDispatcher>();
         serviceCollection.AddSingleton<Mediator>();
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
-        serviceCollection.AddSingleton<HandlerMappings>(_ => configuration.HandlerMappings);
+        serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);
 
         return serviceCollection;
     }
@@ -41,7 +41,7 @@ public static class ServiceExtension
     private static void RegisterWriteSide(IServiceCollection serviceCollection, Configuration configuration)
     {
         IRegistrationPolicy[] policies = [
-            new RegisterMappedCommandHandlers(configuration.HandlerMappings),
+            new RegisterMappedCommandHandlers(configuration.CommandHandlerMappings),
             new RegisterICommandHandler(),
             new RegisterWriteSideEventHandler()
         ];

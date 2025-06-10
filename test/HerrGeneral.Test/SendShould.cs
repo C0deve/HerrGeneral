@@ -24,8 +24,8 @@ public class SendShould
 
             cfg.UseHerrGeneral(configuration =>
                 configuration
-                    .MapHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .MapHandler<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(result => result.Events, x => x.Result)
+                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(result => result.Events, x => x.Result)
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
         });

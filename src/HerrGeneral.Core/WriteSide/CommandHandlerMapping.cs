@@ -2,7 +2,7 @@
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal record HandlerMapping(
+internal record CommandHandlerMapping(
     MethodInfo MethodInfo,
     Type HandlerGenericType,
     Type ReturnValueType,

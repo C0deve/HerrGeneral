@@ -12,7 +12,7 @@ namespace HerrGeneral.Core.WriteSide;
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
 /// <typeparam name="TResult"></typeparam>
-internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler handler, HandlerMappings mappingProvider)
+internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler handler, CommandHandlerMappings mappingProvider)
     : ICommandHandler<TCommand, TResult>
     where TCommand : notnull
     where THandler : notnull
