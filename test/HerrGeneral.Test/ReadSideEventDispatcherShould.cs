@@ -55,7 +55,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
 
             public PongHandler(ReadModel readModel) => _readModel = readModel;
 
-            public void Handle(Pong notification, CancellationToken cancellationToken) => 
+            public void Handle(Pong notification) => 
                 _readModel.Message = notification.Message;
         }
     }

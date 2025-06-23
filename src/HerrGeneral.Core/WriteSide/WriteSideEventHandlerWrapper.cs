@@ -6,7 +6,7 @@ namespace HerrGeneral.Core.WriteSide;
 
 internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
 {
-    private static void Handle(UnitOfWorkId operationId, TEvent @event, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    private static void Handle(UnitOfWorkId operationId, TEvent @event, IServiceProvider serviceProvider)
     {
         var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
         var stringBuilderLogger = serviceProvider.GetRequiredService<CommandLogger>().GetStringBuilder(operationId);
@@ -18,13 +18,13 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
                 .WithDomainExceptionMapping(domainExceptionMapper)
                 .WithErrorLogger(logger, stringBuilderLogger)
                 .WithLogging(logger, handler, stringBuilderLogger)
-                (operationId, @event, cancellationToken);
+                (operationId, @event);
         }
     }
 
-    public void Handle(UnitOfWorkId operationId, object @event, IServiceProvider serviceProvider, CancellationToken cancellationToken) =>
-        Handle(operationId, (TEvent)@event, serviceProvider, cancellationToken);
+    public void Handle(UnitOfWorkId operationId, object @event, IServiceProvider serviceProvider) =>
+        Handle(operationId, (TEvent)@event, serviceProvider);
 
     private static EventHandlerPipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> eventHandler) =>
-        (_, @event, token) => eventHandler.Handle(@event);
+        (_, @event) => eventHandler.Handle(@event);
 }

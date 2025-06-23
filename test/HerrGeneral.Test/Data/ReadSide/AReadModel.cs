@@ -11,7 +11,7 @@ public class ReadModel
     {
         public readonly Guid Id = Guid.NewGuid();
 
-        public void Handle(Pong notification, CancellationToken cancellationToken) => 
+        public void Handle(Pong notification) => 
             readModel.Message = notification.Message;
     }
 }

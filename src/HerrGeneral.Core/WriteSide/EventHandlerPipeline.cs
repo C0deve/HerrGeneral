@@ -9,15 +9,15 @@ namespace HerrGeneral.Core.WriteSide;
 
 internal static class EventHandlerPipeline
 {
-    public delegate void EventHandlerDelegate<in TEvent>(UnitOfWorkId operationId, TEvent @event, CancellationToken cancellationToken);
+    public delegate void EventHandlerDelegate<in TEvent>(UnitOfWorkId operationId, TEvent @event);
 
     public static EventHandlerDelegate<TEvent> WithDomainExceptionMapping<TEvent>(
         this EventHandlerDelegate<TEvent> next, DomainExceptionMapper mapper) =>
-        (operationId, @event, cancellationToken) =>
+        (operationId, @event) =>
         {
             try
             {
-                next(operationId, @event, cancellationToken);
+                next(operationId, @event);
             }
             catch (Exception e)
             {
@@ -28,15 +28,15 @@ internal static class EventHandlerPipeline
         };
 
     public static EventHandlerDelegate<TEvent> WithErrorLogger<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, StringBuilder stringBuilderLogger) =>
-        (operationId, @event, cancellationToken) =>
+        (operationId, @event) =>
         {
             logger ??= NullLogger<IEventHandler<TEvent>>.Instance;
             if (!logger.IsEnabled(LogLevel.Debug))
-                next(operationId, @event, cancellationToken);
+                next(operationId, @event);
 
             try
             {
-                next(operationId, @event, cancellationToken);
+                next(operationId, @event);
             }
             catch (EventHandlerDomainException e)
             {
@@ -51,12 +51,12 @@ internal static class EventHandlerPipeline
         };
 
     public static EventHandlerDelegate<TEvent> WithLogging<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, IEventHandler<TEvent> handler, StringBuilder stringBuilderLogger) =>
-        (operationId, @event, cancellationToken) =>
+        (operationId, @event) =>
         {
             logger ??= NullLogger<IEventHandler<TEvent>>.Instance;
             if (logger.IsEnabled(LogLevel.Debug))
                 stringBuilderLogger.HandleEvent(handler.GetType());
 
-            next(operationId, @event, cancellationToken);
+            next(operationId, @event);
         };
 }

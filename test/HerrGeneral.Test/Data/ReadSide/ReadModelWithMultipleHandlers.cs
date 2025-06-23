@@ -11,10 +11,10 @@ public class ReadModelWithMultipleHandlers
         IEventHandler<Pong>,
         IEventHandler<AnotherPong>
     {
-        public void Handle(Pong notification, CancellationToken cancellationToken) => 
+        public void Handle(Pong notification) => 
             readModel.Message = notification.Message;
 
-        public void Handle(AnotherPong notification, CancellationToken cancellationToken) => 
+        public void Handle(AnotherPong notification) => 
             readModel.Message = notification.Message;
     }
 }
