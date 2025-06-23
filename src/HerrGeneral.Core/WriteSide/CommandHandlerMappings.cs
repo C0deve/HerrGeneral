@@ -6,7 +6,7 @@ namespace HerrGeneral.Core.WriteSide;
 
 /// <summary>
 /// Register mapping between client command handler and internal <see cref="ICommandHandler{TCommand,TResult}"/>*
-/// Used by internal CommandHandler to return ((IEnumerable{object Events, TResult Result)}) from a client handler
+/// Used by internal <see cref="CommandHandlerWithMapping{TCommand,THandler,TResult}"/> to return ((IEnumerable{object Events, TResult Result)}) from a client handler
 /// </summary>
 internal class CommandHandlerMappings
 {
