@@ -1,4 +1,5 @@
 using HerrGeneral.Core.Registration;
+using HerrGeneral.Test;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
 using HerrGeneral.WriteSide;
@@ -22,12 +23,13 @@ public class SendWithErrorShould
             cfg.ForSingletonOf<ReadModel>().Use(new ReadModel());
 
             cfg.UseHerrGeneral(x =>
-                    x
-                        .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
-                        .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
-                        .UseDomainException<MyDomainException>()
-                        .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                );
+                x
+                    .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
+                    .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
+                    .UseDomainException<MyDomainException>()
+                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                    .MapEventHandlerOnWriteSide<EventBase, ILocalEventHandler<EventBase>>()
+            );
         });
     }
 

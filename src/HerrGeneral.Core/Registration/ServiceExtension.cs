@@ -34,6 +34,7 @@ public static class ServiceExtension
         serviceCollection.AddSingleton<Mediator>();
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
         serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);
+        serviceCollection.AddSingleton<EventHandlerMappings>(_ => configuration.WriteSideEventHandlerMappings);
 
         return serviceCollection;
     }
@@ -43,6 +44,7 @@ public static class ServiceExtension
         IRegistrationPolicy[] policies = [
             new RegisterMappedCommandHandlers(configuration.CommandHandlerMappings),
             new RegisterICommandHandler(),
+            new RegisterMappedWriteSideEventHandlers(configuration.WriteSideEventHandlerMappings),
             new RegisterWriteSideEventHandler()
         ];
         

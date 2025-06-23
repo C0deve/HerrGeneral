@@ -1,8 +1,6 @@
-using HerrGeneral.WriteSide;
-
 namespace HerrGeneral.Test.Data.WriteSide;
 
-public class PongMiddleHandler(Dependency dependency) : IEventHandler<Pong>
+public class PongMiddleHandler(Dependency dependency) : ILocalEventHandler<Pong>
 {
     public void Handle(Pong notification)
     {

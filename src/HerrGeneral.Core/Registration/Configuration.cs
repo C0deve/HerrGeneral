@@ -28,9 +28,14 @@ public class Configuration
     internal IReadOnlySet<Type> DomainExceptionTypes => _domainExceptionInterfaces;
 
     /// <summary>
-    /// List of mapping of external handlers
+    /// List of mapping of external command handlers
     /// </summary>
     internal CommandHandlerMappings CommandHandlerMappings { get; } = new();
+    
+    /// <summary>
+    /// List of mapping of external write side event handlers
+    /// </summary>
+    internal EventHandlerMappings WriteSideEventHandlerMappings { get; } = new();
     
     internal Configuration()
     {
@@ -120,6 +125,18 @@ public class Configuration
     public Configuration MapCommandHandler<TCommand, THandler>()
     {
         CommandHandlerMappings.AddMapping<TCommand, THandler, IEnumerable<object>>(x => x);
+        return this;
+    }
+
+    /// <summary>
+    /// Map an external event handler/>
+    /// </summary>
+    /// <typeparam name="TEvent"></typeparam>
+    /// <typeparam name="THandler"></typeparam>
+    /// <returns></returns>
+    public Configuration MapEventHandlerOnWriteSide<TEvent, THandler>()
+    {
+        WriteSideEventHandlerMappings.AddMapping<TEvent, THandler>();
         return this;
     }
 }

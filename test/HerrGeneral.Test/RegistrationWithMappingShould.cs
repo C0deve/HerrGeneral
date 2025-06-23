@@ -33,7 +33,7 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
     }
     
     [Fact]
-    public async Task Resolve_main_handler_with_mapping()
+    public async Task Resolve_main_command_handler_with_mapping()
     {
         var container = new Container(cfg =>
         {
