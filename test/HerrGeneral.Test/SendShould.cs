@@ -27,7 +27,8 @@ public class SendShould
                 configuration
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(result => result.Events, x => x.Result)
-                    .MapEventHandlerOnWriteSide<EventBase, ILocalEventHandler<EventBase>>()
+                    .MapEventHandlerOnWriteSide<EventBase, Test.Data.WriteSide.ILocalEventHandler<EventBase>>()
+                    .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>()
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
         });

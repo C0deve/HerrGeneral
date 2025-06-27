@@ -37,6 +37,11 @@ public class Configuration
     /// </summary>
     internal EventHandlerMappings WriteSideEventHandlerMappings { get; } = new();
     
+    /// <summary>
+    /// List of mapping of external read side event handlers
+    /// </summary>
+    internal EventHandlerMappings ReadSideEventHandlerMappings { get; } = new();
+    
     internal Configuration()
     {
     }
@@ -129,7 +134,7 @@ public class Configuration
     }
 
     /// <summary>
-    /// Map an external event handler/>
+    /// Map an external write side event handler/>
     /// </summary>
     /// <typeparam name="TEvent"></typeparam>
     /// <typeparam name="THandler"></typeparam>
@@ -137,6 +142,18 @@ public class Configuration
     public Configuration MapEventHandlerOnWriteSide<TEvent, THandler>()
     {
         WriteSideEventHandlerMappings.AddMapping<TEvent, THandler>();
+        return this;
+    }
+    
+    /// <summary>
+    /// Map an external read side event handler/>
+    /// </summary>
+    /// <typeparam name="TEvent"></typeparam>
+    /// <typeparam name="THandler"></typeparam>
+    /// <returns></returns>
+    public Configuration MapEventHandlerOnReadSide<TEvent, THandler>()
+    {
+        ReadSideEventHandlerMappings.AddMapping<TEvent, THandler>();
         return this;
     }
 }

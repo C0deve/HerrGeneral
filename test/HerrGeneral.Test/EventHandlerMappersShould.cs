@@ -1,4 +1,5 @@
-﻿using HerrGeneral.Core.Error;
+﻿using HerrGeneral.Core;
+using HerrGeneral.Core.Error;
 using HerrGeneral.Test;
 using HerrGeneral.Test.Data.WriteSide;
 using HerrGeneral.WriteSide;
@@ -13,7 +14,7 @@ public class EventHandlerMappersShould
     public void ThrowExceptionWhenNoHandlerRegistered() =>
         Should.Throw<MissingEventHandlerMapperException>(() =>
         {
-            var sut = new Core.WriteSide.EventHandlerMappings();
+            var sut = new EventHandlerMappings();
             sut.GetFromEvent(new Pong("", Guid.NewGuid(), Guid.NewGuid()));
         });
 
@@ -21,14 +22,14 @@ public class EventHandlerMappersShould
     public void ThrowExceptionWhenHandlerInterfaceIsNotGeneric() =>
         Should.Throw<HandlerTypeMustBeGenericMappingDefinitionException>(() =>
         {
-            var sut = new Core.WriteSide.EventHandlerMappings();
+            var sut = new EventHandlerMappings();
             sut.AddMapping<object, object, bool>(_ => []);
         });
 
     [Fact]
     public void ReturnMapperFroEvent()
     {
-        var sut = new Core.WriteSide.EventHandlerMappings();
+        var sut = new EventHandlerMappings();
         sut.AddMapping<EventBase, IEventHandler<EventBase>>();
 
         sut

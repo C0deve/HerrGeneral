@@ -28,7 +28,8 @@ public class SendWithErrorShould
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
                     .UseDomainException<MyDomainException>()
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .MapEventHandlerOnWriteSide<EventBase, ILocalEventHandler<EventBase>>()
+                    .MapEventHandlerOnWriteSide<EventBase, Test.Data.WriteSide.ILocalEventHandler<EventBase>>()
+                    .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>()
             );
         });
     }

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace HerrGeneral.Core.WriteSide;
+namespace HerrGeneral.Core;
 
 internal record EventHandlerMapping(
     MethodInfo MethodInfo,

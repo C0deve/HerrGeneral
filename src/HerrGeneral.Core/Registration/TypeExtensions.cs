@@ -67,14 +67,9 @@ internal static class TypeExtensions
             .OfType<MethodInfo>()
             .FirstOrDefault();
 
-    private static bool HasUniqueParameterOfType(this MethodInfo methodInfo, Type uniqueParameter)
+    internal static bool HasUniqueParameterOfType(this MethodInfo methodInfo, Type uniqueParameter)
     {
         var parameters = methodInfo.GetParameters();
         return parameters.Length == 1 && parameters[0].ParameterType == uniqueParameter;
     }
 }
-
-// var methodInfo = handlerType.GetMethod(methodName) ?? handlerType
-//     .FindInterfaces((type, _) => type.GetMethod(methodName) != null, null)
-//     .Select(t => t.GetMethod(methodName))
-//     .FirstOrDefault();

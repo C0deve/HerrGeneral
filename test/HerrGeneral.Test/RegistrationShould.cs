@@ -1,6 +1,8 @@
 using HerrGeneral.Core;
 using HerrGeneral.Core.Error;
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration;
+using HerrGeneral.Test;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
 using HerrGeneral.WriteSide;
@@ -76,16 +78,17 @@ public class RegistrationShould(ITestOutputHelper output)
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .UseReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!));
+                    .UseReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!)
+                    .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>());
         });
 
         container
             .GetInstance<ReadSide.IEventHandler<AnotherPong>>()
-            .ShouldBeOfType<ReadModelWithMultipleHandlers.Repository>();
+            .ShouldBeOfType<EventHandlerWithMapping<AnotherPong, ReadModelWithMultipleHandlers.Repository>>();
 
         container
             .GetInstance<ReadSide.IEventHandler<Pong>>()
-            .ShouldBeOfType<ReadModelWithMultipleHandlers.Repository>();
+            .ShouldBeOfType<EventHandlerWithMapping<Pong, ReadModelWithMultipleHandlers.Repository>>();
     }
 
     [Fact]
@@ -97,7 +100,8 @@ public class RegistrationShould(ITestOutputHelper output)
 
             cfg.UseHerrGeneral(scanner =>
                 scanner
-                    .UseReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!));
+                    .UseReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!)
+                    .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>());
         });
 
         container.GetInstance<ReadModel.Repository>().Id.ShouldBe(container.GetInstance<ReadModel.Repository>().Id);

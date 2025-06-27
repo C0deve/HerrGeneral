@@ -47,7 +47,8 @@ public class UnitOfWorkShould(ITestOutputHelper output)
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .MapEventHandlerOnWriteSide<EventBase, ILocalEventHandler<EventBase>>()
+                    .MapEventHandlerOnWriteSide<EventBase, HerrGeneral.Test.Data.WriteSide.ILocalEventHandler<EventBase>>()
+                    .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>()
                 );
         });
     

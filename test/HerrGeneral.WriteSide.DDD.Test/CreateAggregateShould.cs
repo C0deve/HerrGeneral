@@ -2,6 +2,7 @@
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
+using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
 using Xunit.Abstractions;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,9 @@ public class CreateAggregateShould
             cfg.AddSingleton<FriendAddedCounter>();
             cfg
                 .UseHerrGeneral(configuration =>
-                    configuration.UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!))
+                    configuration
+                        .UseReadSideAssembly(typeof(Person).Assembly, typeof(Friends).Namespace!)
+                )
                 .RegisterDDDHandlers(typeof(Person).Assembly);
         });
     }
@@ -35,10 +38,20 @@ public class CreateAggregateShould
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        var personId = await new CreatePerson("John", "Alfred").Send<Guid>(_container);
+        _ = await new CreatePerson("John", "Alfred").Send<Guid>(_container);
 
         _container.GetInstance<FriendAddedCounter>()
             .Value
             .ShouldBe(1);
+    }
+    
+    [Fact]
+    public async Task DispatchEventsOnReadSide()
+    {
+        await new CreatePerson("John", "Alfred").Send<Guid>(_container);
+
+        _container.GetInstance<Friends>()
+            .Names()
+            .ShouldBe(["Alfred"]);
     }
 }

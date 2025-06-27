@@ -2,13 +2,13 @@
 using HerrGeneral.Core.Registration;
 using HerrGeneral.WriteSide;
 
-namespace HerrGeneral.Core.WriteSide;
+namespace HerrGeneral.Core;
 
 /// <summary>
 /// Register mapping between client event handler and internal <see cref="IEventHandler{TEvent}"/>*
 /// Used by internal <see cref="EventHandler"/> to return <see cref="IEnumerable{Object}"/> from a client handler
 /// </summary>
-internal class EventHandlerMappings
+internal class EventHandlerMappings : IReadSideEventHandlerMappings, IWriteSideEventHandlerMappings
 {
     /// <summary>
     /// Map event type with an <see cref="EventHandlerMapping"/>

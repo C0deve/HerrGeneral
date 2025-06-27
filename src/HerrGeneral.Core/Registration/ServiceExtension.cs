@@ -34,7 +34,8 @@ public static class ServiceExtension
         serviceCollection.AddSingleton<Mediator>();
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
         serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);
-        serviceCollection.AddSingleton<EventHandlerMappings>(_ => configuration.WriteSideEventHandlerMappings);
+        serviceCollection.AddSingleton<IWriteSideEventHandlerMappings>(_ => configuration.WriteSideEventHandlerMappings);
+        serviceCollection.AddSingleton<IReadSideEventHandlerMappings>(_ => configuration.ReadSideEventHandlerMappings);
 
         return serviceCollection;
     }
@@ -54,7 +55,8 @@ public static class ServiceExtension
     private static void RegisterReadSide(IServiceCollection serviceCollection, Configuration configuration)
     {
         IRegistrationPolicy[] policies = [
-            new RegisterReadSideEventHandler()
+            new RegisterReadSideEventHandler(),
+            new RegisterMappedReadSideEventHandlers(configuration.ReadSideEventHandlerMappings),
         ];
 
         Register(serviceCollection, policies, configuration.ReadSideSearchParams);

@@ -8,17 +8,17 @@ namespace HerrGeneral.Core.WriteSide;
 /// Internal handler used to map client event handler
 /// </summary>
 /// <param name="handler"></param>
-/// <param name="mappingProvider"></param>
+/// <param name="eventHandlerMappingsProvider"></param>
 /// <typeparam name="TEvent"></typeparam>
 /// <typeparam name="THandler"></typeparam>
-internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, EventHandlerMappings mappingProvider)
+internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWriteSideEventHandlerMappings eventHandlerMappingsProvider)
     : IEventHandler<TEvent>
     where TEvent : notnull
     where THandler : notnull
 {
     public void Handle(TEvent evt)
     {
-        var mapping = mappingProvider.GetFromEvent(evt);
+        var mapping = eventHandlerMappingsProvider.GetFromEvent(evt);
 
         var handleMethod =
             typeof(THandler).GetMethod(mapping.MethodInfo.Name) ?? throw new InvalidOperationException();
