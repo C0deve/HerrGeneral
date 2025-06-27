@@ -32,15 +32,9 @@ public class Configuration
     /// </summary>
     internal CommandHandlerMappings CommandHandlerMappings { get; } = new();
     
-    /// <summary>
-    /// List of mapping of external write side event handlers
-    /// </summary>
-    internal EventHandlerMappings WriteSideEventHandlerMappings { get; } = new();
+    internal EventHandlerMappingRegistration WriteSideEventHandlerMappings { get; } = new();
     
-    /// <summary>
-    /// List of mapping of external read side event handlers
-    /// </summary>
-    internal EventHandlerMappings ReadSideEventHandlerMappings { get; } = new();
+    internal EventHandlerMappingRegistration ReadSideEventHandlerMappings { get; } = new();
     
     internal Configuration()
     {

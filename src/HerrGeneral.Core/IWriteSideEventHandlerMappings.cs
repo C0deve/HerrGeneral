@@ -1,6 +1,9 @@
-﻿namespace HerrGeneral.Core;
+﻿using System.Reflection;
+
+namespace HerrGeneral.Core;
 
 internal interface IWriteSideEventHandlerMappings
 {
-    EventHandlerMapping GetFromEventType(Type evtType);
+    (MethodInfo Method, EventHandlerMapping Mapping) GetHandleMethod(Type evtType, Type handlerType);
+    
 }

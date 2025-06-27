@@ -14,7 +14,7 @@ public class EventHandlerMappersShould
     public void ThrowExceptionWhenNoHandlerRegistered() =>
         Should.Throw<MissingEventHandlerMapperException>(() =>
         {
-            var sut = new EventHandlerMappings();
+            var sut = new EventHandlerMappingRegistration();
             sut.GetFromEventType(typeof(Pong));
         });
 
@@ -22,14 +22,14 @@ public class EventHandlerMappersShould
     public void ThrowExceptionWhenHandlerInterfaceIsNotGeneric() =>
         Should.Throw<HandlerTypeMustBeGenericMappingDefinitionException>(() =>
         {
-            var sut = new EventHandlerMappings();
+            var sut = new EventHandlerMappingRegistration();
             sut.AddMapping<object, object, bool>(_ => []);
         });
 
     [Fact]
     public void ReturnMapperFroEvent()
     {
-        var sut = new EventHandlerMappings();
+        var sut = new EventHandlerMappingRegistration();
         sut.AddMapping<EventBase, IEventHandler<EventBase>>();
 
         sut
