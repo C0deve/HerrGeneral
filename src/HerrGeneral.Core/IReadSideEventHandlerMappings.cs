@@ -1,6 +1,8 @@
-﻿namespace HerrGeneral.Core;
+﻿using System.Reflection;
+
+namespace HerrGeneral.Core;
 
 internal interface IReadSideEventHandlerMappings
 {
-    EventHandlerMapping GetFromEvent(object evt);
+    MethodInfo GetHandleMethod(Type evtType, Type handlerType);
 }

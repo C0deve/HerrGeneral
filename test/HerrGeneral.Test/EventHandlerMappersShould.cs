@@ -15,7 +15,7 @@ public class EventHandlerMappersShould
         Should.Throw<MissingEventHandlerMapperException>(() =>
         {
             var sut = new EventHandlerMappings();
-            sut.GetFromEvent(new Pong("", Guid.NewGuid(), Guid.NewGuid()));
+            sut.GetFromEventType(typeof(Pong));
         });
 
     [Fact]
@@ -33,7 +33,7 @@ public class EventHandlerMappersShould
         sut.AddMapping<EventBase, IEventHandler<EventBase>>();
 
         sut
-            .GetFromEvent(new Pong("", Guid.NewGuid(), Guid.NewGuid()))
+            .GetFromEventType(typeof(Pong))
             .ShouldNotBeNull();
     }
 }

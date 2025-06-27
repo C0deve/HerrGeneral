@@ -2,5 +2,5 @@
 
 internal interface IWriteSideEventHandlerMappings
 {
-    EventHandlerMapping GetFromEvent(object evt);
+    EventHandlerMapping GetFromEventType(Type evtType);
 }

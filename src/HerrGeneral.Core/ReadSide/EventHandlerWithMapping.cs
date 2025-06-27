@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using HerrGeneral.Core.Registration;
 using HerrGeneral.ReadSide;
 
 namespace HerrGeneral.Core.ReadSide;
@@ -18,12 +17,8 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IRead
 {
     public void Handle(TEvent evt)
     {
-        var mapping = eventHandlerMappingProvider.GetFromEvent(evt);
-
-        var handleMethod =
-            typeof(THandler).GetMethods().Single(info => info.Name == mapping.MethodInfo.Name
-                                                         && info.HasUniqueParameterOfType(typeof(TEvent)));
-
+        var handleMethod = eventHandlerMappingProvider.GetHandleMethod(typeof(TEvent), typeof(THandler));
+        
         try
         {
             handleMethod.Invoke(handler, [evt]);

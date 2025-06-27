@@ -18,7 +18,7 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWrit
 {
     public void Handle(TEvent evt)
     {
-        var mapping = eventHandlerMappingsProvider.GetFromEvent(evt);
+        var mapping = eventHandlerMappingsProvider.GetFromEventType(evt.GetType());
 
         var handleMethod =
             typeof(THandler).GetMethod(mapping.MethodInfo.Name) ?? throw new InvalidOperationException();
