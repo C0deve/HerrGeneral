@@ -10,9 +10,7 @@ internal static class Scanner
     /// </summary>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static Dictionary<Type, HashSet<Type>> Scan(IEnumerable<ScanParam> scanParams, HashSet<Type> openTypesToScan)
-    {
-        return
+    public static Dictionary<Type, HashSet<Type>> Scan(IEnumerable<ScanParam> scanParams, HashSet<Type> openTypesToScan) =>
         (
             from scanParam in scanParams
             from scanResult in scanParam.Scan(openTypesToScan)
@@ -24,6 +22,6 @@ internal static class Scanner
                 orderby t.FullName
                 select t
             select (g.Key, y.ToHashSet())
-        ).ToDictionary();
-    }
+        )
+        .ToDictionary();
 }
