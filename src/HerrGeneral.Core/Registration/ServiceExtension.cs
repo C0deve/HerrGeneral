@@ -6,18 +6,23 @@ using Microsoft.Extensions.DependencyInjection;
 namespace HerrGeneral.Core.Registration;
 
 /// <summary>
-/// Extension methods for registration
+/// Extension methods for registering and configuring the HerrGeneral framework within an application.
+/// Provides methods to integrate command and event handling capabilities into the dependency injection system.
 /// </summary>
 public static class ServiceExtension
 {
     /// <summary>
-    /// Configure HerrGeneral :
-    /// Scan and register all command handlers, write side event handlers and read side event handlers 
-    /// Add required services 
+    /// Configures the HerrGeneral framework within your application's service collection.
+    /// 
+    /// This method performs the following operations:
+    /// - Scans and registers all command handlers for processing commands
+    /// - Registers write side event handlers for state-changing operations
+    /// - Registers read side event handlers for updating projections and views
+    /// - Adds all required internal services for the framework to operate
     /// </summary>
-    /// <param name="serviceCollection"></param>
-    /// <param name="configurationDelegate"></param>
-    /// <returns></returns>
+    /// <param name="serviceCollection">The application's service collection to which HerrGeneral services will be added</param>
+    /// <param name="configurationDelegate">A delegate function that configures HerrGeneral by specifying assemblies to scan and registering custom handlers</param>
+    /// <returns>The service collection with all HerrGeneral services registered</returns>
     public static IServiceCollection UseHerrGeneral(
         this IServiceCollection serviceCollection,
         Func<Configuration, Configuration> configurationDelegate
@@ -86,12 +91,13 @@ public static class ServiceExtension
     }
 
     /// <summary>
-    /// Register <see cref="tHandler"/> for all his interfaces/>  
+    /// Registers a handler type against all its implemented interfaces in the service collection.
+    /// This method creates service descriptors that map each interface to the same handler implementation instance.
     /// </summary>
-    /// <param name="serviceCollection"></param>
-    /// <param name="tHandler"></param>
-    /// <param name="serviceLifetime"></param>
-    /// <param name="interfaces"></param>
+    /// <param name="serviceCollection">The service collection to register the handler with</param>
+    /// <param name="tHandler">The handler type to register</param>
+    /// <param name="serviceLifetime">The lifetime scope for the registered services</param>
+    /// <param name="interfaces">The collection of interfaces implemented by the handler that should be registered</param>
     private static void RegisterOpenTypeInternal(this IServiceCollection serviceCollection, Type tHandler, ServiceLifetime serviceLifetime, IEnumerable<Type> interfaces)
     {
         foreach (var @interface in interfaces)
