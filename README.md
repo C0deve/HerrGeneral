@@ -1,4 +1,4 @@
-# Herr General v0.1.12-rc
+# Herr General v0.1.14-rc
 
 
 Herr General is a Cqrs implementation with built in debug log for simple modular monolith.
