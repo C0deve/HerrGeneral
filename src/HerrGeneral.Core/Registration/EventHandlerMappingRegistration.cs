@@ -1,7 +1,6 @@
 ﻿using HerrGeneral.Core.Error;
-using HerrGeneral.Core.Registration;
 
-namespace HerrGeneral.Core;
+namespace HerrGeneral.Core.Registration;
 
 /// <summary>
 /// Responsible for registering mappings between event types and their handlers

@@ -1,4 +1,5 @@
 ﻿using HerrGeneral.Core;
+using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.WriteSide;
 using HerrGeneral.Test;
 using HerrGeneral.Test.Data.WriteSide;
