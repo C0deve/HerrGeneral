@@ -1,205 +1,310 @@
 # Herr General v0.1.14-rc
 
+## Overview
 
-Herr General is a Cqrs implementation with built in debug log for simple modular monolith.
-(strongly inspired from MediatR)
+Herr General is a lightweight CQRS (Command Query Responsibility Segregation) implementation designed for building modular monolithic applications in .NET. It provides a structured approach to handling commands and events with built-in debug logging and unit of work.
 
-Send a command :
-1. Handle the command
-2. Dispatch events to write side
-3. Dispatch events to read side
-4. Return a Result
+> Inspired by MediatR but optimized for CQRS workflows with explicit write and read side segregation.
 
+## Key Features
 
-## Implementation choice
+- **Clean CQRS Implementation**: Separates command and query responsibilities for better maintainability
+- **Built-in Diagnostics**: Comprehensive debug logging for easy troubleshooting
+- **Simple Integration**: Easy to integrate with Microsoft Dependency Injection
+- **No dependency on HerrGeneral in your code**: HerrGeneral can map your handlers, no need to inherit from a ICommandHandler or IEventHandler
+- **Result Pattern**: Uses a functional-style result pattern
 
-One storage for all
-pro : no eventual consistency
-cons : no eventual consistency => doesn't scale
+## Command Processing Flow
 
-One transaction by command.
-
-ReadModel as singleton.
-
-All ids are System.Guid.
-
-Result pattern but CreationResult return the id of the created object.
-
-
-## Installing Herr General with NuGet
-
-Write side
-[HerrGeneral.WriteSide](https://www.nuget.org/packages/HerrGeneral.WriteSide/)
-or
-[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)
-
-Read side
-[HerrGeneral.ReadSide](https://www.nuget.org/packages/HerrGeneral.ReadSide/)
-
-Application or infrastructure layer
-[HerrGeneral.Core](https://www.nuget.org/packages/HerrGeneral.Core/)
-
-### Registering with `IServiceCollection`
-
-Herr General supports `Microsoft.Extensions.DependencyInjection.Abstractions` directly.
-To register write side commands and eventHandlers and read side eventHandlers:
-
-```csharp
-services.UseHerrGeneral(scanner =>
-        scanner
-            .OnWriteSide(typeof(Person).Assembly, typeof(Person).Namespace!)
-            .OnReadSide(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!));
-
-// Dynamic handlers registration
-services.RegisterDynamicHandlers(typeof(CreatePerson).Assembly); 
+```
+┌─────────────┐     ┌─────────────┐     ┌───────────────────┐     ┌────────────────────────────┐
+│   Client    │────▶│   Mediator  │────▶│  Command Handler  │────▶│ Write Side Events Handlers │
+└─────────────┘     └─────────────┘     └───────────────────┘     └─────────────────┬──────────┘
+                                                                                    │
+┌─────────────┐     ┌─────────────────────┐     ┌───────────────┐                   │
+│   Result    │◀────│  Command Completed  │◀────│ Read Side     │◀──────────────────┘
+└─────────────┘     └─────────────────────┘     │ Event Handlers│
+                                                └───────────────┘
 ```
 
+When you send a command through Herr General, it follows this sequential flow:
 
-## Sample code
+1. The command is received by the mediator and routed to its appropriate handler
+2. The command handler processes the command and generates events
+3. Events are dispatched to write side handlers (domain logic) which may generate additional events
+4. Events are dispatched to read side handlers (projections/views)
+5. A strongly-typed `Result` or `Result<T>` is returned to the caller with the outcome
+
+## Debug logger output sample
+
+```
+<------------------- SetFriend <46a0deab-0485-403e-821a-834a96517a7c> thread<1> ------------------->
+|| Publish Write Side on thread<1>
+  HerrGeneral.SampleApplication.WriteSide.FriendChanged
+
+|| Publish Read Side (1 event) on thread<1>
+  HerrGeneral.SampleApplication.WriteSide.FriendChanged
+  -> Handle by HerrGeneral.SampleApplication.ReadSide.PersonFriendRM+PersonFriendRMRepository
+<------------------- SetFriend Finished 00:00:00.0021475 -------------------/>
+```
+## Design Decisions
+
+### Architectural Approach
+
+- **Unified Storage**: Uses a single storage mechanism for both write and read models
+  - **Advantage**: Maintains immediate consistency across all parts of the system
+  - **Consideration**: This approach prioritizes consistency over extreme scalability
+
+- **Transactional Integrity**: Each command executes within its own transaction scope
+  - **Benefit**: Ensures all related changes are committed together or rolled back completely
+
+- **Read Model Implementation**: Read models are registered as singletons in the DI container
+  - **Rationale**: Optimizes performance for read operations which typically dominate most applications
+  
+
+## Installation
+
+Herr General is distributed as a set of focused NuGet packages to allow selective adoption of its features.
+
+### NuGet Packages
+
+#### Core Infrastructure
+- **[HerrGeneral.Core](https://www.nuget.org/packages/HerrGeneral.Core/)**: Essential components for application integration and configuration
+
+#### Optional: Write Side Components
+- **[HerrGeneral.WriteSide](https://www.nuget.org/packages/HerrGeneral.WriteSide/)**: Core write-side functionality for handling commands and domain events
+
+#### Optional: Read Side Components
+- **[HerrGeneral.ReadSide](https://www.nuget.org/packages/HerrGeneral.ReadSide/)**: Handlers and infrastructure for building and maintaining read models
+
+
+## Getting Started
+
+### Registration with Dependency Injection
+
+Herr General integrates seamlessly with .NET's dependency injection system using `Microsoft.Extensions.DependencyInjection`. Configure the framework in your application startup with a fluent API:
 
 ```csharp
-// Write Side
-// Command + handler
-public record record SetFriend(Guid AggregateId, string Friend) : Change<Person>(AggregateId)
-{  
-    public class Handler : ChangeAggregateHandler<Person,SetFriend>
-    {
-        public Handler(CtorParams ctorParams) : base(ctorParams) { }
+// Add Herr General to your service collection
+services.UseHerrGeneral(configuration =>
+    configuration
+        // Register write side assembly and namespace for command and domain event handlers
+        .UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!)
+        // Register read side assembly and namespace for read model event handlers
+        .UseReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!));
+```
 
-        protected override Person Handle(Person aggregate, SetFriend command) => 
-            aggregate.SetFriend(command._friend, command.Id);
-    }
+This registration process scans the specified assemblies for command handlers and event handlers, registering them with the appropriate lifetime scopes in the dependency injection container.
+
+
+## External Handler Integration
+
+Herr General provides a comprehensive set of configuration methods to integrate existing handlers or third-party components that don't follow the standard conventions. This flexibility is essential when working with legacy systems or external libraries.
+
+### Command Handler Integration Methods
+
+The `Configuration` class offers several methods to adapt different types of external command handlers:
+
+#### 1. Simple Command Handler Registration
+
+For handlers that already return events in the expected format (`IEnumerable<object>`):
+
+```csharp
+services.UseHerrGeneral(config => 
+    config.MapCommandHandler<MyCommand, ExternalCommandHandler>());
+```
+
+**How it works:**
+- Registers `ExternalCommandHandler` as the handler for `MyCommand`
+- The handler's return value is used directly as the event collection
+- Suitable for handlers that already return a collection of events
+
+#### 2. Command Handler with Event Mapping
+
+For handlers that return a custom result type that needs transformation:
+
+```csharp
+services.UseHerrGeneral(config => 
+    config.MapCommandHandler<MyCommand, ExternalCommandHandler, CustomResult>(
+        // Transform function: converts the handler result into events
+        result => result.MyEvents
+    ));
+```
+
+**How it works:**
+- The handler returns a custom type (`CustomResult`)
+- The provided mapping function transforms this result into a collection of events
+- Enables integration with handlers that don't directly produce events
+
+#### 3. Command Handler with Value Return
+
+For handlers that need to produce both events and a specific return value (especially useful for creation commands):
+
+```csharp
+services.UseHerrGeneral(config => 
+    config.MapCommandHandler<CreateEntity, ExternalCreateHandler, CustomResult, Guid>(
+        // Event mapping function
+        result => result.MyEvents,
+        
+        // Value mapping function
+        result => result.Id // Returns the ID to the caller
+    ));
+```
+
+**How it works:**
+- The first function maps the handler result to domain events
+- The second function extracts a specific value from the result to return to the caller
+- Perfect for creation commands where you need to return the new entity's ID
+- The extracted value is wrapped in a `Result<TValue>` for consistent error handling
+
+### Event Handler Integration
+
+Event handlers can also be externally registered for both write and read sides:
+
+#### Write Side Event Handlers
+
+```csharp
+services.UseHerrGeneral(config =>
+    config.MapEventHandlerOnWriteSide<PaymentReceived, UpdateAccountBalanceHandler>());
+```
+
+**Purpose:** Register handlers that perform domain logic in response to events (may generate additional events).
+
+#### Read Side Event Handlers
+
+```csharp
+services.UseHerrGeneral(config =>
+    config.MapEventHandlerOnReadSide<OrderShipped, UpdateShippingStatisticsHandler>());
+```
+
+**Purpose:** Register handlers that update read models and projections (should not produce new events).
+
+### Domain Exception Registration
+
+Herr General distinguishes between technical failures and business rule violations by registering domain exceptions:
+
+```csharp
+services.UseHerrGeneral(config =>
+    config.UseDomainException<InsufficientFundsException>());
+```
+
+**Benefits:**
+- Registered exceptions are treated as expected business outcomes rather than system errors
+- They are automatically wrapped in a `DomainError` result instead of an `Exception` result
+- Provides a cleaner separation between technical failures and business rule violations
+
+## Result Pattern
+
+Herr General implements a functional-style result pattern to handle command outcomes in a type-safe manner. This approach eliminates exception-based control flow and provides explicit handling for success, domain errors, and system exceptions.
+
+### Command Result Types
+
+The framework uses two primary result types:
+
+#### Result
+
+Returned for commands that don't need to return a specific value (typically modification operations):
+
+```csharp
+// Result has three possible states: Success, DomainError, or Exception
+public async Task ProcessUpdateCommand()
+{
+    // Result is returned for commands that modify existing entities
+    var result = await _mediator.Send(new SetFriend(personId, "New Friend"));
+
+    result.Match(
+        onSuccess: () => {
+            // Command succeeded - handle success case
+            Console.WriteLine("Friend updated successfully");
+        },
+        onDomainError: error => {
+            // Business rule validation failed
+            Console.WriteLine($"Cannot update friend: {error.Message}");
+        },
+        onException: exception => {
+            // Unexpected system error occurred
+            Console.WriteLine($"System error: {exception.Message}");
+            // Log the exception
+        }
+    );
 }
+```
 
-// or
+#### Result\<T>
 
-//Command only (use dynamic command handler behind the scene)
-public record record SetFriend(Guid AggregateId, string Friend) : Change<Person>(AggregateId);
+Returned for commands that need to return a specific value (typically creation operations):
+
+```csharp
+// Result<T> includes a value on success (typically an ID for new entities)
+public async Task<Guid> ProcessCreateCommand()
+{
+    // Result<Guid> is returned for commands that create new entities
+    var result = await _mediator.Send(new CreatePerson("John", "Doe"));
+
+    return result.Match(
+        onSuccess: id => {
+            // Command succeeded with a value - we have the new entity's ID
+            Console.WriteLine($"Person created with ID: {id}");
+            return id; // The value can be used for further processing
+        },
+        onDomainError: error => {
+            // Business rule validation failed
+            Console.WriteLine($"Cannot create person: {error.Message}");
+            return Guid.Empty;
+        },
+        onException: exception => {
+            // Unexpected system error occurred
+            Console.WriteLine($"System error: {exception.Message}");
+            // Log the exception
+            return Guid.Empty;
+        }
+    );
+}
+```
+
+### Benefits of the Result Pattern
+
+- **Explicit Error Handling**: Forces developers to consider all possible outcomes
+- **Clear Intent**: Makes the code more readable by showing all possible outcomes in one place
+- **Type Safety**: Leverages the type system to ensure all cases are handled
+
+## Code Examples
+
+### Write Side Implementation
 
 
-// Read side
+### Read Side Implementation
+
+```csharp
+// Read model representing a person and their friend
 public record PersonFriendRM(Guid PersonId, string Person, string Friend)
 {
+    // Event handler that updates the read model when FriendChanged event occurs
     public class PersonFriendRMRepository : HerrGeneral.ReadSide.IEventHandler<FriendChanged>
     {
-        ...
-        
-        public Task Handle(FriendChanged notification, CancellationToken cancellationToken)
+        private readonly IDatabase _database;
+
+        public PersonFriendRMRepository(IDatabase database)
         {
-            ...           
+            _database = database;
         }
-        
-        ...
+
+        public Task Handle(FriendChanged @event, CancellationToken cancellationToken)
+        {
+            // Update the read model when a friend is changed
+            return _database.UpdatePersonFriend(@event.PersonId, @event.NewFriendName);
+        }
     }    
 }
 ```
 
+### Technical Choices
 
-## Dynamic command handler
+- **Identifier Strategy**: All entity identifiers use `System.Guid` for uniqueness across distributed systems
+## Contributing
 
-With dynamic command handlers you don't need to write handler.
+Contributions to Herr General are welcome! Whether it's bug reports, feature requests, or code contributions, please feel free to contribute to the project.
 
-### Nugget
+## License
 
-[HerrGeneral.Core.DDD](https://www.nuget.org/packages/HerrGeneral.Core.DDD/)
-
-### Registration
-
-```csharp
-// Register a dynamic handler for all commands without handler
-services.RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
-
-// Register the default IAggregateFactory for aggregate creation
-// DefaultAggregateFactory will call the aggregate constructor new(TCreateCommand command, Guid aggregateId)
-services.AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
-```
-
-### Conventions
-
-#### Create (with DefaultAggregateFactory)
-
-The aggregate must have a constructor new(TCreate command, Guid aggregateId).
-
-#### Change
-
-The aggregate must have a method Execute(TChange command).
-
-### Behind the scene
-
-Dynamic handler for create:
-1. call IAggregateFactory.Create(Create<TAggregate> command, Guid aggregateId)
-2. save the aggregate
-3. dispatch events on write side
-4. dispatch events on read side
-
-Dynamic handler for change:
-1. get the aggregate
-2. call the execute method with command as argument
-3. save the aggregate
-4. dispatch events on write side
-5. dispatch events on read side
-
-
-## Debug logger output sample
-
-<------------------- SetFriend <46a0deab-0485-403e-821a-834a96517a7c> thread<1> ------------------->
-|| Publish Write Side on thread<1>
-&emsp;HerrGeneral.SampleApplication.WriteSide.FriendChanged
-
-|| Publish Read Side (1 event) on thread<1>
-&emsp;HerrGeneral.SampleApplication.WriteSide.FriendChanged
-&emsp;-> Handle by HerrGeneral.SampleApplication.ReadSide.PersonFriendRM+PersonFriendRMRepository
-<------------------- SetFriend Finished 00:00:00.0021475 -------------------/>
-
-
-## How it works
-
-A user: Hey, I want to change my friend name.
-Application: Ok, give me the command and I will take care of the rest. I'll send you back a commandResult when I'm done.
-
-In the application black box :
-Mediator: Anybody to handle this command ?
-CommandHandler: I"m here.
-CommandHandler: I'm done and I have some events to publish.
-WriteSideEventPublisher: That's my job.
-WriteSideEventPublisher: Anybody to handle this event on the write side ? (for each event).
-WriteSideEventHandler: Me (and I may have other events to publish).
-WriteSideEventPublisher: I'm done.
-CommandHandler: Thank you, now I can transmit all those events to the read side.
-ReadSideEventPublisher: Anybody to handle this event on the read side ? (for each event).
-ReadModel: Yes me.
-ReadSideEventPublisher: I'm done.
-CommandHandler: I'm done.
-
-Application: Here is your command result.
-
-
-## Result pattern
-
-### ChangeResult
-
-Herr general return ChangeResult for ChangeCommand
-3 states : Success, DomainError, PanicException
-
-```csharp
-updateResult.Match(() =>
-    {
-        ...
-    },
-    error => ...,
-    exception => ...);
-```
-
-### CreateResult
-
-Herr general return CreationResult for CreationCommand
-3 states : Success<Guid>, DomainError, PanicException
-
-```csharp
-createResult.Match(id =>
-    {
-        ...
-    },
-    error => ...,
-    exception => ...);
-```
+Herr General is released under the [MIT License](LICENSE).

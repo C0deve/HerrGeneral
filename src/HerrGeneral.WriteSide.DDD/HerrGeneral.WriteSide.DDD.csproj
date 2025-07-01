@@ -20,11 +20,15 @@
 
         <Description>Write side implementation for HerrGeneral. Allow to create or update aggregate</Description>
         <PackageTags>.Net;HerrGeneral</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="MinVer"/>
         <PackageReference Include="Microsoft.SourceLink.GitHub"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 </Project>
     

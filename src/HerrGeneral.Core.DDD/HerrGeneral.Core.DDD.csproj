@@ -18,9 +18,9 @@
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <EnablePackageValidation>true</EnablePackageValidation>
-
         <Description>Registration of dynamic handler for aggregate creation and update</Description>
         <PackageTags>.Net;HerrGeneral</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,5 +33,7 @@
       <ProjectReference Include="..\HerrGeneral.WriteSide.DDD\HerrGeneral.WriteSide.DDD.csproj" />
       <ProjectReference Include="..\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj" />
     </ItemGroup>
-
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
 </Project>
