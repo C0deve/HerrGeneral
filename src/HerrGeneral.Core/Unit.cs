@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral.WriteSide;
+﻿namespace HerrGeneral.Core;
 
 /// <summary>
 /// Represent no value

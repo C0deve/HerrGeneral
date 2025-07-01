@@ -1,7 +1,6 @@
 ﻿using HerrGeneral.Core;
 using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Registration;
-using HerrGeneral.WriteSide;
 using Lamar;
 using Shouldly;
 using Xunit.Abstractions;

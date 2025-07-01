@@ -4,7 +4,6 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
-using HerrGeneral.WriteSide;
 using Lamar;
 using Shouldly;
 using Xunit.Abstractions;

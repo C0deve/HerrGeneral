@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral.WriteSide;
+﻿namespace HerrGeneral.Core;
 
 /// <summary>
 /// Result of an handled command.
