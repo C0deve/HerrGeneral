@@ -54,13 +54,14 @@ public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
     }
 
     /// <summary>
-    /// Add a IDomainEvent to dispatch
+    /// Add an IDomainEvent to dispatch
     /// </summary>
     /// <param name="event"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="IdMismatchOnEventEmit{T}"></exception>
-    protected T Emit(IDomainEvent<T> @event)
+    // ReSharper disable once VirtualMemberNeverOverridden.Global
+    protected virtual T Emit(IDomainEvent<T> @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
