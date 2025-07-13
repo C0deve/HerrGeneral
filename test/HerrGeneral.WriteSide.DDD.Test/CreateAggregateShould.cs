@@ -1,4 +1,5 @@
-﻿using HerrGeneral.Core.DDD;
+﻿using HerrGeneral.Core;
+using HerrGeneral.Core.DDD;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
@@ -12,6 +13,7 @@ namespace HerrGeneral.WriteSide.DDD.Test;
 
 public class CreateAggregateShould
 {
+    private readonly Mediator _mediator;
     private readonly Container _container;
 
     public CreateAggregateShould(ITestOutputHelper output)
@@ -28,17 +30,19 @@ public class CreateAggregateShould
                 )
                 .RegisterDDDHandlers(typeof(Person).Assembly);
         });
+        
+        _mediator = _container.GetInstance<Mediator>();
     }
 
     [Fact]
     public async Task Create() =>
-        await new CreatePerson("John", "Alfred").Send<Guid>(_container);
+        await new CreatePerson("John", "Alfred").SendFromMediator(_mediator);
 
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        _ = await new CreatePerson("John", "Alfred").Send<Guid>(_container);
+        await new CreatePerson("John", "Alfred").SendFromMediator(_mediator);
 
         _container.GetInstance<FriendAddedCounter>()
             .Value
@@ -48,7 +52,7 @@ public class CreateAggregateShould
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreatePerson("John", "Alfred").Send<Guid>(_container);
+        await new CreatePerson("John", "Alfred").SendFromMediator(_mediator);
 
         _container.GetInstance<Friends>()
             .Names()

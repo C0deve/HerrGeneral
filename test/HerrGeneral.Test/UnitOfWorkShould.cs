@@ -5,7 +5,6 @@ using HerrGeneral.Test;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
 using Lamar;
-using Shouldly;
 using Xunit.Abstractions;
 
 // ReSharper disable once CheckNamespace
@@ -28,8 +27,9 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         });
 
         
-        var result = await new Ping { Message = "Ping" }.Send(container, false);
-        result.ShouldBe(Result.Success());
+        await new Ping { Message = "Ping" }
+            .SendFromMediator(container.GetInstance<Mediator>())
+            .ShouldSuccess();
     }
     
     private Container Register(IUnitOfWork unitOfWork) =>
@@ -58,7 +58,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var container = Register(unitOfWork);
         var ping = new Ping { Message = "Ping" };
         
-        await ping.Send(container);
+        await ping.SendFromMediator(container.GetInstance<Mediator>());
         
         A.CallTo(() => unitOfWork.Commit(A<UnitOfWorkId>._)).MustHaveHappened();
     }
@@ -70,7 +70,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var container = Register(unitOfWork);
         var ping = new Ping { Message = "Ping" };
         
-        await ping.Send(container);
+        await ping.SendFromMediator(container.GetInstance<Mediator>());
         
         A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
@@ -82,7 +82,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var container = Register(unitOfWork);
         var ping = new PingWithFailureInCommandHandler();
         
-        await ping.Send(container, false);
+        await ping.SendFromMediator(container.GetInstance<Mediator>());
         
         A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
@@ -94,7 +94,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var container = Register(unitOfWork);
         var ping = new PingWithFailureInEventHandler();
         
-        await ping.Send(container, false);
+        await ping.SendFromMediator(container.GetInstance<Mediator>());
         
         A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
@@ -106,7 +106,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var container = Register(unitOfWork);
         var ping = new PingWithPanicException();
         
-        await ping.Send(container, false);
+        await ping.SendFromMediator(container.GetInstance<Mediator>());
         
         A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
@@ -118,7 +118,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var container = Register(unitOfWork);
         var ping = new PingWithFailureInCommandHandler();
         
-        await ping.Send(container, false);
+        await ping.SendFromMediator(container.GetInstance<Mediator>());
         
         A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }
@@ -130,7 +130,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var container = Register(unitOfWork);
         var ping = new PingWithFailureInEventHandler();
         
-        await ping.Send(container, false);
+        await ping.SendFromMediator(container.GetInstance<Mediator>());
         
         A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }
@@ -142,7 +142,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var container = Register(unitOfWork);
         var ping = new PingWithPanicException();
         
-        await ping.Send(container, false);
+        await ping.SendFromMediator(container.GetInstance<Mediator>());
         
         A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }

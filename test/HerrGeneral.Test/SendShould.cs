@@ -12,6 +12,7 @@ namespace HerrGeneral.Send;
 
 public class SendShould
 {
+    private readonly Mediator _mediator;
     private readonly Container _container;
 
     public SendShould(ITestOutputHelper output)
@@ -32,26 +33,29 @@ public class SendShould
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
         });
+        _mediator = _container.GetInstance<Mediator>();
     }
 
     [Fact]
     public async Task Resolve_main_handler() =>
-        (await new Ping { Message = "Ping" }
-            .Send(_container, false))
-        .ShouldBe(Result.Success());
+        await new Ping { Message = "Ping" }
+            .SendFromMediator(_mediator)
+            .ShouldSuccess();
 
     private static readonly Guid AggregateId = Guid.NewGuid();
 
     [Fact]
     public async Task Resolve_main_handler_for_creation_command() =>
-        (await new CreatePing { AggregateId = AggregateId, Message = "Ping" }
-            .Send<Guid>(_container, false))
-        .ShouldBe(Result.Success(AggregateId));
+        await new CreatePing { AggregateId = AggregateId, Message = "Ping" }
+            .SendFromMediator<Guid>(_mediator)
+            .ShouldSuccessAndReturnValue(AggregateId);
 
     [Fact]
     public async Task Dispatch_events_on_write_side()
     {
-        await new Ping { Message = "Ping" }.Send(_container);
+        await new Ping { Message = "Ping" }
+            .SendFromMediator(_mediator)
+            .ShouldSuccess();
 
         _container.GetInstance<Dependency>().Called.ShouldBeTrue();
     }
@@ -59,7 +63,9 @@ public class SendShould
     [Fact]
     public async Task Dispatch_events_on_read_side()
     {
-        await new Ping { Message = "Ping" }.Send(_container);
+        await new Ping { Message = "Ping" }
+            .SendFromMediator(_mediator)
+            .ShouldSuccess();
 
         _container.GetInstance<ReadModel>().Message.ShouldBe("Ping received");
     }
@@ -67,7 +73,7 @@ public class SendShould
     [Fact]
     public async Task Not_dispatch_events_on_read_side_on_domain_error()
     {
-        await new PingWithFailureInCommandHandler().Send(_container, false);
+        await new PingWithFailureInCommandHandler().SendFromMediator(_mediator);
 
         _container.GetInstance<ReadModel>().Message.ShouldBe("");
     }
@@ -75,7 +81,7 @@ public class SendShould
     [Fact]
     public async Task Not_dispatch_events_on_read_side_on_domain_error_throw_from_event_handler()
     {
-        await new PingWithFailureInEventHandler().Send(_container, false);
+        await new PingWithFailureInEventHandler().SendFromMediator(_mediator);
 
         _container.GetInstance<ReadModel>().Message.ShouldBe("");
     }

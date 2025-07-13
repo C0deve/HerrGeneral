@@ -11,11 +11,11 @@ namespace HerrGeneral.Send;
 
 public class SendWithErrorShould
 {
-    private readonly Container _container;
+    private readonly Mediator _mediator;
 
     public SendWithErrorShould(ITestOutputHelper output)
     {
-        _container = new Container(cfg =>
+        var container = new Container(cfg =>
         {
             cfg.AddHerrGeneralTestLogger(output);
 
@@ -32,30 +32,32 @@ public class SendWithErrorShould
                     .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>()
             );
         });
+        
+        _mediator = container.GetInstance<Mediator>();
     }
 
 
     [Fact]
     public async Task Return_result_failure_on_domain_error_thrown_from_command_handler() =>
         await new PingWithFailureInCommandHandler()
-            .Send(_container, false)
-            .ShouldHaveDomainErrorOfType<PingError>();
+            .SendFromMediator(_mediator)
+            .ShouldFailWithDomainErrorOfType<PingError>();
 
     [Fact]
     public async Task Return_result_failure_on_domain_error_thrown_from_event_handler() =>
         await new PingWithFailureInEventHandler()
-            .Send(_container, false)
-            .ShouldHaveDomainErrorOfType<PingError>();
+            .SendFromMediator(_mediator)
+            .ShouldFailWithDomainErrorOfType<PingError>();
 
     [Fact]
     public async Task Return_result_failure_on_panic_exception() =>
         await new PingWithPanicException()
-            .Send(_container, false)
-            .ShouldHavePanicExceptionOfType<SomePanicException>();
+            .SendFromMediator(_mediator)
+            .ShouldFailWithPanicExceptionOfType<SomePanicException>();
 
     [Fact]
     public async Task Return_result_failure_on_panic_exception_from_read_side() =>
         await new PingWithFailureInReadSideEventHandler()
-            .Send(_container, false)
-            .ShouldHavePanicExceptionOfType<SomePanicException>();
+            .SendFromMediator(_mediator)
+            .ShouldFailWithPanicExceptionOfType<SomePanicException>();
 }

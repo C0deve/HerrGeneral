@@ -30,7 +30,13 @@ public record UnitOfWorkId
     /// Implicit convert from Guid to UnitOfWorkId
     /// </summary>
     /// <param name="id"></param>
+    /// <exception cref="ArgumentNullException"></exception>
     /// <returns></returns>
-    public static implicit operator UnitOfWorkId(Guid id) =>
-        id.WithValue(x => new UnitOfWorkId(x));
+    public static implicit operator UnitOfWorkId(Guid id)
+    {
+        if (id.IsEmpty())
+            throw new ArgumentNullException(nameof(id));
+        
+        return new UnitOfWorkId(id);
+    }
 }

@@ -8,12 +8,12 @@ using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace HerrGeneral.WriteSide.DDD.Test;
 
 public class ChangeAggregateShould
 {
+    private readonly Mediator _mediator;
     private readonly Container _container;
 
     public ChangeAggregateShould(ITestOutputHelper output)
@@ -29,46 +29,41 @@ public class ChangeAggregateShould
                 )
                 .RegisterDDDHandlers(typeof(Person).Assembly);
         });
+
+        _mediator = _container.GetInstance<Mediator>();
     }
 
     [Fact]
-    public async Task Change()
-    {
-        var personId = await new CreatePerson("John", "Alfred").Send(_container);
-        await new AddFriend("Adams", personId).Send(_container);
-    }
+    public async Task Change() =>
+        await new CreatePerson("John", "Alfred")
+            .SendFromMediator(_mediator)
+            .Then(personId =>
+                new AddFriend("Adams", personId).SendFromMediator(_mediator))
+            .ShouldSuccess();
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        var personId = await new CreatePerson("John", "Alfred").Send<Guid>(_container);
-        await new AddFriend("Adams", personId).Send(_container);
+        await new CreatePerson("John", "Alfred")
+            .SendFromMediator(_mediator)
+            .Then(personId => 
+                new AddFriend("Adams", personId).SendFromMediator(_mediator));
 
         _container.GetInstance<FriendAddedCounter>()
             .Value
             .ShouldBe(2);
     }
-    
+
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        var personId = await new CreatePerson("John", "Alfred").Send<Guid>(_container);
-        await new AddFriend("Adams", personId).Send(_container);
+        await new CreatePerson("John", "Alfred")
+            .SendFromMediator(_mediator)
+            .Then(personId => 
+                new AddFriend("Adams", personId).SendFromMediator(_mediator));
 
         _container.GetInstance<Friends>()
             .Names()
             .ShouldBe(["Alfred", "Adams"]);
     }
-}
-
-public static class Ext
-{
-    public static async Task<Guid> Send<T>(this Create<T> request, IServiceProvider serviceProvider)
-        where T : IAggregate =>
-        (await serviceProvider
-            .GetRequiredService<Mediator>()
-            .Send<Guid>(request))
-        .Match(id => id,
-            domainError => throw new XunitException($"Command have a domain error of type<{domainError.GetType()}>. {domainError}"),
-            exception => throw new XunitException($"Command have a panic exception of type<{exception.GetType()}>. {exception.Message}", exception));
 }

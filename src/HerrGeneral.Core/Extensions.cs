@@ -1,40 +1,24 @@
-﻿using System.Collections.ObjectModel;
-
-namespace HerrGeneral.Core;
+﻿namespace HerrGeneral.Core;
 
 /// <summary>
 /// Extensions methods
 /// </summary>
-internal static class Extensions
+public static class Extensions
 {
     /// <summary>
     /// Fluent guid validation
     /// </summary>
     /// <param name="guid"></param>
     /// <returns></returns>
-    public static bool IsEmpty(this Guid guid) => guid == Guid.Empty;
+    internal static bool IsEmpty(this Guid guid) => guid == Guid.Empty;
 
-    public static TReturn WithValue<TReturn>(this Guid guid, Func<Guid, TReturn> onValue)
-    {
-        if (guid.IsEmpty())
-            throw new ArgumentNullException(nameof(guid));
-
-        return onValue(guid);
-    }
-    
-    /// <summary>
-    /// Fluent string validation
-    /// </summary>
-    /// <param name="s"></param>
-    /// <returns></returns>
-    public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
     
     /// <summary>
     /// Display the type with a friendly name
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static string GetFriendlyName(this Type type)
+    internal static string GetFriendlyName(this Type type)
     {
         var friendlyName = type.Name;
         if (!type.IsGenericType) return friendlyName;
@@ -57,23 +41,33 @@ internal static class Extensions
     }
 
     /// <summary>
-    /// Add multiple items to the hashSet 
+    /// Sends a command through the mediator using a fluent syntax.
+    /// This extension method improves readability by allowing direct Send() calls on command objects.
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="values"></param>
-    /// <typeparam name="T"></typeparam>
-    public static void AddRange<T>(this HashSet<T> source, IEnumerable<T> values)
-    {
-        foreach (var value in values) source.Add(value);
-    }
+    /// <param name="command">The command to send</param>
+    /// <param name="mediator">The mediator instance used to process the command</param>
+    /// <returns>A task containing the result of the command execution</returns>
+    /// <example>
+    /// <code>
+    /// await new CreatePerson("John", "Doe").SendFromMediator(mediator);
+    /// </code>
+    /// </example>
+    public static Task<Result> SendFromMediator(this object command, Mediator mediator) => mediator.Send(command);
 
     /// <summary>
-    /// Cast a Dictionary to a ReadOnlyDictionary
+    /// Sends a command through the mediator using a fluent syntax and returns a typed value.
+    /// This extension method improves readability by allowing direct Send() calls on command objects
+    /// while specifying the expected return type.
     /// </summary>
-    /// <param name="source"></param>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    /// <returns></returns>
-    public static ReadOnlyDictionary<TKey, TValue> AsReadonly<TKey, TValue>(this Dictionary<TKey, TValue> source) 
-        where TKey : notnull => new(source);
+    /// <param name="command">The command to send</param>
+    /// <param name="mediator">The mediator instance used to process the command</param>
+    /// <typeparam name="TValue">The type of the value returned by the command (e.g., Guid for an identifier)</typeparam>
+    /// <returns>A task containing the result with a value of type <typeparamref name="TValue"/></returns>
+    /// <example>
+    /// <code>
+    /// Guid personId = await new CreatePerson("John", "Doe").SendFromMediator&lt;Guid&gt;(mediator);
+    /// </code>
+    /// </example>
+    public static Task<Result<TValue>> SendFromMediator<TValue>(this object command, Mediator mediator) => mediator.Send<TValue>(command);
+    
 }
