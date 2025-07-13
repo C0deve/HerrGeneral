@@ -52,7 +52,7 @@ internal class CommandHandlerMappings
         AddMapping<TCommand, THandler, THandlerReturn, Unit>(mapEvents, _ => Unit.Default);
    
     /// <summary>
-    /// Return handlerMapper corresponding to <see cref="command"/>
+    /// Return handlerMapper corresponding to <paramref name="command"/>
     /// </summary>
     /// <param name="command"></param>
     /// <param name="returnType"></param>

@@ -37,7 +37,7 @@ internal static class TypeExtensions
     }
     
     /// <summary>
-    /// Return all interfaces with a generic type definition equals to <see cref="openTypeInterface"/> 
+    /// Return all interfaces with a generic type definition equals to <paramref name="openTypeInterface"/> 
     /// </summary>
     /// <param name="type"></param>
     /// <param name="openTypeInterface"></param>
