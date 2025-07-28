@@ -36,10 +36,10 @@ public static class CommandResultExtensions
     /// <param name="task"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    public static async Task<Result> Then<TResult>(this Task<Result<TResult>> task, Func<TResult, Task<Result>> func)
+    public static async Task<Result> Then<TValue>(this Task<Result<TValue>> task, Func<TValue, Task<Result>> func)
     {
-        var createResult = await task;
-        return await createResult
+        var result = await task;
+        return await result
             .Match(
                 func,
                 domainError => Task.FromResult(Result.DomainFail(domainError)),
