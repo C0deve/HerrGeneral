@@ -48,7 +48,7 @@ public class SendShould
     public async Task Resolve_main_handler_for_creation_command() =>
         await new CreatePing { AggregateId = AggregateId, Message = "Ping" }
             .SendFromMediator<Guid>(_mediator)
-            .ShouldSuccessAndReturnValue(AggregateId);
+            .ShouldSuccessWithValue(AggregateId);
 
     [Fact]
     public async Task Dispatch_events_on_write_side()

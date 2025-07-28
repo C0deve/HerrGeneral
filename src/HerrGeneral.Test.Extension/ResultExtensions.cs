@@ -16,6 +16,19 @@ public static class ResultExtensions
     /// <param name="result"></param>
     public static async Task ShouldSuccess(this Task<Result> result) =>
         (await result).IsSuccess.ShouldBeTrue($"Command failed: {result}");
+    
+    /// <summary>
+    /// Asserts that the result is successful
+    /// </summary>
+    /// <param name="result"></param>
+    /// <typeparam name="TValue"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="XunitException"></exception>
+    public static async Task<TValue> ShouldSuccess<TValue>(this Task<Result<TValue>> result) =>
+        (await result)
+        .Match(id => id,
+            domainError => throw new XunitException($"Command have a domain error of type<{domainError.GetType()}>. {domainError}"),
+            exception => throw new XunitException($"Command have a panic exception of type<{exception.GetType()}>. {exception.Message}", exception));
 
     /// <summary>
     /// Asserts that the result is successful and contains the expected value.
@@ -25,15 +38,11 @@ public static class ResultExtensions
     /// <typeparam name="TValue">The type of the value in the result</typeparam>
     /// <returns>The value from the result if successful</returns>
     /// <exception cref="XunitException">Thrown when the result is not successful or doesn't contain the expected value</exception>
-    public static async Task<TValue> ShouldSuccessAndReturnValue<TValue>(this Task<Result<TValue>> result, TValue expected ) =>
-        (await result)
-        .Match(id =>
-            {
-                id.ShouldBe(expected);
-                return id;
-            },
-            domainError => throw new XunitException($"Command have a domain error of type<{domainError.GetType()}>. {domainError}"),
-            exception => throw new XunitException($"Command have a panic exception of type<{exception.GetType()}>. {exception.Message}", exception));
+    public static async Task ShouldSuccessWithValue<TValue>(this Task<Result<TValue>> result, TValue expected)
+    {
+        var res = await result.ShouldSuccess();
+        res.ShouldBe(expected);
+    }
 
     /// <summary>
     /// Asserts that a result contains a domain error of the specified type.
