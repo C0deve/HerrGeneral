@@ -11,6 +11,31 @@ namespace HerrGeneral.Test.Extension;
 public static class ResultExtensions
 {
     /// <summary>
+    /// Sends a command through the mediator and asserts that the execution is successful.
+    /// This method is useful for testing command handlers when you don't need to check the return value.
+    /// </summary>
+    /// <param name="command">The command to send</param>
+    /// <param name="mediator">The mediator instance used to process the command</param>
+    /// <returns>A task representing the asynchronous operation</returns>
+    public static Task AssertSendFrom(this object command, Mediator mediator) => 
+        mediator
+            .Send(command)
+            .ShouldSuccess();
+    
+    /// <summary>
+    /// Sends a command through the mediator, asserts that the execution is successful, and returns the result value.
+    /// This method is useful for testing command handlers that return a value (e.g., an entity ID).
+    /// </summary>
+    /// <param name="command">The command to send</param>
+    /// <param name="mediator">The mediator instance used to process the command</param>
+    /// <typeparam name="TValue">The type of value expected in the successful result</typeparam>
+    /// <returns>The value from the successful result</returns>
+    public static Task<TValue> AssertSendFrom<TValue>(this object command, Mediator mediator) => 
+        mediator
+            .Send<TValue>(command)
+            .ShouldSuccess();
+    
+    /// <summary>
     /// Asserts that the result is successful
     /// </summary>
     /// <param name="result"></param>

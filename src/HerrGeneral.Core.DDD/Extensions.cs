@@ -20,7 +20,7 @@ public static class Extensions
     /// Guid personId = await new CreatePerson("John", "Doe").SendFromMediator(mediator);
     /// </code>
     /// </example>
-    public static Task<Result<Guid>> SendFromMediator<TAggregate>(this Create<TAggregate> command, Mediator mediator)
+    public static Task<Result<Guid>> SendFrom<TAggregate>(this Create<TAggregate> command, Mediator mediator)
         where TAggregate : IAggregate => mediator.Send<Guid>(command);
     
     /// <summary>
@@ -36,6 +36,6 @@ public static class Extensions
     /// await new UpdatePerson(personId, "NewName").SendFromMediator(mediator);
     /// </code>
     /// </example>
-    public static Task<Result> SendFromMediator<TAggregate>(this Change<TAggregate> command, Mediator mediator)
+    public static Task<Result> SendFrom<TAggregate>(this Change<TAggregate> command, Mediator mediator)
         where TAggregate : IAggregate => mediator.Send(command);
 }

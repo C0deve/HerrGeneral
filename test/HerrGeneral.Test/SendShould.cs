@@ -40,13 +40,13 @@ public class SendShould
     [Fact]
     public async Task Resolve_main_handler() =>
         await new Ping { Message = "Ping" }
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .ShouldSuccess();
 
     [Fact]
     public async Task Resolve_handler_inheriting_from_ICommandHandler() =>
         await new PingWithDependenceOnHerrGeneral()
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .ShouldSuccess();
 
     private static readonly Guid AggregateId = Guid.NewGuid();
@@ -54,62 +54,78 @@ public class SendShould
     [Fact]
     public async Task Resolve_main_handler_for_creation_command() =>
         await new CreatePing { AggregateId = AggregateId, Message = "Ping" }
-            .SendFromMediator<Guid>(_mediator)
+            .SendFrom<Guid>(_mediator)
             .ShouldSuccessWithValue(AggregateId);
 
     [Fact]
     public async Task Dispatch_events_on_write_side()
     {
         await new Ping { Message = "Ping" }
-            .SendFromMediator(_mediator)
-            .ShouldSuccess();
+            .AssertSendFrom(_mediator);
 
-        _serviceProvider.GetRequiredService<Dependency>().Called.ShouldBeTrue();
+        _serviceProvider
+            .GetRequiredService<Dependency>()
+            .Called
+            .ShouldBeTrue();
     }
 
     [Fact]
     public async Task Dispatch_events_on_read_side()
     {
         await new Ping { Message = "Ping" }
-            .SendFromMediator(_mediator)
-            .ShouldSuccess();
+            .AssertSendFrom(_mediator);
 
-        _serviceProvider.GetRequiredService<ReadModel>().Message.ShouldBe("Ping received");
+        _serviceProvider
+            .GetRequiredService<ReadModel>()
+            .Message
+            .ShouldBe("Ping received");
     }
 
     [Fact]
     public async Task Dispatch_events_on_write_side_when_handler_inheriting_IEventHandler()
     {
         await new Ping { Message = "Ping" }
-            .SendFromMediator(_mediator)
-            .ShouldSuccess();
+            .AssertSendFrom(_mediator);
 
-        _serviceProvider.GetRequiredService<Dependency2>().Called.ShouldBeTrue();
+        _serviceProvider
+            .GetRequiredService<Dependency2>()
+            .Called
+            .ShouldBeTrue();
     }
     
     [Fact]
     public async Task Dispatch_events_on_read_side_when_handler_inheriting_IEventHandler()
     {
         await new Ping { Message = "Ping" }
-            .SendFromMediator(_mediator)
-            .ShouldSuccess();
+            .AssertSendFrom(_mediator);
 
-        _serviceProvider.GetRequiredService<ReadModelWithMultipleHandlersAndInheritingIEventHandler>().Message.ShouldBe("Ping received");
+        _serviceProvider
+            .GetRequiredService<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
+            .Message
+            .ShouldBe("Ping received");
     }
 
     [Fact]
     public async Task Not_dispatch_events_on_read_side_on_domain_error()
     {
-        await new PingWithFailureInCommandHandler().SendFromMediator(_mediator);
+        await new PingWithFailureInCommandHandler()
+            .SendFrom(_mediator);
 
-        _serviceProvider.GetRequiredService<ReadModel>().Message.ShouldBe("");
+        _serviceProvider
+            .GetRequiredService<ReadModel>()
+            .Message
+            .ShouldBe("");
     }
 
     [Fact]
     public async Task Not_dispatch_events_on_read_side_on_domain_error_throw_from_event_handler()
     {
-        await new PingWithFailureInEventHandler().SendFromMediator(_mediator);
+        await new PingWithFailureInEventHandler()
+            .SendFrom(_mediator);
 
-        _serviceProvider.GetRequiredService<ReadModel>().Message.ShouldBe("");
+        _serviceProvider
+            .GetRequiredService<ReadModel>()
+            .Message
+            .ShouldBe("");
     }
 }

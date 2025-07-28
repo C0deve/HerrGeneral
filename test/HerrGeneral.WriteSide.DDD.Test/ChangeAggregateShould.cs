@@ -35,18 +35,18 @@ public class ChangeAggregateShould
     [Fact]
     public async Task Change() =>
         await new CreatePerson("John", "Alfred")
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .Then(personId =>
-                new AddFriend("Adams", personId).SendFromMediator(_mediator))
+                new AddFriend("Adams", personId).SendFrom(_mediator))
             .ShouldSuccess();
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
         await new CreatePerson("John", "Alfred")
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .Then(personId =>
-                new AddFriend("Adams", personId).SendFromMediator(_mediator));
+                new AddFriend("Adams", personId).SendFrom(_mediator));
 
         _container.GetRequiredService<FriendAddedCounter>()
             .Value
@@ -57,9 +57,9 @@ public class ChangeAggregateShould
     public async Task DispatchEventsOnReadSide()
     {
         await new CreatePerson("John", "Alfred")
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .Then(personId =>
-                new AddFriend("Adams", personId).SendFromMediator(_mediator));
+                new AddFriend("Adams", personId).SendFrom(_mediator));
 
         _container.GetRequiredService<Friends>()
             .Names()

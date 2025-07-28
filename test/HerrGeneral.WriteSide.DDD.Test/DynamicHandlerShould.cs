@@ -29,35 +29,35 @@ public class DynamicHandlerShould
 [Fact]
 public async Task HandleAChangeCommandWithoutHandler() =>
     await new ACreateCommandWithoutHandler("John", "Alfred")
-        .SendFromMediator(_mediator)
+        .SendFrom(_mediator)
         .Then(personId =>
-            new AChangeCommandWithoutHandler("Remy", personId).SendFromMediator(_mediator));
+            new AChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator));
 
 [Fact]
 public async Task HandleASecondChangeCommandWithoutHandler() =>
     await new ACreateCommandWithoutHandler("John", "Alfred")
-        .SendFromMediator(_mediator)
+        .SendFrom(_mediator)
         .Then(personId =>
-            new ASecondChangeCommandWithoutHandler("Remy", personId).SendFromMediator(_mediator));
+            new ASecondChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator));
 
 
 [Fact]
 public async Task HandleACreateCommandWithoutHandler() =>
-    await new ACreateCommandWithoutHandler("John", "Alfred").SendFromMediator(_mediator);
+    await new ACreateCommandWithoutHandler("John", "Alfred").SendFrom(_mediator);
 
 [Fact]
 public async Task ThrowIfExecuteMethodNotFound() =>
     await new ACreateCommandWithoutHandler("John", "Alfred")
-        .SendFromMediator(_mediator)
+        .SendFrom(_mediator)
         .Then(personId =>
-            new AThirdChangeCommandWithoutHandler("Remy", personId).SendFromMediator(_mediator))
+            new AThirdChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator))
         .ShouldFailWithPanicExceptionOfType<MissingMethodException>();
 
 
 [Fact]
 public async Task ThrowIfConstructorNotFound() =>
     await new ASecondCreateCommandWithoutHandler()
-        .SendFromMediator(_mediator)
+        .SendFrom(_mediator)
         .ShouldFailWithPanicExceptionOfType<MissingMethodException, Guid>();
 
 }

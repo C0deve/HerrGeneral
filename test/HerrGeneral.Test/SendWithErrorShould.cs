@@ -37,24 +37,24 @@ public class SendWithErrorShould
     [Fact]
     public async Task Return_result_failure_on_domain_error_thrown_from_command_handler() =>
         await new PingWithFailureInCommandHandler()
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .ShouldFailWithDomainErrorOfType<PingError>();
 
     [Fact]
     public async Task Return_result_failure_on_domain_error_thrown_from_event_handler() =>
         await new PingWithFailureInEventHandler()
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .ShouldFailWithDomainErrorOfType<PingError>();
 
     [Fact]
     public async Task Return_result_failure_on_panic_exception() =>
         await new PingWithPanicException()
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .ShouldFailWithPanicExceptionOfType<SomePanicException>();
 
     [Fact]
     public async Task Return_result_failure_on_panic_exception_from_read_side() =>
         await new PingWithFailureInReadSideEventHandler()
-            .SendFromMediator(_mediator)
+            .SendFrom(_mediator)
             .ShouldFailWithPanicExceptionOfType<SomePanicException>();
 }

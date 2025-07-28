@@ -34,13 +34,13 @@ public class CreateAggregateShould
 
     [Fact]
     public async Task Create() =>
-        await new CreatePerson("John", "Alfred").SendFromMediator(_mediator);
+        await new CreatePerson("John", "Alfred").SendFrom(_mediator);
 
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        await new CreatePerson("John", "Alfred").SendFromMediator(_mediator);
+        await new CreatePerson("John", "Alfred").SendFrom(_mediator);
 
         _container.GetRequiredService<FriendAddedCounter>()
             .Value
@@ -50,7 +50,7 @@ public class CreateAggregateShould
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreatePerson("John", "Alfred").SendFromMediator(_mediator);
+        await new CreatePerson("John", "Alfred").SendFrom(_mediator);
 
         _container.GetRequiredService<Friends>()
             .Names()

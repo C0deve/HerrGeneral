@@ -52,7 +52,7 @@ public static class Extensions
     /// await new CreatePerson("John", "Doe").SendFromMediator(mediator);
     /// </code>
     /// </example>
-    public static Task<Result> SendFromMediator(this object command, Mediator mediator) => mediator.Send(command);
+    public static Task<Result> SendFrom(this object command, Mediator mediator) => mediator.Send(command);
 
     /// <summary>
     /// Sends a command through the mediator using a fluent syntax and returns a typed value.
@@ -68,6 +68,6 @@ public static class Extensions
     /// Guid personId = await new CreatePerson("John", "Doe").SendFromMediator&lt;Guid&gt;(mediator);
     /// </code>
     /// </example>
-    public static Task<Result<TValue>> SendFromMediator<TValue>(this object command, Mediator mediator) => mediator.Send<TValue>(command);
+    public static Task<Result<TValue>> SendFrom<TValue>(this object command, Mediator mediator) => mediator.Send<TValue>(command);
     
 }
