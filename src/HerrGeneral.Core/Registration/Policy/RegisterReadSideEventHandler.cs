@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.Core.Registration.Policy;
 
@@ -11,15 +12,22 @@ internal class RegisterReadSideEventHandler : IRegistrationPolicy
 
     public HashSet<Type> GetOpenTypes() => [_handlerInterface];
 
-    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlers)
+    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
-        if (!externalHandlers.TryGetValue(_handlerInterface, out var handlers)) 
+        if (!externalHandlersProvider.TryGetValue(_handlerInterface, out var externalReadSideEventHandlers))
             return;
-        
-        foreach (var eventHandler in handlers)
-            serviceCollection.RegisterOpenType(
-                eventHandler,
-                _handlerInterface,
-                ServiceLifetime.Singleton);
+
+        foreach (var externalEventHandler in externalReadSideEventHandlers)
+        {
+            serviceCollection.TryAddSingleton(externalEventHandler);
+
+            foreach (var @interface in externalEventHandler
+                         .GetInterfacesHavingGenericOpenType(_handlerInterface))
+            {
+                serviceCollection.AddTransient(
+                    @interface,
+                    p => p.GetRequiredService(externalEventHandler));
+            }
+        }
     }
 }

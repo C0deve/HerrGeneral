@@ -1,0 +1,19 @@
+using HerrGeneral.Test.Data.WriteSide;
+
+namespace HerrGeneral.Test.Data.ReadSide;
+
+public class ReadModelWithMultipleHandlersAndInheritingIEventHandler
+{
+    public string Message { get; private set; } = string.Empty;
+
+    public class Repository(ReadModelWithMultipleHandlersAndInheritingIEventHandler readModel) :
+        HerrGeneral.ReadSide.IEventHandler<Pong>,
+        HerrGeneral.ReadSide.IEventHandler<AnotherPong>
+    {
+        public void Handle(Pong notification) => 
+            readModel.Message = notification.Message;
+
+        public void Handle(AnotherPong notification) => 
+            readModel.Message = notification.Message;
+    }
+}

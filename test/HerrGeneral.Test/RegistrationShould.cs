@@ -70,6 +70,7 @@ public class RegistrationShould(ITestOutputHelper output)
     public void Resolve_handlers_when_a_class_implements_multiple_handlers()
     {
         var services = new ServiceCollection()
+            .AddSingleton<ReadModelWithMultipleHandlers>()
             .AddHerrGeneralTestLogger(output)
             .UseHerrGeneral(scanner =>
                 scanner
@@ -91,6 +92,7 @@ public class RegistrationShould(ITestOutputHelper output)
     public void Register_read_side_repositories_as_singleton()
     {
         var services = new ServiceCollection()
+            .AddSingleton<ReadModel>()
             .AddHerrGeneralTestLogger(output)
             .UseHerrGeneral(scanner =>
                 scanner

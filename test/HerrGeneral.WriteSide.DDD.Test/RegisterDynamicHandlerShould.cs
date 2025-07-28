@@ -13,32 +13,41 @@ public class RegisterDynamicHandlersShould
 {
     private readonly IServiceProvider _container;
 
-    public RegisterDynamicHandlersShould(ITestOutputHelper output)
-    {
+    public RegisterDynamicHandlersShould(ITestOutputHelper output) =>
         _container = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
-            .AddSingleton<IAggregateFactory<Person>,DefaultAggregateFactory<Person>>()
+            .AddSingleton<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
             .UseHerrGeneral(scanner => scanner)
+            .RegisterDDDHandlers(typeof(Person).Assembly)
             .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly)
             .BuildServiceProvider();
-    }
 
     [Fact]
     public void RegisterDynamicHandlersForChangeAggregateCommandWithoutHandler() =>
-        _container.GetServices<ICommandHandler<AChangeCommandWithoutHandler, Unit>>()
+        _container
+            .GetServices<ICommandHandler<AChangeCommandWithoutHandler, Unit>>()
             .Count()
             .ShouldBe(1);
 
     [Fact]
     public void NotRegisterDynamicHandlersForChangeAggregateCommandWithHandler() =>
-        _container.GetServices<ICommandHandler<AddFriend, Unit>>().Count().ShouldBe(1);
+        _container
+            .GetServices<ICommandHandler<AddFriend, Unit>>()
+            .Count()
+            .ShouldBe(1);
 
     [Fact]
     public void RegisterDynamicHandlersForCreateAggregateCommandWithoutHandler() =>
-        _container.GetServices<ICommandHandler<ACreateCommandWithoutHandler, Guid>>().Count().ShouldBe(1);
+        _container
+            .GetServices<ICommandHandler<ACreateCommandWithoutHandler, Guid>>()
+            .Count()
+            .ShouldBe(1);
 
     [Fact]
     public void NotRegisterDynamicHandlersForCreateAggregateCommandWithHandler() =>
-        _container.GetServices<ICommandHandler<CreatePerson, Guid>>().Count().ShouldBe(1);
+        _container
+            .GetServices<ICommandHandler<CreatePerson, Guid>>()
+            .Count()
+            .ShouldBe(1);
 }

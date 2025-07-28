@@ -18,11 +18,11 @@ internal class RegisterMappedReadSideEventHandlers(EventHandlerMappingRegistrati
             .Select(mapping => mapping.HandlerGenericType)
             .ToHashSet();
 
-    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlers)
+    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
         var scanResults =
             from mapping in eventHandlerMappings.All()
-            from externalHandlerType in externalHandlers[mapping.HandlerGenericType]
+            from externalHandlerType in externalHandlersProvider[mapping.HandlerGenericType]
             from method in externalHandlerType.GetMethods(BindingFlags.Public|BindingFlags.Instance|BindingFlags.DeclaredOnly)
             where method.Name == mapping.MethodInfo.Name
             let eventType = method

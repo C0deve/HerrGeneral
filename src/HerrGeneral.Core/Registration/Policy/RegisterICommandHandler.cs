@@ -1,5 +1,6 @@
 ﻿using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.Core.Registration.Policy;
 
@@ -12,15 +13,22 @@ internal class RegisterICommandHandler : IRegistrationPolicy
 
     public HashSet<Type> GetOpenTypes() => [_handlerInterface];
 
-    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlers)
+    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
-        if (!externalHandlers.TryGetValue(_handlerInterface, out var handlers)) 
+        if (!externalHandlersProvider.TryGetValue(_handlerInterface, out var externalCommandHandlers)) 
             return;
         
-        foreach (var commandHandler in handlers)
-            serviceCollection.RegisterOpenType(
-                commandHandler,
-                _handlerInterface,
-                ServiceLifetime.Transient);
+        foreach (var externalCommandHandler in externalCommandHandlers)
+        {
+            serviceCollection.TryAddTransient(externalCommandHandler);
+            
+            var @interface = externalCommandHandler
+                .GetInterfacesHavingGenericOpenType(_handlerInterface)
+                .Single();
+            
+            serviceCollection.AddTransient(
+                @interface,
+                externalCommandHandler);
+        }
     }
 }

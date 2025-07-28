@@ -1,6 +1,7 @@
 ﻿using HerrGeneral.Core.WriteSide;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.Core.Registration.Policy;
 
@@ -16,11 +17,11 @@ internal class RegisterMappedCommandHandlers(CommandHandlerMappings commandHandl
             .Select(mapping => mapping.HandlerGenericType)
             .ToHashSet();
 
-    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlers)
+    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
         var scanResults =
             from mapping in commandHandlerMappings.All()
-            from externalHandler in externalHandlers[mapping.HandlerGenericType]
+            from externalHandler in externalHandlersProvider[mapping.HandlerGenericType]
             let commandType = externalHandler
                 .GetMethod(mapping.MethodInfo.Name)!
                 .GetParameters()[0]
@@ -31,11 +32,12 @@ internal class RegisterMappedCommandHandlers(CommandHandlerMappings commandHandl
         {
             var @interface = typeof(ICommandHandler<,>).MakeGenericType(scanResult.CommandType, scanResult.ValueType);
             var internalHandler = typeof(CommandHandlerWithMapping<,,>).MakeGenericType(scanResult.CommandType, scanResult.HandlerType, scanResult.ValueType);
-
-            serviceCollection.Add(new ServiceDescriptor(
+            
+            serviceCollection.TryAddTransient(scanResult.HandlerType);
+            
+            serviceCollection.AddTransient(
                 @interface,
-                internalHandler,
-                ServiceLifetime.Transient));
+                internalHandler);
         }
     }
 

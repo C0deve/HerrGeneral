@@ -16,27 +16,33 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     public async Task Not_be_mandatory()
     {
         var services = new ServiceCollection()
+            .AddSingleton<Dependency2>()
             .AddHerrGeneralTestLogger(output)
             .UseHerrGeneral(scanner =>
                 scanner
                     .UseWriteSideAssembly(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                );
+            );
 
-        var serviceProvider = services.BuildServiceProvider();
-        
-        await new Ping { Message = "Ping" }
-            .SendFromMediator(serviceProvider.GetRequiredService<Mediator>())
+        var mediator = services
+            .BuildServiceProvider()
+            .GetRequiredService<Mediator>();
+
+        await mediator
+            .Send(new Ping { Message = "Ping" })
             .ShouldSuccess();
     }
-    
-    private ServiceProvider Register(IUnitOfWork unitOfWork)
+
+    private Mediator BuildMediator(IUnitOfWork unitOfWork)
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<IUnitOfWork>(_ => unitOfWork)
-            .AddSingleton(new Dependency())
-            .AddSingleton(new ReadModel())
+            .AddSingleton<Dependency>()
+            .AddSingleton<Dependency2>()
+            .AddSingleton<ReadModel>()
+            .AddSingleton<ReadModelWithMultipleHandlers>()
+            .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
             .UseHerrGeneral(scanner =>
                 scanner
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
@@ -44,44 +50,48 @@ public class UnitOfWorkShould(ITestOutputHelper output)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
                     .MapEventHandlerOnWriteSide<EventBase, HerrGeneral.Test.Data.WriteSide.ILocalEventHandler<EventBase>>()
                     .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>()
-                );
-                
-        return services.BuildServiceProvider();
+            );
+
+        return services
+            .BuildServiceProvider()
+            .GetRequiredService<Mediator>();
     }
-    
+
     [Fact]
     public async Task Commit()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
-        var serviceProvider = Register(unitOfWork);
+        var mediator = BuildMediator(unitOfWork);
         var ping = new Ping { Message = "Ping" };
-        
-        await ping.SendFromMediator(serviceProvider.GetRequiredService<Mediator>());
-        
+
+        await mediator
+            .Send(ping)
+            .ShouldSuccess();
+
         A.CallTo(() => unitOfWork.Commit(A<UnitOfWorkId>._)).MustHaveHappened();
     }
-    
+
     [Fact]
     public async Task Dispose()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
-        var serviceProvider = Register(unitOfWork);
+        var mediator = BuildMediator(unitOfWork);
         var ping = new Ping { Message = "Ping" };
-        
-        await ping.SendFromMediator(serviceProvider.GetRequiredService<Mediator>());
-        
+
+        await mediator.Send(ping);
+
         A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
-    
+
     [Fact]
     public async Task Dispose_on_domain_error_thrown_from_command_handler()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
-        var serviceProvider = Register(unitOfWork);
+        var mediator = BuildMediator(unitOfWork);
         var ping = new PingWithFailureInCommandHandler();
-        
-        await ping.SendFromMediator(serviceProvider.GetRequiredService<Mediator>());
-        
+
+        await mediator.Send(ping);
+
         A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
 
@@ -89,59 +99,60 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     public async Task Dispose_on_on_domain_error_thrown_from_event_handler()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
-        var serviceProvider = Register(unitOfWork);
+        var mediator = BuildMediator(unitOfWork);
         var ping = new PingWithFailureInEventHandler();
-        
-        await ping.SendFromMediator(serviceProvider.GetRequiredService<Mediator>());
-        
+
+        await mediator.Send(ping);
+
+
         A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
-    
+
     [Fact]
-    public async Task Dispose_on_on_panic_exception() 
+    public async Task Dispose_on_on_panic_exception()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
-        var serviceProvider = Register(unitOfWork);
+        var mediator = BuildMediator(unitOfWork);
         var ping = new PingWithPanicException();
-        
-        await ping.SendFromMediator(serviceProvider.GetRequiredService<Mediator>());
-        
+
+        await mediator.Send(ping);
+
         A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
     }
-    
+
     [Fact]
     public async Task RollBack_on_domain_error_thrown_from_command_handler()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
-        var serviceProvider = Register(unitOfWork);
+        var mediator = BuildMediator(unitOfWork);
         var ping = new PingWithFailureInCommandHandler();
-        
-        await ping.SendFromMediator(serviceProvider.GetRequiredService<Mediator>());
-        
+
+        await mediator.Send(ping);
+
         A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }
-    
+
     [Fact]
     public async Task RollBack_on_on_domain_error_thrown_from_event_handler()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
-        var serviceProvider = Register(unitOfWork);
+        var mediator = BuildMediator(unitOfWork);
         var ping = new PingWithFailureInEventHandler();
-        
-        await ping.SendFromMediator(serviceProvider.GetRequiredService<Mediator>());
-        
+
+        await mediator.Send(ping);
+
         A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }
-       
+
     [Fact]
-    public async Task RollBack_on_on_panic_exception() 
+    public async Task RollBack_on_on_panic_exception()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
-        var serviceProvider = Register(unitOfWork);
+        var mediator = BuildMediator(unitOfWork);
         var ping = new PingWithPanicException();
-        
-        await ping.SendFromMediator(serviceProvider.GetRequiredService<Mediator>());
-        
+
+        await mediator.Send(ping);
+
         A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
     }
 }

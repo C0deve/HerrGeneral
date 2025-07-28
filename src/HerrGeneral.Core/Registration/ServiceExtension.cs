@@ -77,33 +77,4 @@ public static class ServiceExtension
         foreach (var policy in policies) 
             policy.Register(serviceCollection, externalHandlers);
     }
-
-    internal static void RegisterOpenType(this IServiceCollection serviceCollection, Type tHandler, Type openTypeInterface, ServiceLifetime serviceLifetime)
-    {
-        var interfacesToRegister = tHandler.GetInterfacesHavingGenericOpenType(openTypeInterface);
-        if (serviceLifetime == ServiceLifetime.Singleton)
-        {
-            serviceCollection.AddSingleton(tHandler);
-            serviceCollection.RegisterOpenTypeInternal(tHandler, ServiceLifetime.Transient, interfacesToRegister);
-        }
-        else
-            serviceCollection.RegisterOpenTypeInternal(tHandler, serviceLifetime, interfacesToRegister);
-    }
-
-    /// <summary>
-    /// Registers a handler type against all its implemented interfaces in the service collection.
-    /// This method creates service descriptors that map each interface to the same handler implementation instance.
-    /// </summary>
-    /// <param name="serviceCollection">The service collection to register the handler with</param>
-    /// <param name="tHandler">The handler type to register</param>
-    /// <param name="serviceLifetime">The lifetime scope for the registered services</param>
-    /// <param name="interfaces">The collection of interfaces implemented by the handler that should be registered</param>
-    private static void RegisterOpenTypeInternal(this IServiceCollection serviceCollection, Type tHandler, ServiceLifetime serviceLifetime, IEnumerable<Type> interfaces)
-    {
-        foreach (var @interface in interfaces)
-            serviceCollection.Add(new ServiceDescriptor(
-                @interface,
-                provider => provider.GetRequiredService(tHandler),
-                serviceLifetime));
-    }
 }

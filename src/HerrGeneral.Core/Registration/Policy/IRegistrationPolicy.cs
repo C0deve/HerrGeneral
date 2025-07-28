@@ -17,6 +17,6 @@ internal interface IRegistrationPolicy
     /// Register all concrete class that inherits one of the provided open type
     /// </summary>
     /// <param name="serviceCollection"></param>
-    /// <param name="externalHandlers">Mapping between open type and their concrete class</param>
-    void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlers);
+    /// <param name="externalHandlersProvider">Mapping between open type and their concrete class</param>
+    void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider);
 }

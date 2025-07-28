@@ -1,6 +1,7 @@
 ﻿using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.Registration.Policy;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.Core.DDD.RegistrationPolicies;
 
@@ -10,25 +11,27 @@ internal class RegisterIEventHandler : IRegistrationPolicy
 
     public HashSet<Type> GetOpenTypes() => [_handlerInterface];
 
-    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlers)
+    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
-        if (!externalHandlers.TryGetValue(_handlerInterface, out var handlers))
+        if (!externalHandlersProvider.TryGetValue(_handlerInterface, out var externalHandlers))
             return;
 
-        foreach (var handlerType in handlers)
+        foreach (var externalWriteSideEventHandler in externalHandlers)
         {
-            var genericArguments = handlerType.GetInterface(_handlerInterface.Name)?.GetGenericArguments()
-                                   ?? throw new InvalidOperationException($"Interface {_handlerInterface.Name} not found on {handlerType.GetFriendlyName()}");
+            var genericArguments = externalWriteSideEventHandler.GetInterface(_handlerInterface.Name)?.GetGenericArguments()
+                                   ?? throw new InvalidOperationException($"Interface {_handlerInterface.Name} not found on {externalWriteSideEventHandler.GetFriendlyName()}");
             
             var eventType = genericArguments[0];
             
             var @interface = TypeDefinition.WriteSideEventHandlerInterface.MakeGenericType(eventType);
-            var internalHandler = typeof(EventHandlerInternal<,>).MakeGenericType(eventType, handlerType);
+            var internalHandler = typeof(EventHandlerInternal<,>).MakeGenericType(eventType, externalWriteSideEventHandler);
 
-            serviceCollection.Add(new ServiceDescriptor(
+            serviceCollection.TryAddTransient(externalWriteSideEventHandler);
+            
+            serviceCollection.AddTransient(
                 @interface,
-                internalHandler,
-                ServiceLifetime.Transient));
+                internalHandler);
+            
         }
     }
 }

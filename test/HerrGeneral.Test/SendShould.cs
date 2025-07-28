@@ -19,8 +19,11 @@ public class SendShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<ReadModel, ReadModel>()
-            .AddSingleton<Dependency, Dependency>()
+            .AddSingleton<ReadModel>()
+            .AddSingleton<ReadModelWithMultipleHandlers>()
+            .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
+            .AddSingleton<Dependency>()
+            .AddSingleton<Dependency2>()
             .UseHerrGeneral(configuration =>
                 configuration
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
@@ -37,6 +40,12 @@ public class SendShould
     [Fact]
     public async Task Resolve_main_handler() =>
         await new Ping { Message = "Ping" }
+            .SendFromMediator(_mediator)
+            .ShouldSuccess();
+
+    [Fact]
+    public async Task Resolve_handler_inheriting_from_ICommandHandler() =>
+        await new PingWithDependenceOnHerrGeneral()
             .SendFromMediator(_mediator)
             .ShouldSuccess();
 
@@ -66,6 +75,26 @@ public class SendShould
             .ShouldSuccess();
 
         _serviceProvider.GetRequiredService<ReadModel>().Message.ShouldBe("Ping received");
+    }
+
+    [Fact]
+    public async Task Dispatch_events_on_write_side_when_handler_inheriting_IEventHandler()
+    {
+        await new Ping { Message = "Ping" }
+            .SendFromMediator(_mediator)
+            .ShouldSuccess();
+
+        _serviceProvider.GetRequiredService<Dependency2>().Called.ShouldBeTrue();
+    }
+    
+    [Fact]
+    public async Task Dispatch_events_on_read_side_when_handler_inheriting_IEventHandler()
+    {
+        await new Ping { Message = "Ping" }
+            .SendFromMediator(_mediator)
+            .ShouldSuccess();
+
+        _serviceProvider.GetRequiredService<ReadModelWithMultipleHandlersAndInheritingIEventHandler>().Message.ShouldBe("Ping received");
     }
 
     [Fact]

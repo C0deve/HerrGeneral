@@ -2,6 +2,7 @@
 using HerrGeneral.Core.Registration.Policy;
 using HerrGeneral.WriteSide.DDD;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.Core.DDD.RegistrationPolicies;
 
@@ -11,22 +12,23 @@ internal class RegisterICreateHandler : IRegistrationPolicy
 
     public HashSet<Type> GetOpenTypes() => [_handlerInterface];
 
-    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlers)
+    public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
-        if (!externalHandlers.TryGetValue(_handlerInterface, out var handlers)) 
+        if (!externalHandlersProvider.TryGetValue(_handlerInterface, out var externalHandlers)) 
             return;
         
-        foreach (var commandHandler in handlers)
+        foreach (var externalCommandHandler in externalHandlers)
         {
-            var genericArguments = commandHandler.GetInterface(_handlerInterface.Name)?.GetGenericArguments() 
-                                   ?? throw new InvalidOperationException($"Interface {_handlerInterface.Name} not found on {commandHandler.GetFriendlyName()}");
+            var genericArguments = externalCommandHandler.GetInterface(_handlerInterface.Name)?.GetGenericArguments() 
+                                   ?? throw new InvalidOperationException($"Interface {_handlerInterface.Name} not found on {externalCommandHandler.GetFriendlyName()}");
             var @interface = TypeDefinition.CommandHandlerInterface.MakeGenericType(genericArguments[1], typeof(Guid));
-            var internalHandler = typeof(CreateHandlerInternal<,,>).MakeGenericType(genericArguments[0], genericArguments[1], commandHandler);
+            var internalHandler = typeof(CreateHandlerInternal<,,>).MakeGenericType(genericArguments[0], genericArguments[1], externalCommandHandler);
 
-            serviceCollection.Add(new ServiceDescriptor(
+            serviceCollection.TryAddTransient(externalCommandHandler);
+            
+            serviceCollection.AddTransient(
                 @interface,
-                internalHandler,
-                ServiceLifetime.Transient));
+                internalHandler);
         }
     }
 }

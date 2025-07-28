@@ -15,8 +15,11 @@ public static class ResultExtensions
     /// </summary>
     /// <param name="result"></param>
     public static async Task ShouldSuccess(this Task<Result> result) =>
-        (await result).IsSuccess.ShouldBeTrue($"Command failed: {result}");
-    
+        (await result).Match(
+            _ => {},
+            domainError => throw new XunitException($"Command have a domain error of type<{domainError.GetType()}>. {domainError}"),
+            exception => throw new XunitException($"Command have a panic exception of type<{exception.GetType()}>. {exception.Message}", exception));
+
     /// <summary>
     /// Asserts that the result is successful
     /// </summary>

@@ -21,20 +21,6 @@ internal static class TypeExtensions
 
         return type.BaseType != null && type.BaseType != typeof(object) && IsAssignableFromOpenType(type.BaseType, openType);
     }
-
-    public static bool IsAssignableToGenericType(this Type givenType, Type genericType)
-    {
-        var interfaceTypes = givenType.GetInterfaces();
-
-        if (interfaceTypes.Any(it => it.IsGenericType && it.GetGenericTypeDefinition() == genericType))
-            return true;
-
-        if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
-            return true;
-
-        var baseType = givenType.BaseType;
-        return baseType != null && IsAssignableToGenericType(baseType, genericType);
-    }
     
     /// <summary>
     /// Return all interfaces with a generic type definition equals to <paramref name="openTypeInterface"/> 
