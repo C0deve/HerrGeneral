@@ -3,7 +3,7 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
-using Lamar;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
 
@@ -13,18 +13,15 @@ namespace HerrGeneral.Send;
 public class SendShould
 {
     private readonly Mediator _mediator;
-    private readonly Container _container;
+    private readonly ServiceProvider _serviceProvider;
 
     public SendShould(ITestOutputHelper output)
     {
-        _container = new Container(cfg =>
-        {
-            cfg.AddHerrGeneralTestLogger(output);
-
-            cfg.ForSingletonOf<ReadModel>().Use<ReadModel>();
-            cfg.ForSingletonOf<Dependency>().Use<Dependency>();
-
-            cfg.UseHerrGeneral(configuration =>
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .AddSingleton<ReadModel, ReadModel>()
+            .AddSingleton<Dependency, Dependency>()
+            .UseHerrGeneral(configuration =>
                 configuration
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(result => result.Events, x => x.Result)
@@ -32,8 +29,9 @@ public class SendShould
                     .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>()
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!));
-        });
-        _mediator = _container.GetInstance<Mediator>();
+        
+        _serviceProvider = services.BuildServiceProvider();
+        _mediator = _serviceProvider.GetRequiredService<Mediator>();
     }
 
     [Fact]
@@ -57,7 +55,7 @@ public class SendShould
             .SendFromMediator(_mediator)
             .ShouldSuccess();
 
-        _container.GetInstance<Dependency>().Called.ShouldBeTrue();
+        _serviceProvider.GetRequiredService<Dependency>().Called.ShouldBeTrue();
     }
 
     [Fact]
@@ -67,7 +65,7 @@ public class SendShould
             .SendFromMediator(_mediator)
             .ShouldSuccess();
 
-        _container.GetInstance<ReadModel>().Message.ShouldBe("Ping received");
+        _serviceProvider.GetRequiredService<ReadModel>().Message.ShouldBe("Ping received");
     }
 
     [Fact]
@@ -75,7 +73,7 @@ public class SendShould
     {
         await new PingWithFailureInCommandHandler().SendFromMediator(_mediator);
 
-        _container.GetInstance<ReadModel>().Message.ShouldBe("");
+        _serviceProvider.GetRequiredService<ReadModel>().Message.ShouldBe("");
     }
 
     [Fact]
@@ -83,6 +81,6 @@ public class SendShould
     {
         await new PingWithFailureInEventHandler().SendFromMediator(_mediator);
 
-        _container.GetInstance<ReadModel>().Message.ShouldBe("");
+        _serviceProvider.GetRequiredService<ReadModel>().Message.ShouldBe("");
     }
 }

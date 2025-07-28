@@ -1,7 +1,7 @@
 ﻿using HerrGeneral.Core;
 using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Registration;
-using Lamar;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
 
@@ -34,12 +34,10 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
     [Fact]
     public async Task Resolve_main_command_handler_with_mapping()
     {
-        var container = new Container(cfg =>
-        {
-            cfg.ForSingletonOf<Dependency>().Use(new Dependency());
-            cfg.AddHerrGeneralTestLogger(output);
-
-            cfg.UseHerrGeneral(configuration =>
+        var services = new ServiceCollection()
+            .AddSingleton<Dependency>(new Dependency())
+            .AddHerrGeneralTestLogger(output)
+            .UseHerrGeneral(configuration =>
             {
                 configuration
                     .MapCommandHandler<Ping, ICommandHandler<Ping>>()
@@ -47,29 +45,27 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
                 
                 return configuration;
             });
-        });
 
-        var mediator = container.GetInstance<Mediator>();
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = serviceProvider.GetRequiredService<Mediator>();
 
         var response = await mediator.Send(new Ping());
 
         response.ShouldBe(Result.Success());
-        container.GetInstance<Dependency>().Called.ShouldBe(true);
+        serviceProvider.GetRequiredService<Dependency>().Called.ShouldBe(true);
     }
 
     [Fact]
     public async Task Raise_exception_if_no_command_handler_registered()
     {
-        var container = new Container(cfg =>
-        {
-            cfg.ForSingletonOf<Dependency>().Use(new Dependency());
-
-            cfg.UseHerrGeneral(scanner =>
+        var services = new ServiceCollection()
+            .AddSingleton<Dependency>(new Dependency())
+            .UseHerrGeneral(scanner =>
                 scanner
                     .UseWriteSideAssembly(typeof(PingHandler).Assembly, "empty.namespace"));
-        });
 
-        var mediator = container.GetInstance<Mediator>();
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = serviceProvider.GetRequiredService<Mediator>();
 
         await Should.ThrowAsync<MissingCommandHandlerRegistrationException>(async () => await mediator.Send(new Ping()));
     }

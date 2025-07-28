@@ -5,7 +5,6 @@ using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
 using Xunit.Abstractions;
-using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
@@ -14,24 +13,23 @@ namespace HerrGeneral.WriteSide.DDD.Test;
 public class CreateAggregateShould
 {
     private readonly Mediator _mediator;
-    private readonly Container _container;
+    private readonly IServiceProvider _container;
 
     public CreateAggregateShould(ITestOutputHelper output)
     {
-        _container = new Container(cfg =>
-        {
-            cfg.AddHerrGeneralTestLogger(output);
-            cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
-            cfg.AddSingleton<FriendAddedCounter>();
-            cfg
-                .UseHerrGeneral(configuration =>
-                    configuration
-                        .UseReadSideAssembly(typeof(Person).Assembly, typeof(Friends).Namespace!)
-                )
-                .RegisterDDDHandlers(typeof(Person).Assembly);
-        });
-        
-        _mediator = _container.GetInstance<Mediator>();
+        var services = new ServiceCollection()
+            .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
+            .AddHerrGeneralTestLogger(output)
+            .AddSingleton<FriendAddedCounter>(_ => new FriendAddedCounter())
+            .UseHerrGeneral(configuration =>
+                configuration
+                    .UseReadSideAssembly(typeof(Person).Assembly, typeof(Friends).Namespace!)
+            )
+            .RegisterDDDHandlers(typeof(Person).Assembly);
+
+        _container = services.BuildServiceProvider();
+
+        _mediator = _container.GetRequiredService<Mediator>();
     }
 
     [Fact]
@@ -44,17 +42,17 @@ public class CreateAggregateShould
     {
         await new CreatePerson("John", "Alfred").SendFromMediator(_mediator);
 
-        _container.GetInstance<FriendAddedCounter>()
+        _container.GetRequiredService<FriendAddedCounter>()
             .Value
             .ShouldBe(1);
     }
-    
+
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
         await new CreatePerson("John", "Alfred").SendFromMediator(_mediator);
 
-        _container.GetInstance<Friends>()
+        _container.GetRequiredService<Friends>()
             .Names()
             .ShouldBe(["Alfred"]);
     }

@@ -6,7 +6,7 @@ using HerrGeneral.Test;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
 using HerrGeneral.WriteSide;
-using Lamar;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
 
@@ -22,10 +22,10 @@ public class RegistrationShould(ITestOutputHelper output)
         public (IEnumerable<object> Events, Unit Result) Handle(Ping command)
         {
             dependency.Called = true;
-            return ( [], Unit.Default);
+            return ([], Unit.Default);
         }
     }
-    
+
     private class Dependency
     {
         public bool Called { get; set; }
@@ -34,37 +34,34 @@ public class RegistrationShould(ITestOutputHelper output)
     [Fact]
     public async Task Resolve_main_handler()
     {
-        var container = new Container(cfg =>
-        {
-            cfg.ForSingletonOf<Dependency>().Use(new Dependency());
-
-            cfg.AddHerrGeneralTestLogger(output);
-
-            cfg.UseHerrGeneral(scanner =>
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .UseHerrGeneral(scanner =>
                 scanner.UseWriteSideAssembly(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!));
-        });
 
-        var mediator = container.GetInstance<Mediator>();
+        services.AddSingleton<Dependency>();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = serviceProvider.GetRequiredService<Mediator>();
 
         var response = await mediator.Send(new Ping());
 
         response.ShouldBe(Result.Success());
-        container.GetInstance<Dependency>().Called.ShouldBe(true);
+        serviceProvider.GetRequiredService<Dependency>().Called.ShouldBe(true);
     }
 
     [Fact]
     public async Task Raise_exception_if_no_command_handler_registered()
     {
-        var container = new Container(cfg =>
-        {
-            cfg.ForSingletonOf<Dependency>().Use(new Dependency());
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .UseHerrGeneral(scanner =>
+                scanner.UseWriteSideAssembly(typeof(PingHandler).Assembly, "empty.namespace"));
 
-            cfg.UseHerrGeneral(scanner =>
-                scanner
-                    .UseWriteSideAssembly(typeof(PingHandler).Assembly, "empty.namespace"));
-        });
+        services.AddSingleton<Dependency>();
 
-        var mediator = container.GetInstance<Mediator>();
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = serviceProvider.GetRequiredService<Mediator>();
 
         await Should.ThrowAsync<MissingCommandHandlerRegistrationException>(async () => await mediator.Send(new Ping()));
     }
@@ -72,38 +69,37 @@ public class RegistrationShould(ITestOutputHelper output)
     [Fact]
     public void Resolve_handlers_when_a_class_implements_multiple_handlers()
     {
-        var container = new Container(cfg =>
-        {
-            cfg.AddHerrGeneralTestLogger(output);
-
-            cfg.UseHerrGeneral(scanner =>
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .UseHerrGeneral(scanner =>
                 scanner
                     .UseReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!)
                     .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>());
-        });
+
+        var container = services.BuildServiceProvider();
 
         container
-            .GetInstance<ReadSide.IEventHandler<AnotherPong>>()
+            .GetRequiredService<ReadSide.IEventHandler<AnotherPong>>()
             .ShouldBeOfType<EventHandlerWithMapping<AnotherPong, ReadModelWithMultipleHandlers.Repository>>();
 
         container
-            .GetInstance<ReadSide.IEventHandler<Pong>>()
+            .GetRequiredService<ReadSide.IEventHandler<Pong>>()
             .ShouldBeOfType<EventHandlerWithMapping<Pong, ReadModelWithMultipleHandlers.Repository>>();
     }
 
     [Fact]
     public void Register_read_side_repositories_as_singleton()
     {
-        var container = new Container(cfg =>
-        {
-            cfg.AddHerrGeneralTestLogger(output);
-
-            cfg.UseHerrGeneral(scanner =>
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .UseHerrGeneral(scanner =>
                 scanner
                     .UseReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!)
                     .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>());
-        });
 
-        container.GetInstance<ReadModel.Repository>().Id.ShouldBe(container.GetInstance<ReadModel.Repository>().Id);
+
+        var container = services.BuildServiceProvider();
+
+        container.GetRequiredService<ReadModel.Repository>().Id.ShouldBe(container.GetRequiredService<ReadModel.Repository>().Id);
     }
 }

@@ -2,7 +2,7 @@ using HerrGeneral.Core;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
-using Lamar;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
 
@@ -14,26 +14,24 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
         [Fact]
         public void Dispatch_event()
         {
-            var container = new Container(cfg =>
-            {
-                cfg.AddHerrGeneralTestLogger(output);
-
-                cfg.ForSingletonOf<ReadModel>().Use<ReadModel>();
-
-                cfg.UseHerrGeneral(scanner =>
+            var services = new ServiceCollection()
+                .AddHerrGeneralTestLogger(output)
+                .UseHerrGeneral(scanner =>
                     scanner
                         .UseWriteSideAssembly(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!)
                         .UseReadSideAssembly(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!));
-            });
-            var operationId = UnitOfWorkId.New();
 
-            container.GetInstance<IAddEventToDispatch>().AddEventToDispatch(operationId, new Pong(
+            services.AddSingleton<ReadModel, ReadModel>();
+
+            var operationId = UnitOfWorkId.New();
+            var container = services.BuildServiceProvider();
+            container.GetRequiredService<IAddEventToDispatch>().AddEventToDispatch(operationId, new Pong(
                 "Pong received",
                 Guid.NewGuid(),
                 Guid.NewGuid()));
-            container.GetInstance<Core.ReadSide.ReadSideEventDispatcher>().Dispatch(operationId, CancellationToken.None);
+            container.GetRequiredService<Core.ReadSide.ReadSideEventDispatcher>().Dispatch(operationId, CancellationToken.None);
 
-            container.GetInstance<ReadModel>().Message.ShouldBe("Pong received");
+            container.GetRequiredService<ReadModel>().Message.ShouldBe("Pong received");
         }
 
         private class ReadModel
@@ -55,7 +53,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
 
             public PongHandler(ReadModel readModel) => _readModel = readModel;
 
-            public void Handle(Pong notification) => 
+            public void Handle(Pong notification) =>
                 _readModel.Message = notification.Message;
         }
     }

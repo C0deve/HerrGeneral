@@ -3,28 +3,26 @@ using HerrGeneral.Core.DDD;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.SampleApplication.ReadSide;
 using HerrGeneral.SampleApplication.WriteSide;
-using HerrGeneral.WriteSide;
 using HerrGeneral.WriteSide.DDD;
-using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-var container = new Container(cfg =>
-{
-    cfg.AddLogging(builder => builder
+var services = new ServiceCollection()
+    .AddLogging(builder => builder
         .SetMinimumLevel(LogLevel.Debug)
-        .AddSimpleConsole());
-    cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
-    cfg.AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
-    cfg.UseHerrGeneral(configuration =>
+        .AddSimpleConsole())
+    .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
+    .AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
+    .UseHerrGeneral(configuration =>
             configuration
                 .UseReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
         )
-        .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
-});
+    .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
+
+var serviceProvider = services.BuildServiceProvider();
 Console.WriteLine("Initialization Ok");
 
-var mediator = container.GetInstance<Mediator>();
+var mediator = serviceProvider.GetRequiredService<Mediator>();
 
 var smithId = Guid.Empty;
 
@@ -35,17 +33,17 @@ await mediator
     .Then(personId =>
     {
         smithId = personId;
-        DisplayFriend(container, smithId);
+        DisplayFriend(serviceProvider, smithId);
         Console.WriteLine("Set Theo as a friend");
         return mediator.Send(new SetFriend(personId, "Theo"));
     })
     .Then(() =>
     {
-        DisplayFriend(container, smithId);
+        DisplayFriend(serviceProvider, smithId);
         Console.WriteLine("Set Alfred as a friend");
         return mediator.Send(new SetFriend(smithId, "Alfred"));
     })
-    .Match(() => DisplayFriend(container, smithId),
+    .Match(() => DisplayFriend(serviceProvider, smithId),
         _ => Console.WriteLine("Fail"),
         _ => Console.WriteLine("Fail"));
 
@@ -53,8 +51,8 @@ await mediator
 Console.ReadKey();
 return;
 
-void DisplayFriend(IServiceContext container1, Guid guid)
+void DisplayFriend(IServiceProvider serviceProvider1, Guid guid)
 {
-    var rm = container1.GetInstance<PersonFriendRM.PersonFriendRMRepository>().Get(guid);
+    var rm = serviceProvider1.GetRequiredService<PersonFriendRM.PersonFriendRMRepository>().Get(guid);
     Console.WriteLine($"{rm.Person} friend is {rm.Friend}.");
 }

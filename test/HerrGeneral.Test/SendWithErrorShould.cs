@@ -3,7 +3,7 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
 using HerrGeneral.Test.Data.ReadSide;
 using HerrGeneral.Test.Data.WriteSide;
-using Lamar;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 // ReSharper disable once CheckNamespace
@@ -15,14 +15,11 @@ public class SendWithErrorShould
 
     public SendWithErrorShould(ITestOutputHelper output)
     {
-        var container = new Container(cfg =>
-        {
-            cfg.AddHerrGeneralTestLogger(output);
-
-            cfg.ForSingletonOf<Dependency>().Use(new Dependency());
-            cfg.ForSingletonOf<ReadModel>().Use(new ReadModel());
-
-            cfg.UseHerrGeneral(x =>
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .AddSingleton<Dependency>(new Dependency())
+            .AddSingleton(new ReadModel())
+            .UseHerrGeneral(x =>
                 x
                     .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
@@ -31,9 +28,9 @@ public class SendWithErrorShould
                     .MapEventHandlerOnWriteSide<EventBase, Test.Data.WriteSide.ILocalEventHandler<EventBase>>()
                     .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>()
             );
-        });
         
-        _mediator = container.GetInstance<Mediator>();
+        var serviceProvider = services.BuildServiceProvider();
+        _mediator = serviceProvider.GetRequiredService<Mediator>();
     }
 
 

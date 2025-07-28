@@ -4,7 +4,6 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
-using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
@@ -14,23 +13,23 @@ namespace HerrGeneral.WriteSide.DDD.Test;
 public class ChangeAggregateShould
 {
     private readonly Mediator _mediator;
-    private readonly Container _container;
+    private readonly IServiceProvider _container;
 
     public ChangeAggregateShould(ITestOutputHelper output)
     {
-        _container = new Container(cfg =>
-        {
-            cfg.AddHerrGeneralTestLogger(output);
-            cfg.ForSingletonOf<IAggregateRepository<Person>>().Use<PersonRepository>();
-            cfg.AddSingleton<FriendAddedCounter>();
-            cfg.UseHerrGeneral(configuration =>
-                    configuration
-                        .UseReadSideAssembly(typeof(Person).Assembly, typeof(Friends).Namespace!)
-                )
-                .RegisterDDDHandlers(typeof(Person).Assembly);
-        });
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
+            .AddSingleton<FriendAddedCounter>()
+            .UseHerrGeneral(configuration =>
+                configuration
+                    .UseReadSideAssembly(typeof(Person).Assembly, typeof(Friends).Namespace!)
+            )
+            .RegisterDDDHandlers(typeof(Person).Assembly);
+        
+        _container = services.BuildServiceProvider();
 
-        _mediator = _container.GetInstance<Mediator>();
+        _mediator = _container.GetRequiredService<Mediator>();
     }
 
     [Fact]
@@ -46,10 +45,10 @@ public class ChangeAggregateShould
     {
         await new CreatePerson("John", "Alfred")
             .SendFromMediator(_mediator)
-            .Then(personId => 
+            .Then(personId =>
                 new AddFriend("Adams", personId).SendFromMediator(_mediator));
 
-        _container.GetInstance<FriendAddedCounter>()
+        _container.GetRequiredService<FriendAddedCounter>()
             .Value
             .ShouldBe(2);
     }
@@ -59,10 +58,10 @@ public class ChangeAggregateShould
     {
         await new CreatePerson("John", "Alfred")
             .SendFromMediator(_mediator)
-            .Then(personId => 
+            .Then(personId =>
                 new AddFriend("Adams", personId).SendFromMediator(_mediator));
 
-        _container.GetInstance<Friends>()
+        _container.GetRequiredService<Friends>()
             .Names()
             .ShouldBe(["Alfred", "Adams"]);
     }
