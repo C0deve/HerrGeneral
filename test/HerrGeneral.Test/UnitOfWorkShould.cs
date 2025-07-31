@@ -2,8 +2,9 @@ using FakeItEasy;
 using HerrGeneral.Core;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
-using HerrGeneral.Test.Data.ReadSide;
-using HerrGeneral.Test.Data.WriteSide;
+using HerrGeneral.Test.Data.WithHerrGeneralDependency.ReadSide;
+using HerrGeneral.Test.Data.WithMapping.ReadSide;
+using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
@@ -16,11 +17,13 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     public async Task Not_be_mandatory()
     {
         var services = new ServiceCollection()
-            .AddSingleton<Dependency2>()
+            .AddSingleton<CommandTracker1>()
+            .AddSingleton<CommandTracker2>()
+            .AddSingleton<CommandTracker3>()
             .AddHerrGeneralTestLogger(output)
             .UseHerrGeneral(scanner =>
                 scanner
-                    .UseWriteSideAssembly(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!)
+                    .ScanWriteSideOn(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
             );
 
@@ -29,7 +32,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
             .GetRequiredService<Mediator>();
 
         await mediator
-            .Send(new Ping { Message = "Ping" })
+            .Send(new Ping())
             .ShouldSuccess();
     }
 
@@ -38,18 +41,18 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<IUnitOfWork>(_ => unitOfWork)
-            .AddSingleton<Dependency>()
-            .AddSingleton<Dependency2>()
-            .AddSingleton<ReadModel>()
-            .AddSingleton<ReadModelWithMultipleHandlers>()
+            .AddSingleton<CommandTracker1>()
+            .AddSingleton<CommandTracker2>()
+            .AddSingleton<CommandTracker3>()
+            .AddSingleton<AReadModelWithMultipleHandlers>()
             .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
             .UseHerrGeneral(scanner =>
                 scanner
-                    .UseWriteSideAssembly(typeof(Ping).Assembly, typeof(Ping).Namespace!)
-                    .UseReadSideAssembly(typeof(Ping).Assembly, typeof(ReadModel).Namespace!)
+                    .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
+                    .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .MapEventHandlerOnWriteSide<EventBase, HerrGeneral.Test.Data.WriteSide.ILocalEventHandler<EventBase>>()
-                    .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>()
+                    .MapWriteSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>>()
+                    .MapReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
             );
 
         return services
@@ -62,7 +65,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
         var mediator = BuildMediator(unitOfWork);
-        var ping = new Ping { Message = "Ping" };
+        var ping = new Ping();
 
         await mediator
             .Send(ping)
@@ -76,7 +79,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
         var mediator = BuildMediator(unitOfWork);
-        var ping = new Ping { Message = "Ping" };
+        var ping = new Ping();
 
         await mediator.Send(ping);
 

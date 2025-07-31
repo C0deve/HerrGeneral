@@ -23,7 +23,7 @@ public class CreateAggregateShould
             .AddSingleton<FriendAddedCounter>(_ => new FriendAddedCounter())
             .UseHerrGeneral(configuration =>
                 configuration
-                    .UseReadSideAssembly(typeof(Person).Assembly, typeof(Friends).Namespace!)
+                    .ScanReadSideOn(typeof(Person).Assembly, typeof(Friends).Namespace!)
             )
             .RegisterDDDHandlers(typeof(Person).Assembly);
 

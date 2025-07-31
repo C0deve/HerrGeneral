@@ -15,7 +15,7 @@ var services = new ServiceCollection()
     .AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
     .UseHerrGeneral(configuration =>
             configuration
-                .UseReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
+                .ScanReadSideOn(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
         )
     .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
 

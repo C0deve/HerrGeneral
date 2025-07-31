@@ -2,7 +2,7 @@
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.WriteSide;
 using HerrGeneral.Test;
-using HerrGeneral.Test.Data.WriteSide;
+using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using HerrGeneral.WriteSide;
 using Shouldly;
 
@@ -16,11 +16,14 @@ public class EventHandlerWithMappingShould
     {
         var mappers = new EventHandlerMappingRegistration();
         mappers.AddMapping<EventBase, IEventHandler<EventBase>>();
-        var dependency = new Dependency();
+        var dependency = new CommandTracker2();
         var sut = new EventHandlerWithMapping<Pong, PongHandler>(new PongHandler(dependency), new EventHandlerMappings(mappers));
 
-        sut.Handle(new Pong("", Guid.NewGuid(), Guid.NewGuid()));
+        var sourceCommandId = Guid.NewGuid();
+        sut.Handle(new Pong(sourceCommandId, Guid.NewGuid()));
             
-        dependency.Called.ShouldBeTrue();
+        dependency
+            .HasHandled(sourceCommandId)
+            .ShouldBeTrue();
     }
 }

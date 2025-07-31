@@ -1,6 +1,6 @@
 ﻿using HerrGeneral.Core;
 using HerrGeneral.Core.WriteSide;
-using HerrGeneral.Test.Data.WriteSide;
+using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using Shouldly;
 
 // ReSharper disable once CheckNamespace
@@ -14,11 +14,12 @@ public class CommandHandlerWithMappingShould
         var mappers = new CommandHandlerMappings();
         mappers.AddMapping<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(x => x.Events);
 
-        var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(), mappers);
+        var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(new CommandTracker1()), mappers);
 
         sut.Handle(new Ping())
             .Events
-            .ShouldBe([Ping.Handler.LastPong]);
+            .Count()
+            .ShouldBe(1);
     }
 
     [Fact]
@@ -29,11 +30,12 @@ public class CommandHandlerWithMappingShould
             ILocalCommandHandler<CommandBase, Unit>,
             MyResult<Unit>>(x => x.Events);
 
-        var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(), mappers);
+        var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(new CommandTracker1()), mappers);
 
         sut.Handle(new Ping())
             .Events
-            .ShouldBe([Ping.Handler.LastPong]);
+            .Count()
+            .ShouldBe(1);
     }
 
     [Fact]

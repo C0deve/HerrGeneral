@@ -1,7 +1,7 @@
 ﻿using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
-using HerrGeneral.Test.Data.WriteSide;
+using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using HerrGeneral.WriteSide;
 using Shouldly;
 

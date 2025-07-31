@@ -3,8 +3,8 @@ using HerrGeneral.Core.Error;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
-using HerrGeneral.Test.Data.ReadSide;
-using HerrGeneral.Test.Data.WriteSide;
+using HerrGeneral.Test.Data.WithMapping.ReadSide;
+using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -37,7 +37,7 @@ public class RegistrationShould(ITestOutputHelper output)
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
             .UseHerrGeneral(scanner =>
-                scanner.UseWriteSideAssembly(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!));
+                scanner.ScanWriteSideOn(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!));
 
         services.AddSingleton<Dependency>();
 
@@ -56,7 +56,7 @@ public class RegistrationShould(ITestOutputHelper output)
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
             .UseHerrGeneral(scanner =>
-                scanner.UseWriteSideAssembly(typeof(PingHandler).Assembly, "empty.namespace"));
+                scanner.ScanWriteSideOn(typeof(PingHandler).Assembly, "empty.namespace"));
 
         services.AddSingleton<Dependency>();
 
@@ -70,38 +70,37 @@ public class RegistrationShould(ITestOutputHelper output)
     public void Resolve_handlers_when_a_class_implements_multiple_handlers()
     {
         var services = new ServiceCollection()
-            .AddSingleton<ReadModelWithMultipleHandlers>()
+            .AddSingleton<AReadModelWithMultipleHandlers>()
             .AddHerrGeneralTestLogger(output)
             .UseHerrGeneral(scanner =>
                 scanner
-                    .UseReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!)
-                    .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>());
+                    .ScanReadSideOn(typeof(AReadModelWithMultipleHandlers).Assembly, typeof(AReadModelWithMultipleHandlers).Namespace!)
+                    .MapReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>());
 
         var container = services.BuildServiceProvider();
 
         container
             .GetRequiredService<ReadSide.IEventHandler<AnotherPong>>()
-            .ShouldBeOfType<EventHandlerWithMapping<AnotherPong, ReadModelWithMultipleHandlers.Repository>>();
+            .ShouldBeOfType<EventHandlerWithMapping<AnotherPong, AReadModelWithMultipleHandlers>>();
 
         container
             .GetRequiredService<ReadSide.IEventHandler<Pong>>()
-            .ShouldBeOfType<EventHandlerWithMapping<Pong, ReadModelWithMultipleHandlers.Repository>>();
+            .ShouldBeOfType<EventHandlerWithMapping<Pong, AReadModelWithMultipleHandlers>>();
     }
 
     [Fact]
     public void Register_read_side_repositories_as_singleton()
     {
         var services = new ServiceCollection()
-            .AddSingleton<ReadModel>()
             .AddHerrGeneralTestLogger(output)
             .UseHerrGeneral(scanner =>
                 scanner
-                    .UseReadSideAssembly(typeof(ReadModelWithMultipleHandlers).Assembly, typeof(ReadModelWithMultipleHandlers).Namespace!)
-                    .MapEventHandlerOnReadSide<EventBase, HerrGeneral.Test.Data.ReadSide.ILocalEventHandler<EventBase>>());
+                    .ScanReadSideOn(typeof(AReadModelWithMultipleHandlers).Assembly, typeof(AReadModelWithMultipleHandlers).Namespace!)
+                    .MapReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>());
 
 
         var container = services.BuildServiceProvider();
 
-        container.GetRequiredService<ReadModel.Repository>().Id.ShouldBe(container.GetRequiredService<ReadModel.Repository>().Id);
+        container.GetRequiredService<AReadModel>().Id.ShouldBe(container.GetRequiredService<AReadModel>().Id);
     }
 }

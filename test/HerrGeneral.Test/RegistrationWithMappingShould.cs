@@ -41,7 +41,7 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
             {
                 configuration
                     .MapCommandHandler<Ping, ICommandHandler<Ping>>()
-                    .UseWriteSideAssembly(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!);
+                    .ScanWriteSideOn(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!);
                 
                 return configuration;
             });
@@ -62,7 +62,7 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
             .AddSingleton<Dependency>(new Dependency())
             .UseHerrGeneral(scanner =>
                 scanner
-                    .UseWriteSideAssembly(typeof(PingHandler).Assembly, "empty.namespace"));
+                    .ScanWriteSideOn(typeof(PingHandler).Assembly, "empty.namespace"));
 
         var serviceProvider = services.BuildServiceProvider();
         var mediator = serviceProvider.GetRequiredService<Mediator>();

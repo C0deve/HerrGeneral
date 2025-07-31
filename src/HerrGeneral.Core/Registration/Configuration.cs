@@ -60,7 +60,7 @@ public class Configuration
     /// <param name="assembly">The assembly to scan for read side event handlers.</param>
     /// <param name="namespaces">Optional list of namespaces to limit the search. If not specified, the entire assembly will be scanned.</param>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration UseReadSideAssembly(Assembly assembly, params string[] namespaces)
+    public Configuration ScanReadSideOn(Assembly assembly, params string[] namespaces)
     {
         _readSideSearchParams.Add(new ScanParam(assembly, namespaces));
         return this;
@@ -73,7 +73,7 @@ public class Configuration
     /// <param name="assembly">The assembly to scan for write side command and event handlers.</param>
     /// <param name="namespaces">Optional list of namespaces to limit the search. If not specified, the entire assembly will be scanned.</param>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration UseWriteSideAssembly(Assembly assembly, params string[] namespaces)
+    public Configuration ScanWriteSideOn(Assembly assembly, params string[] namespaces)
     {
         _writeSideSearchParams.Add(new ScanParam(assembly, namespaces));
         return this;
@@ -99,7 +99,7 @@ public class Configuration
     internal void ThrowIfNotValid()
     {
         if (_writeSideSearchParams.Count == 0 && _readSideSearchParams.Count == 0)
-            throw new InvalidOperationException($"No assembly to scan. Use {nameof(UseWriteSideAssembly)} or {nameof(UseReadSideAssembly)} to specify on which assemblies to scan");
+            throw new InvalidOperationException($"No assembly to scan. Use {nameof(ScanWriteSideOn)} or {nameof(ScanReadSideOn)} to specify on which assemblies to scan");
     }
     
     /// <summary>
@@ -156,7 +156,7 @@ public class Configuration
     /// <typeparam name="TEvent">The type of event to process.</typeparam>
     /// <typeparam name="THandler">The type of event handler to register.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration MapEventHandlerOnWriteSide<TEvent, THandler>()
+    public Configuration MapWriteSideEventHandler<TEvent, THandler>()
     {
         WriteSideEventHandlerMappings.AddMapping<TEvent, THandler>();
         return this;
@@ -169,7 +169,7 @@ public class Configuration
     /// <typeparam name="TEvent">The type of event to process.</typeparam>
     /// <typeparam name="THandler">The type of event handler to register.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration MapEventHandlerOnReadSide<TEvent, THandler>()
+    public Configuration MapReadSideEventHandler<TEvent, THandler>()
     {
         ReadSideEventHandlerMappings.AddMapping<TEvent, THandler>();
         return this;

@@ -18,16 +18,17 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
                 .AddHerrGeneralTestLogger(output)
                 .UseHerrGeneral(scanner =>
                     scanner
-                        .UseWriteSideAssembly(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!)
-                        .UseReadSideAssembly(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!));
+                        .ScanWriteSideOn(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!)
+                        .ScanReadSideOn(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!));
 
             services.AddSingleton<ReadModel, ReadModel>();
 
             var operationId = UnitOfWorkId.New();
             var container = services.BuildServiceProvider();
+            var commandId = Guid.NewGuid();
             container.GetRequiredService<IAddEventToDispatch>().AddEventToDispatch(operationId, new Pong(
                 "Pong received",
-                Guid.NewGuid(),
+                commandId,
                 Guid.NewGuid()));
             container.GetRequiredService<Core.ReadSide.ReadSideEventDispatcher>().Dispatch(operationId, CancellationToken.None);
 

@@ -1,5 +1,5 @@
 ﻿using HerrGeneral.Core.Error;
-using HerrGeneral.Test.Data.WriteSide;
+using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using Shouldly;
 
 // ReSharper disable once CheckNamespace
