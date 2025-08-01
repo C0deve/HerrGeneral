@@ -36,7 +36,7 @@ public class RegistrationShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .UseHerrGeneral(scanner =>
+            .AddHerrGeneral(scanner =>
                 scanner.ScanWriteSideOn(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!));
 
         services.AddSingleton<Dependency>();
@@ -55,7 +55,7 @@ public class RegistrationShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .UseHerrGeneral(scanner =>
+            .AddHerrGeneral(scanner =>
                 scanner.ScanWriteSideOn(typeof(PingHandler).Assembly, "empty.namespace"));
 
         services.AddSingleton<Dependency>();
@@ -72,7 +72,7 @@ public class RegistrationShould(ITestOutputHelper output)
         var services = new ServiceCollection()
             .AddSingleton<AReadModelWithMultipleHandlers>()
             .AddHerrGeneralTestLogger(output)
-            .UseHerrGeneral(scanner =>
+            .AddHerrGeneral(scanner =>
                 scanner
                     .ScanReadSideOn(typeof(AReadModelWithMultipleHandlers).Assembly, typeof(AReadModelWithMultipleHandlers).Namespace!)
                     .MapReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>());
@@ -93,7 +93,7 @@ public class RegistrationShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .UseHerrGeneral(scanner =>
+            .AddHerrGeneral(scanner =>
                 scanner
                     .ScanReadSideOn(typeof(AReadModelWithMultipleHandlers).Assembly, typeof(AReadModelWithMultipleHandlers).Namespace!)
                     .MapReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>());

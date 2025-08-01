@@ -37,7 +37,7 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
         var services = new ServiceCollection()
             .AddSingleton<Dependency>(new Dependency())
             .AddHerrGeneralTestLogger(output)
-            .UseHerrGeneral(configuration =>
+            .AddHerrGeneral(configuration =>
             {
                 configuration
                     .MapCommandHandler<Ping, ICommandHandler<Ping>>()
@@ -60,7 +60,7 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddSingleton<Dependency>(new Dependency())
-            .UseHerrGeneral(scanner =>
+            .AddHerrGeneral(scanner =>
                 scanner
                     .ScanWriteSideOn(typeof(PingHandler).Assembly, "empty.namespace"));
 

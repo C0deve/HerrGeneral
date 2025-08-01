@@ -23,7 +23,7 @@ public static class ServiceExtension
     /// <param name="serviceCollection">The application's service collection to which HerrGeneral services will be added</param>
     /// <param name="configurationDelegate">A delegate function that configures HerrGeneral by specifying assemblies to scan and registering custom handlers</param>
     /// <returns>The service collection with all HerrGeneral services registered</returns>
-    public static IServiceCollection UseHerrGeneral(
+    public static IServiceCollection AddHerrGeneral(
         this IServiceCollection serviceCollection,
         Func<Configuration, Configuration> configurationDelegate
     )

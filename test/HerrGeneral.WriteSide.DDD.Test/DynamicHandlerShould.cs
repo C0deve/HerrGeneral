@@ -18,7 +18,7 @@ public class DynamicHandlerShould
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
             .AddSingleton<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
-            .UseHerrGeneral(configuration => configuration)
+            .AddHerrGeneral(configuration => configuration)
             .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly);
 
         _mediator = services

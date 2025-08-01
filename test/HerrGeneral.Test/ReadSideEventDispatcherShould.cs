@@ -16,7 +16,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
         {
             var services = new ServiceCollection()
                 .AddHerrGeneralTestLogger(output)
-                .UseHerrGeneral(scanner =>
+                .AddHerrGeneral(scanner =>
                     scanner
                         .ScanWriteSideOn(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!)
                         .ScanReadSideOn(typeof(PongHandler).Assembly, typeof(PongHandler).Namespace!));

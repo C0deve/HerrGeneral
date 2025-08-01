@@ -21,7 +21,7 @@ public class CreateAggregateShould
             .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<FriendAddedCounter>(_ => new FriendAddedCounter())
-            .UseHerrGeneral(configuration =>
+            .AddHerrGeneral(configuration =>
                 configuration
                     .ScanReadSideOn(typeof(Person).Assembly, typeof(Friends).Namespace!)
             )

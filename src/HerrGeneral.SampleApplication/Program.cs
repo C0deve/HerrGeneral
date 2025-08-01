@@ -13,7 +13,7 @@ var services = new ServiceCollection()
         .AddSimpleConsole())
     .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
     .AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
-    .UseHerrGeneral(configuration =>
+    .AddHerrGeneral(configuration =>
             configuration
                 .ScanReadSideOn(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
         )

@@ -21,7 +21,7 @@ public class SendWithMappingShould
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<CommandTracker1>()
             .AddSingleton<CommandTracker2>()
-            .UseHerrGeneral(configuration =>
+            .AddHerrGeneral(configuration =>
                 configuration
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(it => it.Events, it => it.Result)

@@ -20,7 +20,7 @@ public class SendWitHerrGeneralDependencyShould
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<CommandTracker3>()
-            .UseHerrGeneral(configuration =>
+            .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(PingWithDependenceOnHerrGeneral).Namespace!)
                     .ScanReadSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(ReadModelWithMultipleHandlersAndInheritingIEventHandler).Namespace!));

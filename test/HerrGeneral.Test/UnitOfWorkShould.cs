@@ -21,7 +21,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
             .AddSingleton<CommandTracker2>()
             .AddSingleton<CommandTracker3>()
             .AddHerrGeneralTestLogger(output)
-            .UseHerrGeneral(scanner =>
+            .AddHerrGeneral(scanner =>
                 scanner
                     .ScanWriteSideOn(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
@@ -46,7 +46,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
             .AddSingleton<CommandTracker3>()
             .AddSingleton<AReadModelWithMultipleHandlers>()
             .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
-            .UseHerrGeneral(scanner =>
+            .AddHerrGeneral(scanner =>
                 scanner
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!)
