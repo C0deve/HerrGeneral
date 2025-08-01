@@ -7,26 +7,26 @@
 public interface IUnitOfWork
 {
     /// <summary>
-    /// Starts the transaction associated with command(sourceCommandId)
+    /// Starts the transaction associated with unit of work
     /// </summary>
-    /// <param name="sourceCommandId">Unique id of the command</param>
-    void Start(UnitOfWorkId sourceCommandId);
-
+    /// <param name="unitOfWorkId">Unique id of the unit of work</param>
+    void Start(UnitOfWorkId unitOfWorkId);
+    
     /// <summary>
-    /// Commits the transaction associated with command(sourceCommandId)
+    /// Commits the transaction associated with unit of work
     /// </summary>
-    /// <param name="sourceCommandId">Unique id of the command</param>
-    void Commit(UnitOfWorkId sourceCommandId);
-
+    /// <param name="unitOfWorkId">Unique id of the unit of work</param>
+    void Commit(UnitOfWorkId unitOfWorkId);
+    
     /// <summary>
-    /// RollBack the transaction associated with command(sourceCommandId)
+    /// Rolls back the transaction associated with unit of work
     /// </summary>
-    /// <param name="sourceCommandId">Unique id of the command</param>
-    void RollBack(UnitOfWorkId sourceCommandId);
-
+    /// <param name="unitOfWorkId">Unique id of the unit of work</param>
+    void RollBack(UnitOfWorkId unitOfWorkId);
+    
     /// <summary>
-    /// RollBack the transaction associated with command(sourceCommandId)
+    /// Disposes the transaction associated with unit of work
     /// </summary>
-    /// <param name="sourceCommandId">Unique id of the command</param>
-    void Dispose(UnitOfWorkId sourceCommandId);
+    /// <param name="unitOfWorkId">Unique id of the unit of work</param>
+    void Dispose(UnitOfWorkId unitOfWorkId);
 }
