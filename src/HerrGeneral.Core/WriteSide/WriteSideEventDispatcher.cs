@@ -26,14 +26,14 @@ internal class WriteSideEventDispatcher : EventDispatcherBase
 
     protected override Type WrapperOpenType => typeof(WriteSideEventHandlerWrapper<>);
 
-    public override void Dispatch(UnitOfWorkId commandId, object eventToDispatch, CancellationToken cancellationToken)
+    public override void Dispatch(UnitOfWorkId unitOfWorkId, object eventToDispatch, CancellationToken cancellationToken)
     {
         if(_logger.IsEnabled(LogLevel.Debug))
             _commandLogger
-                .GetStringBuilder(commandId)
+                .GetStringBuilder(unitOfWorkId)
                 .PublishEventOnWriteSide(eventToDispatch);
-                
-        base.Dispatch(commandId, eventToDispatch, cancellationToken);
-        _readSideEventDispatcher.AddEventToDispatch(commandId, eventToDispatch);
+
+        base.Dispatch(unitOfWorkId, eventToDispatch, cancellationToken);
+        _readSideEventDispatcher.AddEventToDispatch(unitOfWorkId, eventToDispatch);
     }
 }

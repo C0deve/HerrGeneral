@@ -28,35 +28,35 @@ internal class ReadSideEventDispatcher : EventDispatcherBase, IAddEventToDispatc
         _commandLogger = commandLogger;
     }
 
-    public void AddEventToDispatch(UnitOfWorkId commandId, object @event)
+    public void AddEventToDispatch(UnitOfWorkId unitOfWorkId, object @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
         _eventsToDispatch
-            .AddOrUpdate(commandId, [@event], (_, events) =>
+            .AddOrUpdate(unitOfWorkId, [@event], (_, events) =>
             {
                 events.Add(@event);
                 return events;
             });
     }
 
-    private IEnumerable<object> GetAndRemove(UnitOfWorkId commandId) =>
-        _eventsToDispatch.TryRemove(commandId, out var events)
+    private IEnumerable<object> GetAndRemove(UnitOfWorkId unitOfWorkId) =>
+        _eventsToDispatch.TryRemove(unitOfWorkId, out var events)
             ? events
             : Enumerable.Empty<object>();
 
-    public void Dispatch(UnitOfWorkId commandId, CancellationToken cancellationToken)
+    public void Dispatch(UnitOfWorkId unitOfWorkId, CancellationToken cancellationToken)
     {
         var stringBuilder = _logger.IsEnabled(LogLevel.Debug)
-            ? _commandLogger.GetStringBuilder(commandId)
+            ? _commandLogger.GetStringBuilder(unitOfWorkId)
             : null;
 
-        var eventsToPublish = GetAndRemove(commandId).ToList();
+        var eventsToPublish = GetAndRemove(unitOfWorkId).ToList();
         stringBuilder?.StartPublishEventsOnReadSide(eventsToPublish.Count);
         foreach (var eventToDispatch in eventsToPublish)
         {
             stringBuilder?.PublishEventOnReadSide(eventToDispatch);
-            Dispatch(commandId, eventToDispatch, cancellationToken);
+            Dispatch(unitOfWorkId, eventToDispatch, cancellationToken);
         }
     }
 }

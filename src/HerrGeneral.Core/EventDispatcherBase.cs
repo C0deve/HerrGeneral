@@ -24,11 +24,11 @@ internal abstract class EventDispatcherBase
     /// <summary>
     /// Dispatch the event using an instance of WrapperType
     /// </summary>
-    /// <param name="commandId"></param>
+    /// <param name="unitOfWorkId"></param>
     /// <param name="eventToDispatch"></param>
     /// <param name="cancellationToken"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public virtual void Dispatch(UnitOfWorkId commandId, object eventToDispatch, CancellationToken cancellationToken)
+    public virtual void Dispatch(UnitOfWorkId unitOfWorkId, object eventToDispatch, CancellationToken cancellationToken)
     {
         var wrapper = _eventHandlerWrappers.GetOrAdd(eventToDispatch.GetType(), eventTypeInput =>
         {
@@ -37,6 +37,6 @@ internal abstract class EventDispatcherBase
             return (IEventHandlerWrapper)wrapper;
         });
 
-        wrapper.Handle(commandId, eventToDispatch, _serviceProvider);
+        wrapper.Handle(unitOfWorkId, eventToDispatch, _serviceProvider);
     }
 }
