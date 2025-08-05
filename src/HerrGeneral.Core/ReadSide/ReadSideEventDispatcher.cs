@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using HerrGeneral.Core.Logger;
-using HerrGeneral.Core.WriteSide;
+﻿using HerrGeneral.Core.WriteSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -14,7 +12,7 @@ internal class ReadSideEventDispatcher : EventDispatcherBase, IAddEventToDispatc
     private readonly CommandLogger _commandLogger;
     protected override Type WrapperOpenType => typeof(EventHandlerWrapper<>);
 
-    private readonly ConcurrentDictionary<UnitOfWorkId, List<object>> _eventsToDispatch = new();
+    private readonly List<object> _eventsToDispatch = [];
 
     public ReadSideEventDispatcher(IServiceProvider serviceProvider, ILogger<ReadSideEventDispatcher> logger, CommandLogger commandLogger) : base(serviceProvider)
     {
@@ -28,35 +26,23 @@ internal class ReadSideEventDispatcher : EventDispatcherBase, IAddEventToDispatc
         _commandLogger = commandLogger;
     }
 
-    public void AddEventToDispatch(UnitOfWorkId unitOfWorkId, object @event)
+    public void AddEventToDispatch(object @event)
     {
         ArgumentNullException.ThrowIfNull(@event);
-
-        _eventsToDispatch
-            .AddOrUpdate(unitOfWorkId, [@event], (_, events) =>
-            {
-                events.Add(@event);
-                return events;
-            });
+        _eventsToDispatch.Add(@event);
     }
 
-    private IEnumerable<object> GetAndRemove(UnitOfWorkId unitOfWorkId) =>
-        _eventsToDispatch.TryRemove(unitOfWorkId, out var events)
-            ? events
-            : Enumerable.Empty<object>();
-
-    public void Dispatch(UnitOfWorkId unitOfWorkId, CancellationToken cancellationToken)
+    public void Dispatch()
     {
-        var stringBuilder = _logger.IsEnabled(LogLevel.Debug)
-            ? _commandLogger.GetStringBuilder(unitOfWorkId)
+        var commandLogger = _logger.IsEnabled(LogLevel.Debug)
+            ? _commandLogger
             : null;
 
-        var eventsToPublish = GetAndRemove(unitOfWorkId).ToList();
-        stringBuilder?.StartPublishEventsOnReadSide(eventsToPublish.Count);
-        foreach (var eventToDispatch in eventsToPublish)
+        commandLogger?.StartPublishEventsOnReadSide(_eventsToDispatch.Count);
+        foreach (var eventToDispatch in _eventsToDispatch)
         {
-            stringBuilder?.PublishEventOnReadSide(eventToDispatch);
-            Dispatch(unitOfWorkId, eventToDispatch, cancellationToken);
+            commandLogger?.PublishEventOnReadSide(eventToDispatch);
+            Dispatch(eventToDispatch);
         }
     }
 }

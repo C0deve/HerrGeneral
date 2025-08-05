@@ -32,10 +32,10 @@ public static class ServiceExtension
         RegisterWriteSide(serviceCollection, configuration);
         RegisterReadSide(serviceCollection, configuration);
 
-        serviceCollection.AddSingleton<CommandLogger>();
-        serviceCollection.AddSingleton<ReadSideEventDispatcher>();
-        serviceCollection.AddSingleton<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
-        serviceCollection.AddSingleton<WriteSideEventDispatcher>();
+        serviceCollection.AddScoped<CommandLogger>();
+        serviceCollection.AddScoped<ReadSideEventDispatcher>();
+        serviceCollection.AddScoped<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
+        serviceCollection.AddScoped<WriteSideEventDispatcher>();
         serviceCollection.AddSingleton<Mediator>();
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
         serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);

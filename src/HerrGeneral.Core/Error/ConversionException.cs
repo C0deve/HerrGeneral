@@ -1,6 +1,4 @@
-﻿using HerrGeneral.WriteSide;
-
-namespace HerrGeneral.Core.Error;
+﻿namespace HerrGeneral.Core.Error;
 
 /// <summary>
 /// The conversion of the external handler result to <see cref="Result{TResult}"/> failed 

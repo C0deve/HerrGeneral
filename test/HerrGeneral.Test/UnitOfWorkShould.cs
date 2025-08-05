@@ -40,7 +40,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IUnitOfWork>(_ => unitOfWork)
+            .AddScoped<IUnitOfWork>(_ => unitOfWork)
             .AddSingleton<CommandTracker1>()
             .AddSingleton<CommandTracker2>()
             .AddSingleton<CommandTracker3>()
@@ -71,7 +71,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
             .Send(ping)
             .ShouldSuccess();
 
-        A.CallTo(() => unitOfWork.Commit(A<UnitOfWorkId>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Commit()).MustHaveHappened();
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
         await mediator.Send(ping);
 
-        A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Dispose()).MustHaveHappened();
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
         await mediator.Send(ping);
 
-        A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Dispose()).MustHaveHappened();
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         await mediator.Send(ping);
 
 
-        A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Dispose()).MustHaveHappened();
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
         await mediator.Send(ping);
 
-        A.CallTo(() => unitOfWork.Dispose(A<UnitOfWorkId>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.Dispose()).MustHaveHappened();
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
         await mediator.Send(ping);
 
-        A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.RollBack()).MustHaveHappened();
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
         await mediator.Send(ping);
 
-        A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.RollBack()).MustHaveHappened();
     }
 
     [Fact]
@@ -156,6 +156,6 @@ public class UnitOfWorkShould(ITestOutputHelper output)
 
         await mediator.Send(ping);
 
-        A.CallTo(() => unitOfWork.RollBack(A<UnitOfWorkId>._)).MustHaveHappened();
+        A.CallTo(() => unitOfWork.RollBack()).MustHaveHappened();
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using HerrGeneral.Core.WriteSide;
-using HerrGeneral.WriteSide;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Core;
 
@@ -32,7 +32,9 @@ public class Mediator
             return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
         });
 
-        return await wrapper.Handle(command, _serviceProvider, cancellationToken).ConfigureAwait(false);
+        using var scope = _serviceProvider.CreateScope();
+        var scopedServiceProvider = scope.ServiceProvider;
+        return await wrapper.Handle(command, scopedServiceProvider, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -49,6 +51,8 @@ public class Mediator
             return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
         });
 
-        return await wrapper.Handle(command, _serviceProvider, cancellationToken).ConfigureAwait(false);
+        using var scope = _serviceProvider.CreateScope();
+        var scopedServiceProvider = scope.ServiceProvider;
+        return await wrapper.Handle(command, scopedServiceProvider, cancellationToken).ConfigureAwait(false);
     }
 }

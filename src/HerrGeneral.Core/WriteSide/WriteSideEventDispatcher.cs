@@ -1,4 +1,3 @@
-using HerrGeneral.Core.Logger;
 using HerrGeneral.Core.ReadSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -26,14 +25,13 @@ internal class WriteSideEventDispatcher : EventDispatcherBase
 
     protected override Type WrapperOpenType => typeof(WriteSideEventHandlerWrapper<>);
 
-    public override void Dispatch(UnitOfWorkId unitOfWorkId, object eventToDispatch, CancellationToken cancellationToken)
+    public override void Dispatch(object eventToDispatch)
     {
         if(_logger.IsEnabled(LogLevel.Debug))
             _commandLogger
-                .GetStringBuilder(unitOfWorkId)
                 .PublishEventOnWriteSide(eventToDispatch);
 
-        base.Dispatch(unitOfWorkId, eventToDispatch, cancellationToken);
-        _readSideEventDispatcher.AddEventToDispatch(unitOfWorkId, eventToDispatch);
+        base.Dispatch(eventToDispatch);
+        _readSideEventDispatcher.AddEventToDispatch(eventToDispatch);
     }
 }

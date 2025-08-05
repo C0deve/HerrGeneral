@@ -9,24 +9,20 @@ public interface IUnitOfWork
     /// <summary>
     /// Starts the transaction associated with unit of work
     /// </summary>
-    /// <param name="unitOfWorkId">Unique id of the unit of work</param>
-    void Start(UnitOfWorkId unitOfWorkId);
-    
+    void Start();
+
     /// <summary>
     /// Commits the transaction associated with unit of work
     /// </summary>
-    /// <param name="unitOfWorkId">Unique id of the unit of work</param>
-    void Commit(UnitOfWorkId unitOfWorkId);
-    
+    void Commit();
+
     /// <summary>
     /// Rolls back the transaction associated with unit of work
     /// </summary>
-    /// <param name="unitOfWorkId">Unique id of the unit of work</param>
-    void RollBack(UnitOfWorkId unitOfWorkId);
-    
+    void RollBack();
+
     /// <summary>
     /// Disposes the transaction associated with unit of work
     /// </summary>
-    /// <param name="unitOfWorkId">Unique id of the unit of work</param>
-    void Dispose(UnitOfWorkId unitOfWorkId);
+    void Dispose();
 }

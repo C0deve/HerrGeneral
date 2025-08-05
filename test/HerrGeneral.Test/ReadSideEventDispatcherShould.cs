@@ -1,4 +1,3 @@
-using HerrGeneral.Core;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
@@ -23,14 +22,12 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
 
             services.AddSingleton<ReadModel, ReadModel>();
 
-            var operationId = UnitOfWorkId.New();
             var container = services.BuildServiceProvider();
-            var commandId = Guid.NewGuid();
-            container.GetRequiredService<IAddEventToDispatch>().AddEventToDispatch(operationId, new Pong(
+            container.GetRequiredService<IAddEventToDispatch>().AddEventToDispatch(new Pong(
                 "Pong received",
-                commandId,
+                Guid.NewGuid(),
                 Guid.NewGuid()));
-            container.GetRequiredService<Core.ReadSide.ReadSideEventDispatcher>().Dispatch(operationId, CancellationToken.None);
+            container.GetRequiredService<Core.ReadSide.ReadSideEventDispatcher>().Dispatch();
 
             container.GetRequiredService<ReadModel>().Message.ShouldBe("Pong received");
         }
