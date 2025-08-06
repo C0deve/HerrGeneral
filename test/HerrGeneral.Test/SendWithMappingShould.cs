@@ -39,6 +39,21 @@ public class SendWithMappingShould
         await new Ping().SendFrom(_mediator)
             .ShouldSuccess();
 
+    [Fact]
+    public async Task Manage_parallel_processing()
+    {
+        var t1 = new Ping().SendFrom(_mediator)
+            .ShouldSuccess();
+        
+        var t2 = new Ping().SendFrom(_mediator)
+            .ShouldSuccess();
+        
+        var t3 = new Ping().SendFrom(_mediator)
+            .ShouldSuccess();
+        
+        await Task.WhenAll(t1, t2, t3);
+    }
+
 
     private static readonly Guid AggregateId = Guid.NewGuid();
 

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Concurrent;
+using System.Reflection;
 using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Registration;
 
@@ -15,7 +16,7 @@ namespace HerrGeneral.Core;
 internal class EventHandlerMappings(EventHandlerMappingRegistration mappingRegistration) : IReadSideEventHandlerMappings, IWriteSideEventHandlerMappings
 {
     // Cache for handler methods to avoid expensive reflection lookups
-    private readonly Dictionary<(Type EventType, Type HandlerType), MethodInfo> _handleMethodCache = new();
+    private readonly ConcurrentDictionary<(Type EventType, Type HandlerType), MethodInfo> _handleMethodCache = new();
 
     #region Method Resolution
 
@@ -77,7 +78,7 @@ internal class EventHandlerMappings(EventHandlerMappingRegistration mappingRegis
         var methodInfo = FindMatchingHandleMethod(handlerType, mapping.MethodInfo.Name, evtType);
 
         // Cache the result for future calls
-        _handleMethodCache.Add(cacheKey, methodInfo);
+        _handleMethodCache.TryAdd(cacheKey, methodInfo);
 
         return (methodInfo, mapping);
     }

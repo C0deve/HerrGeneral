@@ -1,4 +1,5 @@
-﻿using HerrGeneral.Core.Error;
+﻿using System.Collections.Concurrent;
+using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.WriteSide;
 
@@ -10,7 +11,7 @@ namespace HerrGeneral.Core.WriteSide;
 /// </summary>
 internal class CommandHandlerMappings
 {
-    private readonly Dictionary<(Type TCommand, Type TResult), CommandHandlerMapping> _handlerMappers = new();
+    private readonly ConcurrentDictionary<(Type TCommand, Type TResult), CommandHandlerMapping> _handlerMappers = new();
 
     public CommandHandlerMappings AddMapping<TCommand, THandler, THandlerReturn, TValue>(
         Func<THandlerReturn, IEnumerable<object>> mapEvents,
@@ -33,7 +34,7 @@ internal class CommandHandlerMappings
             ? null
             : o => mapValue((THandlerReturn)o);
         
-        _handlerMappers.Add(
+        _handlerMappers.TryAdd(
             (typeof(TCommand), typeof(TValue)),
             new CommandHandlerMapping(
                 methodInfo,
