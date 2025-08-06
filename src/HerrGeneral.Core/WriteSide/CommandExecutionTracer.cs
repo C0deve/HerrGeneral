@@ -3,7 +3,12 @@ using HerrGeneral.Core.Error;
 
 namespace HerrGeneral.Core.WriteSide;
 
-internal class CommandLogger
+/// <summary>
+/// CommandExecutionTracer logs and traces the execution flow of commands and events in the system.
+/// Responsible for tracking command handling, event publishing, and capturing exceptions during processing.
+/// This provides a complete audit trail of command and event processing, making debugging and monitoring easier.
+/// </summary>
+internal class CommandExecutionTracer
 {
     private const string Indent = "      ";
     private readonly StringBuilder _stringBuilder = new();

@@ -25,7 +25,7 @@ internal static class EventHandlerPipeline
             }
         };
 
-    public static EventHandlerDelegate<TEvent> WithErrorLogger<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, CommandLogger stringBuilderLogger) =>
+    public static EventHandlerDelegate<TEvent> WithErrorLogger<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, CommandExecutionTracer stringBuilderLogger) =>
         @event =>
         {
             logger ??= NullLogger<IEventHandler<TEvent>>.Instance;
@@ -48,7 +48,7 @@ internal static class EventHandlerPipeline
             }
         };
 
-    public static EventHandlerDelegate<TEvent> WithLogging<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, IEventHandler<TEvent> handler, CommandLogger stringBuilderLogger) =>
+    public static EventHandlerDelegate<TEvent> WithLogging<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, IEventHandler<TEvent> handler, CommandExecutionTracer stringBuilderLogger) =>
         @event =>
         {
             logger ??= NullLogger<IEventHandler<TEvent>>.Instance;

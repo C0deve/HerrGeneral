@@ -32,7 +32,7 @@ public static class ServiceExtension
         RegisterWriteSide(serviceCollection, configuration);
         RegisterReadSide(serviceCollection, configuration);
 
-        serviceCollection.AddScoped<CommandLogger>();
+        serviceCollection.AddScoped<CommandExecutionTracer>();
         serviceCollection.AddScoped<ReadSideEventDispatcher>();
         serviceCollection.AddScoped<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
         serviceCollection.AddScoped<WriteSideEventDispatcher>();

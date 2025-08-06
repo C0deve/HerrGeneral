@@ -12,15 +12,15 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
     private static void Handle(TEvent @event, IServiceProvider serviceProvider)
     {
         var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
-        var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
+        var tracer = serviceProvider.GetRequiredService<CommandExecutionTracer>();
         var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
 
         foreach (var handler in serviceProvider.GetServices<IEventHandler<TEvent>>())
         {
             Start(handler)
                 .WithDomainExceptionMapping(domainExceptionMapper)
-                .WithErrorLogger(logger, commandLogger)
-                .WithLogging(logger, handler, commandLogger)
+                .WithErrorLogger(logger, tracer)
+                .WithLogging(logger, handler, tracer)
                 (@event);
         }
     }

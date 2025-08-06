@@ -8,19 +8,19 @@ internal class WriteSideEventDispatcher : EventDispatcherBase
 {
     private readonly IAddEventToDispatch _readSideEventDispatcher;
     private readonly ILogger<WriteSideEventDispatcher> _logger;
-    private readonly CommandLogger _commandLogger;
+    private readonly CommandExecutionTracer _commandExecutionTracer;
 
-    public WriteSideEventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, ILogger<WriteSideEventDispatcher> logger, CommandLogger commandLogger) : base(serviceProvider)
+    public WriteSideEventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, ILogger<WriteSideEventDispatcher> logger, CommandExecutionTracer commandExecutionTracer) : base(serviceProvider)
     {
         _readSideEventDispatcher = readSideEventDispatcher;
         _logger = logger;
-        _commandLogger = commandLogger;
+        _commandExecutionTracer = commandExecutionTracer;
     }
-    public WriteSideEventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, CommandLogger commandLogger) : base(serviceProvider)
+    public WriteSideEventDispatcher(IServiceProvider serviceProvider, IAddEventToDispatch readSideEventDispatcher, CommandExecutionTracer commandExecutionTracer) : base(serviceProvider)
     {
         _readSideEventDispatcher = readSideEventDispatcher;
         _logger =  NullLogger<WriteSideEventDispatcher>.Instance;
-        _commandLogger = commandLogger;
+        _commandExecutionTracer = commandExecutionTracer;
     }
 
     protected override Type WrapperOpenType => typeof(WriteSideEventHandlerWrapper<>);
@@ -28,7 +28,7 @@ internal class WriteSideEventDispatcher : EventDispatcherBase
     public override void Dispatch(object eventToDispatch)
     {
         if(_logger.IsEnabled(LogLevel.Debug))
-            _commandLogger
+            _commandExecutionTracer
                 .PublishEventOnWriteSide(eventToDispatch);
 
         base.Dispatch(eventToDispatch);

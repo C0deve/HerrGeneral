@@ -9,21 +9,21 @@ namespace HerrGeneral.Core.ReadSide;
 internal class ReadSideEventDispatcher : EventDispatcherBase, IAddEventToDispatch
 {
     private readonly ILogger<ReadSideEventDispatcher> _logger;
-    private readonly CommandLogger _commandLogger;
+    private readonly CommandExecutionTracer _commandExecutionTracer;
     protected override Type WrapperOpenType => typeof(EventHandlerWrapper<>);
 
     private readonly List<object> _eventsToDispatch = [];
 
-    public ReadSideEventDispatcher(IServiceProvider serviceProvider, ILogger<ReadSideEventDispatcher> logger, CommandLogger commandLogger) : base(serviceProvider)
+    public ReadSideEventDispatcher(IServiceProvider serviceProvider, ILogger<ReadSideEventDispatcher> logger, CommandExecutionTracer commandExecutionTracer) : base(serviceProvider)
     {
         _logger = logger;
-        _commandLogger = commandLogger;
+        _commandExecutionTracer = commandExecutionTracer;
     }
 
-    public ReadSideEventDispatcher(IServiceProvider serviceProvider, CommandLogger commandLogger) : base(serviceProvider)
+    public ReadSideEventDispatcher(IServiceProvider serviceProvider, CommandExecutionTracer commandExecutionTracer) : base(serviceProvider)
     {
         _logger = NullLogger<ReadSideEventDispatcher>.Instance;
-        _commandLogger = commandLogger;
+        _commandExecutionTracer = commandExecutionTracer;
     }
 
     public void AddEventToDispatch(object @event)
@@ -34,14 +34,14 @@ internal class ReadSideEventDispatcher : EventDispatcherBase, IAddEventToDispatc
 
     public void Dispatch()
     {
-        var commandLogger = _logger.IsEnabled(LogLevel.Debug)
-            ? _commandLogger
+        var tracer = _logger.IsEnabled(LogLevel.Debug)
+            ? _commandExecutionTracer
             : null;
 
-        commandLogger?.StartPublishEventsOnReadSide(_eventsToDispatch.Count);
+        tracer?.StartPublishEventsOnReadSide(_eventsToDispatch.Count);
         foreach (var eventToDispatch in _eventsToDispatch)
         {
-            commandLogger?.PublishEventOnReadSide(eventToDispatch);
+            tracer?.PublishEventOnReadSide(eventToDispatch);
             Dispatch(eventToDispatch);
         }
     }

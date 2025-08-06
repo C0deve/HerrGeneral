@@ -13,12 +13,12 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
     private static void Handle(TEvent @event, IServiceProvider serviceProvider)
     {
         var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
-        var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
+        var tracer = serviceProvider.GetRequiredService<CommandExecutionTracer>();
 
         foreach (var handler in serviceProvider.GetServices<IEventHandler<TEvent>>())
         {
             Start(handler)
-                .WithReadSideHandlerLogging(logger, handler, commandLogger)
+                .WithReadSideHandlerLogging(logger, handler, tracer)
                 (@event);
         }
     }

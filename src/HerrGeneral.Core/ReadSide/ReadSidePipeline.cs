@@ -13,7 +13,7 @@ internal static class ReadSidePipeline
         this EventHandlerDelegate<TEvent> next,
         ILogger<IEventHandler<TEvent>>? logger,
         IEventHandler<TEvent> handler,
-        CommandLogger stringBuilderLogger) =>
+        CommandExecutionTracer stringBuilderLogger) =>
         @event =>
         {
             logger ??= NullLogger<IEventHandler<TEvent>>.Instance;

@@ -29,25 +29,25 @@ internal static class CommandPipeline
         };
 
     public static HandlerDelegate<TCommand, TResult> WithLogger<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandLogger commandLogger)
+        this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandExecutionTracer commandExecutionTracer)
     {
         logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
 
         if (logger.IsEnabled(LogLevel.Debug))
-            return WithDebugLogger(next, logger, commandLogger);
+            return WithDebugLogger(next, logger, commandExecutionTracer);
         return logger.IsEnabled(LogLevel.Information)
             ? WithInformationLogger(next, logger)
             : next;
     }
 
-    private static HandlerDelegate<TCommand, TResult> WithDebugLogger<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>> logger, CommandLogger commandLogger)
+    private static HandlerDelegate<TCommand, TResult> WithDebugLogger<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>> logger, CommandExecutionTracer commandExecutionTracer)
         =>
             (command, cancellationToken) =>
             {
                 var watch = new Stopwatch();
                 var commandType = typeof(TCommand).GetFriendlyName();
 
-                commandLogger
+                commandExecutionTracer
                     .StartHandlingCommand(commandType);
 
                 watch.Start();
@@ -62,7 +62,7 @@ internal static class CommandPipeline
                 }
                 catch (DomainException e)
                 {
-                    commandLogger.OnException(e, 2);
+                    commandExecutionTracer.OnException(e, 2);
                     throw;
                 }
                 catch (EventHandlerException)
@@ -72,16 +72,16 @@ internal static class CommandPipeline
                 }
                 catch (Exception e)
                 {
-                    commandLogger.OnException(e, 2);
+                    commandExecutionTracer.OnException(e, 2);
                     throw;
                 }
                 finally
                 {
                     watch.Stop();
 
-                    commandLogger.StopHandlingCommand(commandType, watch.Elapsed);
+                    commandExecutionTracer.StopHandlingCommand(commandType, watch.Elapsed);
 
-                    logger.LogDebug("{Message}", commandLogger.BuildString());
+                    logger.LogDebug("{Message}", commandExecutionTracer.BuildString());
                 }
             };
 

@@ -19,7 +19,7 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
         var writeSideEventDispatcher = serviceProvider.GetRequiredService<WriteSideEventDispatcher>();
         var readSideEventDispatcher = serviceProvider.GetRequiredService<ReadSideEventDispatcher>();
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
-        var commandLogger = serviceProvider.GetRequiredService<CommandLogger>();
+        var tracer = serviceProvider.GetRequiredService<CommandExecutionTracer>();
         var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
 
         return
@@ -28,7 +28,7 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
                 .WithWriteSideDispatching(writeSideEventDispatcher)
                 .WithReadSideDispatching(readSideEventDispatcher)
                 .WithUnitOfWork(unitOfWork)
-                .WithLogger(logger, commandLogger);
+                .WithLogger(logger, tracer);
     }
 
     private static CommandPipeline.HandlerDelegate<TCommand, TReturn> Start<TReturn>(ICommandHandler<TCommand, TReturn> commandHandler) =>
