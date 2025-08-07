@@ -41,7 +41,7 @@ internal class CreateHandlerInternal<TAggregate, TCommand, THandler> : ICommandH
     {
         var id = Guid.NewGuid();
         var aggregate = _handler.Handle(command, id);
-        _repository.Save(aggregate, command.Id);
+        _repository.Save(aggregate);
         var result = (aggregate.NewEvents, aggregate.Id);
         aggregate.ClearNewEvents();
         return result;

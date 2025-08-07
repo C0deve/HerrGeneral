@@ -40,7 +40,7 @@ internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandH
     {
         var aggregate = GetAggregate(command);
         aggregate = _handler.Handle(aggregate, command);
-        _repository.Save(aggregate, command.Id);
+        _repository.Save(aggregate);
         var result = (aggregate.NewEvents, Unit.Default);
         aggregate.ClearNewEvents();
         
@@ -48,6 +48,6 @@ internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandH
     }
 
     private TAggregate GetAggregate(TCommand command) =>
-        _repository.Get(command.AggregateId, command.Id) ?? throw new AggregateNotFound<TAggregate>(command.AggregateId);
+        _repository.Get(command.AggregateId) ?? throw new AggregateNotFound<TAggregate>(command.AggregateId);
 
 }

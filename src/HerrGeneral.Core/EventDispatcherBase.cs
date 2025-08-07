@@ -22,7 +22,7 @@ internal abstract class EventDispatcherBase
     protected EventDispatcherBase(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
     /// <summary>
-    /// Dispatch the event using an instance of WrapperType
+    /// Dispatch the event using an instance of <see cref="WrapperOpenType"/>
     /// </summary>
     /// <param name="eventToDispatch"></param>
     /// <exception cref="InvalidOperationException"></exception>

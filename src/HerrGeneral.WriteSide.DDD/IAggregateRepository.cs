@@ -10,14 +10,12 @@ public interface IAggregateRepository<T> where T : IAggregate
     /// Find the aggregate with by id 
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="sourceCommandId"></param>
     /// <returns></returns>
-    T? Get(Guid id, Guid sourceCommandId);
-    
+    T? Get(Guid id);
+
     /// <summary>
     /// Save an aggregate
     /// </summary>
     /// <param name="aggregate"></param>
-    /// <param name="sourceCommandId"></param>
-    void Save(T aggregate, Guid sourceCommandId);
+    void Save(T aggregate);
 }
