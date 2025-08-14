@@ -49,6 +49,12 @@ public class Configuration
     /// </summary>
     internal EventHandlerMappingRegistration ReadSideEventHandlerMappings { get; } = new();
     
+    /// <summary>
+    /// Gets or sets a value indicating whether execution tracing for command handlers is enabled.
+    /// Enables detailed logging of command processing for debugging and performance monitoring.
+    /// </summary>
+    internal bool IsTracingEnabled { get; private set; } = true;
+    
     internal Configuration()
     {
     }
@@ -172,6 +178,18 @@ public class Configuration
     public Configuration MapReadSideEventHandler<TEvent, THandler>()
     {
         ReadSideEventHandlerMappings.AddMapping<TEvent, THandler>();
+        return this;
+    }
+
+    /// <summary>
+    /// Enables or disables execution tracing for command handling.
+    /// When enabled, detailed logs will be generated during command processing for debugging purposes.
+    /// </summary>
+    /// <param name="enabled">True to enable command execution tracing, false to disable it.</param>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public Configuration EnableCommandExecutionTracing(bool enabled = true)
+    {
+        IsTracingEnabled = enabled;
         return this;
     }
 }

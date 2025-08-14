@@ -32,7 +32,8 @@ public static class ServiceExtension
         RegisterWriteSide(serviceCollection, configuration);
         RegisterReadSide(serviceCollection, configuration);
 
-        serviceCollection.AddScoped<CommandExecutionTracer>();
+        if (configuration.IsTracingEnabled)
+            serviceCollection.AddScoped<CommandExecutionTracer>();
         serviceCollection.AddScoped<ReadSideEventDispatcher>();
         serviceCollection.AddScoped<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
         serviceCollection.AddScoped<WriteSideEventDispatcher>();
@@ -47,26 +48,28 @@ public static class ServiceExtension
 
     private static void RegisterWriteSide(IServiceCollection serviceCollection, Configuration configuration)
     {
-        IRegistrationPolicy[] policies = [
+        IRegistrationPolicy[] policies =
+        [
             new RegisterMappedCommandHandlers(configuration.CommandHandlerMappings),
             new RegisterICommandHandler(),
             new RegisterMappedWriteSideEventHandlers(configuration.WriteSideEventHandlerMappings),
             new RegisterWriteSideEventHandler()
         ];
-        
+
         Register(serviceCollection, policies, configuration.WriteSideSearchParams);
     }
 
     private static void RegisterReadSide(IServiceCollection serviceCollection, Configuration configuration)
     {
-        IRegistrationPolicy[] policies = [
+        IRegistrationPolicy[] policies =
+        [
             new RegisterReadSideEventHandler(),
             new RegisterMappedReadSideEventHandlers(configuration.ReadSideEventHandlerMappings),
         ];
 
         Register(serviceCollection, policies, configuration.ReadSideSearchParams);
     }
-    
+
     internal static void Register(IServiceCollection serviceCollection, IRegistrationPolicy[] policies, IEnumerable<ScanParam> scanParams)
     {
         var openTypesToScan = policies
@@ -74,7 +77,7 @@ public static class ServiceExtension
             .ToHashSet();
         var externalHandlers = Scanner.Scan(scanParams, openTypesToScan);
 
-        foreach (var policy in policies) 
+        foreach (var policy in policies)
             policy.Register(serviceCollection, externalHandlers);
     }
 }

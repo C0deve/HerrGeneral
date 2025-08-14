@@ -1,7 +1,5 @@
 using HerrGeneral.Core.WriteSide;
 using HerrGeneral.ReadSide;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HerrGeneral.Core.ReadSide;
 
@@ -11,15 +9,11 @@ internal static class ReadSidePipeline
 
     public static EventHandlerDelegate<TEvent> WithReadSideHandlerLogging<TEvent>(
         this EventHandlerDelegate<TEvent> next,
-        ILogger<IEventHandler<TEvent>>? logger,
         IEventHandler<TEvent> handler,
-        CommandExecutionTracer stringBuilderLogger) =>
+        CommandExecutionTracer? tracer) =>
         @event =>
         {
-            logger ??= NullLogger<IEventHandler<TEvent>>.Instance;
-            if (logger.IsEnabled(LogLevel.Debug))
-                stringBuilderLogger.HandleEvent(handler.GetType());
-
+            tracer?.HandleEvent(handler.GetType());
             next(@event);
         };
 }

@@ -1,7 +1,5 @@
 using HerrGeneral.Core.Error;
 using HerrGeneral.WriteSide;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -25,36 +23,29 @@ internal static class EventHandlerPipeline
             }
         };
 
-    public static EventHandlerDelegate<TEvent> WithErrorLogger<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, CommandExecutionTracer stringBuilderLogger) =>
+    public static EventHandlerDelegate<TEvent> WithTracer<TEvent>(this EventHandlerDelegate<TEvent> next, IEventHandler<TEvent> handler, CommandExecutionTracer? tracer) =>
         @event =>
         {
-            logger ??= NullLogger<IEventHandler<TEvent>>.Instance;
-            if (!logger.IsEnabled(LogLevel.Debug))
-                next( @event);
+            if (tracer is null)
+            {
+                next(@event);
+                return;
+            }
 
             try
             {
-                next( @event);
+                tracer.HandleEvent(handler.GetType());
+                next(@event);
             }
             catch (EventHandlerDomainException e)
             {
-                stringBuilderLogger.OnException(e, 2);
+                tracer.OnException(e, 2);
                 throw;
             }
             catch (EventHandlerException e)
             {
-                stringBuilderLogger.OnException(e.InnerException!, 2);
+                tracer.OnException(e.InnerException!, 2);
                 throw;
             }
-        };
-
-    public static EventHandlerDelegate<TEvent> WithLogging<TEvent>(this EventHandlerDelegate<TEvent> next, ILogger<IEventHandler<TEvent>>? logger, IEventHandler<TEvent> handler, CommandExecutionTracer stringBuilderLogger) =>
-        @event =>
-        {
-            logger ??= NullLogger<IEventHandler<TEvent>>.Instance;
-            if (logger.IsEnabled(LogLevel.Debug))
-                stringBuilderLogger.HandleEvent(handler.GetType());
-
-            next( @event);
         };
 }

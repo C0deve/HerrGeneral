@@ -1,6 +1,5 @@
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -11,16 +10,14 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
 
     private static void Handle(TEvent @event, IServiceProvider serviceProvider)
     {
-        var logger = serviceProvider.GetService<ILogger<IEventHandler<TEvent>>>();
-        var tracer = serviceProvider.GetRequiredService<CommandExecutionTracer>();
+        var tracer = serviceProvider.GetService<CommandExecutionTracer>();
         var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
 
         foreach (var handler in serviceProvider.GetServices<IEventHandler<TEvent>>())
         {
             Start(handler)
                 .WithDomainExceptionMapping(domainExceptionMapper)
-                .WithErrorLogger(logger, tracer)
-                .WithLogging(logger, handler, tracer)
+                .WithTracer(handler, tracer)
                 (@event);
         }
     }

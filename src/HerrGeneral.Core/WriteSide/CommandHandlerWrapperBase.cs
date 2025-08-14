@@ -3,6 +3,7 @@ using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -19,16 +20,16 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
         var writeSideEventDispatcher = serviceProvider.GetRequiredService<WriteSideEventDispatcher>();
         var readSideEventDispatcher = serviceProvider.GetRequiredService<ReadSideEventDispatcher>();
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
-        var tracer = serviceProvider.GetRequiredService<CommandExecutionTracer>();
+        var tracer = serviceProvider.GetService<CommandExecutionTracer>();
         var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
-
+        
         return
             Start(commandHandler)
                 .WithDomainExceptionMapping(domainExceptionMapper)
                 .WithWriteSideDispatching(writeSideEventDispatcher)
                 .WithReadSideDispatching(readSideEventDispatcher)
                 .WithUnitOfWork(unitOfWork)
-                .WithLogger(logger, tracer);
+                .WithTracer(logger, tracer);
     }
 
     private static CommandPipeline.HandlerDelegate<TCommand, TReturn> Start<TReturn>(ICommandHandler<TCommand, TReturn> commandHandler) =>

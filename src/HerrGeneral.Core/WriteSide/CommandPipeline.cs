@@ -3,7 +3,6 @@ using HerrGeneral.Core.Error;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using System.Text.Json;
 using HerrGeneral.Core.ReadSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -27,23 +26,18 @@ internal static class CommandPipeline
                     exception => exception);
             }
         };
+    
 
-    public static HandlerDelegate<TCommand, TResult> WithLogger<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>>? logger, CommandExecutionTracer commandExecutionTracer)
-    {
-        logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
-
-        if (logger.IsEnabled(LogLevel.Debug))
-            return WithDebugLogger(next, logger, commandExecutionTracer);
-        return logger.IsEnabled(LogLevel.Information)
-            ? WithInformationLogger(next, logger)
-            : next;
-    }
-
-    private static HandlerDelegate<TCommand, TResult> WithDebugLogger<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next, ILogger<ICommandHandler<TCommand, TResult>> logger, CommandExecutionTracer commandExecutionTracer)
-        =>
-            (command, cancellationToken) =>
+    public static HandlerDelegate<TCommand, TResult> WithTracer<TCommand, TResult>(
+        this HandlerDelegate<TCommand, TResult> next,
+        ILogger<ICommandHandler<TCommand, TResult>>? logger,
+        CommandExecutionTracer? commandExecutionTracer) =>
+        commandExecutionTracer is null
+            ? next
+            : (command, cancellationToken) =>
             {
+                logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
+
                 var watch = new Stopwatch();
                 var commandType = typeof(TCommand).GetFriendlyName();
 
@@ -81,40 +75,9 @@ internal static class CommandPipeline
 
                     commandExecutionTracer.StopHandlingCommand(commandType, watch.Elapsed);
 
-                    logger.LogDebug("{Message}", commandExecutionTracer.BuildString());
+                    logger.LogInformation("{Message}", commandExecutionTracer.BuildString());
                 }
             };
-
-    private static HandlerDelegate<TCommand, TResult> WithInformationLogger<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next, ILogger logger) =>
-        (command, cancellationToken) =>
-        {
-            try
-            {
-                logger.LogInformation("{CommandType}, {Data}", command?.GetType(), JsonSerializer.Serialize(command));
-                return next(command, cancellationToken);
-            }
-            catch (EventHandlerDomainException)
-            {
-                // already logged
-                throw;
-            }
-            catch (DomainException e)
-            {
-                logger.LogError(e, null);
-                throw;
-            }
-            catch (EventHandlerException)
-            {
-                // already logged
-                throw;
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, null);
-                throw;
-            }
-        };
 
     public static HandlerDelegate<TCommand, TResult> WithUnitOfWork<TCommand, TResult>(
         this HandlerDelegate<TCommand, TResult> next, IUnitOfWork? unitOfWork) =>
