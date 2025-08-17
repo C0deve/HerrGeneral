@@ -5,7 +5,7 @@ namespace HerrGeneral.Core.WriteSide;
 
 internal static class EventHandlerPipeline
 {
-    public delegate void EventHandlerDelegate<in TEvent>(TEvent @event);
+    public delegate IEnumerable<object> EventHandlerDelegate<in TEvent>(TEvent @event);
 
     public static EventHandlerDelegate<TEvent> WithDomainExceptionMapping<TEvent>(
         this EventHandlerDelegate<TEvent> next, DomainExceptionMapper mapper) =>
@@ -13,7 +13,7 @@ internal static class EventHandlerPipeline
         {
             try
             {
-                next(@event);
+                return next(@event);
             }
             catch (Exception e)
             {
@@ -28,14 +28,13 @@ internal static class EventHandlerPipeline
         {
             if (tracer is null)
             {
-                next(@event);
-                return;
+                return next(@event);
             }
 
             try
             {
                 tracer.HandleEvent(handler.GetType());
-                next(@event);
+                return next(@event);
             }
             catch (EventHandlerDomainException e)
             {

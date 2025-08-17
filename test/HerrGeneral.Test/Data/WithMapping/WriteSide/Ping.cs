@@ -2,12 +2,13 @@ namespace HerrGeneral.Test.Data.WithMapping.WriteSide;
 
 public record Ping : CommandBase
 {
-    public class Handler(CommandTracker1 commandTracker) : CommandHandler<Ping>
+    public class Handler(EventTracker eventTracker) : CommandHandler<Ping>
     {
         protected override IEnumerable<object> InnerHandle(Ping command)
         {
-            commandTracker.AddHandled(command.Id);
-            return [new Pong(command.Id, Guid.NewGuid())];
+            var pong = new Pong(command.Id, Guid.NewGuid());
+            eventTracker.AddHandled(pong);
+            return [pong];
         }
     }
 }

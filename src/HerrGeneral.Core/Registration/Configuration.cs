@@ -156,21 +156,66 @@ public class Configuration
     }
 
     /// <summary>
-    /// Registers an external event handler for the write side.
+    /// Registers all external event handlers for the write side that implement the specified THandler interface.
+    /// 
+    /// The system will automatically discover and register all classes that implement the THandler interface.
+    /// These external handlers must return a collection of events directly (IEnumerable&lt;object&gt;) without 
+    /// requiring additional transformation.
+    /// 
     /// These handlers are responsible for modifying the system state in response to events.
+    /// 
+    /// Example:
+    /// <code>
+    /// // This will register ALL classes implementing IEventHandler&lt;EventBase&gt;
+    /// configuration.RegisterWriteSideEventHandler&lt;EventBase, IEventHandler&lt;EventBase&gt;&gt;();
+    /// </code>
     /// </summary>
     /// <typeparam name="TEvent">The type of event to process.</typeparam>
-    /// <typeparam name="THandler">The type of event handler to register.</typeparam>
+    /// <typeparam name="THandler">The interface type that event handlers must implement. All implementations will be registered.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public Configuration MapWriteSideEventHandler<TEvent, THandler>()
     {
         WriteSideEventHandlerMappings.AddMapping<TEvent, THandler>();
         return this;
     }
+    
+    /// <summary>
+    /// Registers all external event handlers for the write side that implement the specified THandler interface,
+    /// with a custom transformation function to convert their return values into events.
+    /// 
+    /// The system will automatically discover and register all classes that implement the THandler interface.
+    /// When these handlers process events and return a TReturn value, the provided transformation function
+    /// will convert that return value into a collection of events that can be processed by the system.
+    /// 
+    /// These handlers are responsible for modifying the system state in response to events.
+    /// 
+    /// Example:
+    /// <code>
+    /// // This will register ALL classes implementing IUserEventHandler&lt;UserUpdatedEvent&gt;
+    /// configuration.RegisterWriteSideEventHandlerWithMapping&lt;UserUpdatedEvent, IUserEventHandler&lt;UserUpdatedEvent&gt;, UpdateResult&gt;(
+    ///     result => result.GeneratedEvents.Cast&lt;object&gt;());
+    /// </code>
+    /// </summary>
+    /// <param name="mapEvents">Transformation function that converts the handler's result into a collection of events.</param>
+    /// <typeparam name="TEvent">The type of event to process.</typeparam>
+    /// <typeparam name="THandler">The interface type that event handlers must implement. All implementations will be registered.</typeparam>
+    /// <typeparam name="TReturn">The raw return type of the event handlers implementing THandler.</typeparam>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public Configuration MapWriteSideEventHandlerWithMapping<TEvent, THandler, TReturn>(
+        Func<TReturn, IEnumerable<object>> mapEvents)
+    {
+        WriteSideEventHandlerMappings.AddMapping<TEvent, THandler, TReturn>(mapEvents);
+        return this;
+    }
 
     /// <summary>
     /// Registers an external event handler for the read side.
     /// These handlers are responsible for updating views and projections in response to events.
+    /// 
+    /// Example:
+    /// <code>
+    /// configuration.MapReadSideEventHandler&lt;UserCreatedEvent, UserViewUpdater&gt;();
+    /// </code>
     /// </summary>
     /// <typeparam name="TEvent">The type of event to process.</typeparam>
     /// <typeparam name="THandler">The type of event handler to register.</typeparam>

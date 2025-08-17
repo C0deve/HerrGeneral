@@ -35,7 +35,6 @@ public static class ServiceExtension
         if (configuration.IsTracingEnabled)
             serviceCollection.AddScoped<CommandExecutionTracer>();
         serviceCollection.AddScoped<ReadSideEventDispatcher>();
-        serviceCollection.AddScoped<IAddEventToDispatch>(x => x.GetRequiredService<ReadSideEventDispatcher>());
         serviceCollection.AddScoped<WriteSideEventDispatcher>();
         serviceCollection.AddSingleton<Mediator>();
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));

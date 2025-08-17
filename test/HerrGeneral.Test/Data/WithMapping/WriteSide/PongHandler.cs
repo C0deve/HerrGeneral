@@ -1,7 +1,13 @@
 namespace HerrGeneral.Test.Data.WithMapping.WriteSide;
 
-public class PongHandler(CommandTracker2 commandTracker) : ILocalEventHandler<Pong>
+public class PongHandler(CommandTracker2 commandTracker, EventTracker eventTracker) : ILocalEventHandler<Pong>
 {
-    public void Handle(Pong notification) => 
+    public MyEventHandlerResult Handle(Pong notification)
+    {
         commandTracker.AddHandled(notification.SourceCommandId);
+
+        var pongPong = new PongPong(notification.SourceCommandId, Guid.NewGuid());
+        eventTracker.AddHandled(pongPong);
+        return new MyEventHandlerResult(pongPong);
+    }
 }

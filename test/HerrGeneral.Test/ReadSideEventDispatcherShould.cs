@@ -23,11 +23,10 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
             services.AddSingleton<ReadModel, ReadModel>();
 
             var container = services.BuildServiceProvider();
-            container.GetRequiredService<IAddEventToDispatch>().AddEventToDispatch(new Pong(
+            container.GetRequiredService<Core.ReadSide.ReadSideEventDispatcher>().Dispatch(new Pong(
                 "Pong received",
                 Guid.NewGuid(),
                 Guid.NewGuid()));
-            container.GetRequiredService<Core.ReadSide.ReadSideEventDispatcher>().Dispatch();
 
             container.GetRequiredService<ReadModel>().Message.ShouldBe("Pong received");
         }

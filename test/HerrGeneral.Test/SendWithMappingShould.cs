@@ -19,13 +19,13 @@ public class SendWithMappingShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<CommandTracker1>()
             .AddSingleton<CommandTracker2>()
+            .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
                     .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(it => it.Events, it => it.Result)
-                    .MapWriteSideEventHandler<EventBase, Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>>()
+                    .MapWriteSideEventHandlerWithMapping<EventBase, Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>, MyEventHandlerResult>(x => x.Events)
                     .MapReadSideEventHandler<EventBase, Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!));
@@ -62,7 +62,8 @@ public class SendWithMappingShould
         await new CreatePing { AggregateId = AggregateId, Message = "Ping" }
             .SendFrom<Guid>(_mediator)
             .ShouldSuccessWithValue(AggregateId);
-
+    
+    
     [Fact]
     public async Task Dispatch_events_on_write_side()
     {
@@ -71,9 +72,10 @@ public class SendWithMappingShould
             .AssertSendFrom(_mediator);
 
         _serviceProvider
-            .GetRequiredService<CommandTracker1>()
-            .HasHandled(ping.Id)
-            .ShouldBeTrue();
+            .GetRequiredService<EventTracker>()
+            .GetEventsWithSourceCommandId(ping.Id)
+            .Count()
+            .ShouldBe(3);
     }
 
     [Fact]

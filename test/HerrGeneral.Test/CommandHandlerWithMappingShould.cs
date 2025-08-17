@@ -14,7 +14,7 @@ public class CommandHandlerWithMappingShould
         var mappers = new CommandHandlerMappings();
         mappers.AddMapping<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(x => x.Events);
 
-        var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(new CommandTracker1()), mappers);
+        var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(new EventTracker()), mappers);
 
         sut.Handle(new Ping())
             .Events
@@ -30,7 +30,7 @@ public class CommandHandlerWithMappingShould
             ILocalCommandHandler<CommandBase, Unit>,
             MyResult<Unit>>(x => x.Events);
 
-        var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(new CommandTracker1()), mappers);
+        var sut = new CommandHandlerWithMapping<Ping, Ping.Handler, Unit>(new Ping.Handler(new EventTracker()), mappers);
 
         sut.Handle(new Ping())
             .Events

@@ -17,7 +17,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     public async Task Not_be_mandatory()
     {
         var services = new ServiceCollection()
-            .AddSingleton<CommandTracker1>()
+            .AddSingleton<EventTracker>()
             .AddSingleton<CommandTracker2>()
             .AddSingleton<CommandTracker3>()
             .AddHerrGeneralTestLogger(output)
@@ -41,7 +41,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
             .AddScoped<IUnitOfWork>(_ => unitOfWork)
-            .AddSingleton<CommandTracker1>()
+            .AddSingleton<EventTracker>()
             .AddSingleton<CommandTracker2>()
             .AddSingleton<CommandTracker3>()
             .AddSingleton<AReadModelWithMultipleHandlers>()
@@ -50,9 +50,13 @@ public class UnitOfWorkShould(ITestOutputHelper output)
                 scanner
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!)
-                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .MapWriteSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>>()
-                    .MapReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
+                    .MapCommandHandler<CommandBase, 
+                        ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                    .MapWriteSideEventHandlerWithMapping<EventBase,
+                        HerrGeneral.Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>,
+                        MyEventHandlerResult>(x => x.Events)
+                    .MapReadSideEventHandler<EventBase,
+                        HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
             );
 
         return services

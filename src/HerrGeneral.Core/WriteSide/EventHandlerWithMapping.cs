@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using HerrGeneral.Core.Error;
+using HerrGeneral.Core.Registration;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -16,26 +17,44 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWrit
     where TEvent : notnull
     where THandler : notnull
 {
-    public void Handle(TEvent evt)
+    public IEnumerable<object> Handle(TEvent evt)
     {
         var (handleMethod, mapping) = eventHandlerMappingsProvider.GetHandleMethod(typeof(TEvent), typeof(THandler));
 
         try
         {
             var result = handleMethod.Invoke(handler, [evt]);
-            if (result == null || mapping.MapEvents == null) return;
+            if (result == null)
+                 return [];
             
-            try
+            // Event resolution logic:
+            // 1. If no custom mapping function is provided (MapEvents is null):
+            //    - Try to cast the result directly to IEnumerable<object> (handler already returns events)
+            //    - If cast fails, throw exception indicating missing conversion function
+            // 2. If a custom mapping function is provided:
+            //    - Apply the transformation function to convert the result into events
+            //    - Handle any conversion errors by wrapping them in ConversionException
+            switch (mapping.MapEvents)
             {
-                var events = mapping.MapEvents(result);
+                case null when result is IEnumerable<object> events:
+                    return events;
+                case null:
+                    throw new InvalidOperationException(
+                        $"Handler type '{typeof(THandler).Name}' is registered without a conversion function " +
+                        $"and its return value of type '{result.GetType().Name}' cannot be converted to a collection of events. " +
+                        $"Either make the handler return IEnumerable<object> or register it with a mapping function using " +
+                        $"{nameof(Configuration)}.{nameof(Configuration.MapWriteSideEventHandlerWithMapping)} method.");
+                default:
+                    try
+                    {
+                        return mapping.MapEvents(result);
+                    }
+                    catch (Exception e)
+                    {
+                        var mappingHandlerType = mapping.MethodInfo.DeclaringType!;
+                        throw new ConversionException(result.GetType(), mappingHandlerType, e);
+                    }
             }
-            catch (Exception e)
-            {
-                var mappingHandlerType = mapping.MethodInfo.DeclaringType!;
-                throw new ConversionException(result.GetType(), mappingHandlerType, e);
-            }
-
-            //return (events, value);
         }
         // throw only the innerException of TargetInvocationException produce by handleMethod.Invoke. 
         catch (TargetInvocationException e)

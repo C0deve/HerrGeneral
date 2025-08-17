@@ -3,7 +3,6 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.WriteSide;
 using HerrGeneral.Test;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;
-using HerrGeneral.WriteSide;
 using Shouldly;
 
 // ReSharper disable once CheckNamespace
@@ -15,14 +14,17 @@ public class EventHandlerWithMappingShould
     public void HandleEvent()
     {
         var mappers = new EventHandlerMappingRegistration();
-        mappers.AddMapping<EventBase, IEventHandler<EventBase>>();
-        var dependency = new CommandTracker2();
-        var sut = new EventHandlerWithMapping<Pong, PongHandler>(new PongHandler(dependency), new EventHandlerMappings(mappers));
+        mappers.AddMapping<EventBase, ILocalEventHandler<EventBase>, MyEventHandlerResult>(x => x.Events);
+
+        var commandTracker2 = new CommandTracker2();
+        var sut = new EventHandlerWithMapping<Pong, PongHandler>(new PongHandler(commandTracker2,
+                new EventTracker()),
+            new EventHandlerMappings(mappers));
 
         var sourceCommandId = Guid.NewGuid();
         sut.Handle(new Pong(sourceCommandId, Guid.NewGuid()));
-            
-        dependency
+
+        commandTracker2
             .HasHandled(sourceCommandId)
             .ShouldBeTrue();
     }

@@ -10,5 +10,5 @@ public interface ILocalEventHandler<in TEvent>
     /// Handle a notification
     /// </summary>
     /// <param name="notification">The notification</param>
-    void Handle(TEvent notification);
+    MyEventHandlerResult Handle(TEvent notification);
 }

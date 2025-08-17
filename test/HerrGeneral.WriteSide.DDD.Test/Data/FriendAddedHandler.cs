@@ -2,8 +2,11 @@
 
 public class FriendAddedHandler(FriendAddedCounter counter) : IEventHandler<FriendAdded>
 {
-    public void Handle(FriendAdded notification) => counter.Increment();
-    
+    public IEnumerable<object> Handle(FriendAdded notification)
+    {
+         counter.Increment();
+         return [];
+    }
 }
 
 public class FriendAddedCounter

@@ -24,9 +24,12 @@ internal class CommandExecutionTracer
     public void StopHandlingCommand(string type, TimeSpan elapsed) =>
         _stringBuilder.AppendLine($"<------------------- {type} Finished {elapsed:c} -------------------/>");
 
+    public void StartPublishEventOnWriteSide() =>
+        _stringBuilder
+            .AppendLine($"|| Publish Write Side on thread<{Environment.CurrentManagedThreadId}>");
+
     public void PublishEventOnWriteSide(object @event) =>
         _stringBuilder
-            .AppendLine($"|| Publish Write Side on thread<{Environment.CurrentManagedThreadId}>")
             .AppendLine($"{Indent}{@event.GetType()}");
 
     public void HandleEvent(Type tHandler) =>

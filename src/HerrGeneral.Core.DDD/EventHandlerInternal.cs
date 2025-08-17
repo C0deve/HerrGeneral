@@ -10,5 +10,5 @@ internal class EventHandlerInternal<TEvent, THandler>(THandler handler) : HerrGe
 {
     private readonly THandler _handler = handler;
 
-    public void Handle(TEvent notification) => _handler.Handle(notification);
+    public IEnumerable<object> Handle(TEvent notification) => _handler.Handle(notification);
 }

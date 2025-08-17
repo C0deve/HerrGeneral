@@ -7,6 +7,5 @@ public abstract class CommandTracker
     public void AddHandled(Guid commandId) => _handledCommandIds.Add(commandId);
 }
 
-public class CommandTracker1 : CommandTracker;
 public class CommandTracker2 : CommandTracker;
 public class CommandTracker3 : CommandTracker;

@@ -106,10 +106,7 @@ internal static class CommandPipeline
         (command, cancellationToken) =>
         {
             var (events, result) = next(command, cancellationToken);
-            var enumerable = events as object[] ?? events.ToArray();
-            foreach (var @event in enumerable)
-                eventDispatcher.Dispatch(@event);
-            return (enumerable, result);
+            return (eventDispatcher.Dispatch(events), result);
         };
 
     public static HandlerDelegate<TCommand, TResult> WithReadSideDispatching<TCommand, TResult>(
@@ -117,7 +114,7 @@ internal static class CommandPipeline
         (command, cancellationToken) =>
         {
             var result = next(command, cancellationToken);
-            readSideEventDispatcher.Dispatch();
+            readSideEventDispatcher.Dispatch(result.Events);
             return result;
         };
 }

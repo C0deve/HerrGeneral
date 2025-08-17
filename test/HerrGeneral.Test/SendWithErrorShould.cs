@@ -17,7 +17,6 @@ public class SendWithErrorShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<CommandTracker1>()
             .AddHerrGeneral(x =>
                 x
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)

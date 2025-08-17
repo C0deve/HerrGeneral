@@ -10,5 +10,5 @@ public interface IEventHandler<in TEvent>
     /// Handle a notification
     /// </summary>
     /// <param name="notification">The notification</param>
-    void Handle(TEvent notification);
+    IEnumerable<object> Handle(TEvent notification);
 }

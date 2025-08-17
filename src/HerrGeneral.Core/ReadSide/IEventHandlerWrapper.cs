@@ -1,4 +1,4 @@
-namespace HerrGeneral.Core;
+namespace HerrGeneral.Core.ReadSide;
 
 internal interface IEventHandlerWrapper
 {
