@@ -43,7 +43,7 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWrit
                         $"Handler type '{typeof(THandler).Name}' is registered without a conversion function " +
                         $"and its return value of type '{result.GetType().Name}' cannot be converted to a collection of events. " +
                         $"Either make the handler return IEnumerable<object> or register it with a mapping function using " +
-                        $"{nameof(Configuration)}.{nameof(Configuration.MapWriteSideEventHandlerWithMapping)} method.");
+                        $"{nameof(Configuration)}.{nameof(Configuration.RegisterWriteSideEventHandlerWithMapping)} method.");
                 default:
                     try
                     {

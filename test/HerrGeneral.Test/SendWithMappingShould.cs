@@ -23,10 +23,10 @@ public class SendWithMappingShould
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
-                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(it => it.Events, it => it.Result)
-                    .MapWriteSideEventHandlerWithMapping<EventBase, Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>, MyEventHandlerResult>(x => x.Events)
-                    .MapReadSideEventHandler<EventBase, Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
+                    .RegisterCommandHandlerWithMapping<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                    .RegisterCommandHandlerWithMapping<CommandBase, ILocalCommandHandler<CommandBase, Guid>, MyResult<Guid>, Guid>(it => it.Events, it => it.Result)
+                    .RegisterWriteSideEventHandlerWithMapping<EventBase, Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>, MyEventHandlerResult>(x => x.Events)
+                    .RegisterReadSideEventHandler<EventBase, Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!));
 

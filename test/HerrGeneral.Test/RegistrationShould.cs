@@ -75,7 +75,7 @@ public class RegistrationShould(ITestOutputHelper output)
             .AddHerrGeneral(scanner =>
                 scanner
                     .ScanReadSideOn(typeof(AReadModelWithMultipleHandlers).Assembly, typeof(AReadModelWithMultipleHandlers).Namespace!)
-                    .MapReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>());
+                    .RegisterReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>());
 
         var container = services.BuildServiceProvider();
 
@@ -96,7 +96,7 @@ public class RegistrationShould(ITestOutputHelper output)
             .AddHerrGeneral(scanner =>
                 scanner
                     .ScanReadSideOn(typeof(AReadModelWithMultipleHandlers).Assembly, typeof(AReadModelWithMultipleHandlers).Namespace!)
-                    .MapReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>());
+                    .RegisterReadSideEventHandler<EventBase, HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>());
 
 
         var container = services.BuildServiceProvider();

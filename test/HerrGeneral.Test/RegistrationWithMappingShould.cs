@@ -40,7 +40,7 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
             .AddHerrGeneral(configuration =>
             {
                 configuration
-                    .MapCommandHandler<Ping, ICommandHandler<Ping>>()
+                    .RegisterCommandHandler<Ping, ICommandHandler<Ping>>()
                     .ScanWriteSideOn(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!);
                 
                 return configuration;

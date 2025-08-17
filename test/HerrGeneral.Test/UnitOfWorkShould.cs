@@ -24,7 +24,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
             .AddHerrGeneral(scanner =>
                 scanner
                     .ScanWriteSideOn(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!)
-                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                    .RegisterCommandHandlerWithMapping<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
             );
 
         var mediator = services
@@ -50,12 +50,12 @@ public class UnitOfWorkShould(ITestOutputHelper output)
                 scanner
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!)
-                    .MapCommandHandler<CommandBase, 
+                    .RegisterCommandHandlerWithMapping<CommandBase, 
                         ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .MapWriteSideEventHandlerWithMapping<EventBase,
+                    .RegisterWriteSideEventHandlerWithMapping<EventBase,
                         HerrGeneral.Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>,
                         MyEventHandlerResult>(x => x.Events)
-                    .MapReadSideEventHandler<EventBase,
+                    .RegisterReadSideEventHandler<EventBase,
                         HerrGeneral.Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
             );
 

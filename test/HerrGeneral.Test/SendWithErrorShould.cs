@@ -22,9 +22,9 @@ public class SendWithErrorShould
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!)
                     .UseDomainException<MyDomainException>()
-                    .MapCommandHandler<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .MapWriteSideEventHandler<EventBase, Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>>()
-                    .MapReadSideEventHandler<EventBase, Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
+                    .RegisterCommandHandlerWithMapping<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
+                    .RegisterWriteSideEventHandler<EventBase, Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>>()
+                    .RegisterReadSideEventHandler<EventBase, Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
             );
         
         var serviceProvider = services.BuildServiceProvider();

@@ -111,13 +111,19 @@ public class Configuration
     /// <summary>
     /// Registers an external command handler that produces events.
     /// This method allows integration of handlers that don't directly follow the system's convention.
+    /// 
+    /// Example:
+    /// <code>
+    /// configuration.MapCommandHandler&lt;CreateUserCommand, ExternalUserHandler, UserDto&gt;(
+    ///     dto => new[] { new UserCreatedEvent(dto.Id, dto.Name, dto.Email) });
+    /// </code>
     /// </summary>
     /// <param name="mapEvents">Transformation function that converts the handler's result into a collection of events.</param>
     /// <typeparam name="TCommand">The type of command to process.</typeparam>
     /// <typeparam name="THandler">The type of command handler.</typeparam>
     /// <typeparam name="TReturn">The return type of the command handler.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration MapCommandHandler<TCommand, THandler, TReturn>(Func<TReturn, IEnumerable<object>> mapEvents)
+    public Configuration RegisterCommandHandlerWithMapping<TCommand, THandler, TReturn>(Func<TReturn, IEnumerable<object>> mapEvents)
     {
         CommandHandlerMappings.AddMapping<TCommand, THandler, TReturn>(mapEvents);
         return this;
@@ -126,6 +132,13 @@ public class Configuration
     /// <summary>
     /// Registers an external command handler that produces both events and a return value.
     /// This method allows integration of complex handlers that produce multiple results.
+    /// 
+    /// Example:
+    /// <code>
+    /// configuration.MapCommandHandler&lt;ProcessOrderCommand, OrderProcessorHandler, OrderResult, Guid&gt;(
+    ///     result => new[] { new OrderProcessedEvent(result.OrderId, result.Status) },
+    ///     result => result.OrderId);
+    /// </code>
     /// </summary>
     /// <param name="mapEvents">Transformation function that converts the handler's result into a collection of events.</param>
     /// <param name="mapValue">Transformation function that extracts a specific return value from the handler's result.</param>
@@ -134,7 +147,7 @@ public class Configuration
     /// <typeparam name="TReturn">The raw return type of the command handler.</typeparam>
     /// <typeparam name="TValue">The type of the extracted value to return to the client.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration MapCommandHandler<TCommand, THandler, TReturn, TValue>(
+    public Configuration RegisterCommandHandlerWithMapping<TCommand, THandler, TReturn, TValue>(
         Func<TReturn, IEnumerable<object>> mapEvents,
         Func<TReturn, TValue>? mapValue) where TValue : notnull
     {
@@ -145,11 +158,16 @@ public class Configuration
     /// <summary>
     /// Registers an external command handler that directly returns a collection of events.
     /// Simplified version for handlers that already follow the convention of returning events.
+    /// 
+    /// Example:
+    /// <code>
+    /// configuration.MapCommandHandler&lt;DeleteUserCommand, UserDeletionHandler&gt;();
+    /// </code>
     /// </summary>
     /// <typeparam name="TCommand">The type of command to process.</typeparam>
     /// <typeparam name="THandler">The type of command handler that already implements returning a collection of events.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration MapCommandHandler<TCommand, THandler>()
+    public Configuration RegisterCommandHandler<TCommand, THandler>()
     {
         CommandHandlerMappings.AddMapping<TCommand, THandler, IEnumerable<object>>(x => x);
         return this;
@@ -173,7 +191,7 @@ public class Configuration
     /// <typeparam name="TEvent">The type of event to process.</typeparam>
     /// <typeparam name="THandler">The interface type that event handlers must implement. All implementations will be registered.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration MapWriteSideEventHandler<TEvent, THandler>()
+    public Configuration RegisterWriteSideEventHandler<TEvent, THandler>()
     {
         WriteSideEventHandlerMappings.AddMapping<TEvent, THandler>();
         return this;
@@ -201,7 +219,7 @@ public class Configuration
     /// <typeparam name="THandler">The interface type that event handlers must implement. All implementations will be registered.</typeparam>
     /// <typeparam name="TReturn">The raw return type of the event handlers implementing THandler.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration MapWriteSideEventHandlerWithMapping<TEvent, THandler, TReturn>(
+    public Configuration RegisterWriteSideEventHandlerWithMapping<TEvent, THandler, TReturn>(
         Func<TReturn, IEnumerable<object>> mapEvents)
     {
         WriteSideEventHandlerMappings.AddMapping<TEvent, THandler, TReturn>(mapEvents);
@@ -220,7 +238,7 @@ public class Configuration
     /// <typeparam name="TEvent">The type of event to process.</typeparam>
     /// <typeparam name="THandler">The type of event handler to register.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public Configuration MapReadSideEventHandler<TEvent, THandler>()
+    public Configuration RegisterReadSideEventHandler<TEvent, THandler>()
     {
         ReadSideEventHandlerMappings.AddMapping<TEvent, THandler>();
         return this;
