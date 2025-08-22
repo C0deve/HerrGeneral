@@ -23,7 +23,9 @@ public class SendWithErrorShould
                     .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!)
                     .UseDomainException<MyDomainException>()
                     .RegisterCommandHandlerWithMapping<CommandBase, ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
-                    .RegisterWriteSideEventHandler<EventBase, Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>>()
+                    .RegisterWriteSideEventHandlerWithMapping<EventBase,
+                        Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>, MyEventHandlerResult>(result =>
+                        result.Events)
                     .RegisterReadSideEventHandler<EventBase, Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
             );
         

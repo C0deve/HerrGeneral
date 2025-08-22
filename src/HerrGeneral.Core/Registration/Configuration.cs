@@ -193,7 +193,7 @@ public class Configuration
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public Configuration RegisterWriteSideEventHandler<TEvent, THandler>()
     {
-        WriteSideEventHandlerMappings.AddMapping<TEvent, THandler>();
+        WriteSideEventHandlerMappings.AddWriteSideMapping<TEvent, THandler>();
         return this;
     }
     
@@ -222,7 +222,7 @@ public class Configuration
     public Configuration RegisterWriteSideEventHandlerWithMapping<TEvent, THandler, TReturn>(
         Func<TReturn, IEnumerable<object>> mapEvents)
     {
-        WriteSideEventHandlerMappings.AddMapping<TEvent, THandler, TReturn>(mapEvents);
+        WriteSideEventHandlerMappings.AddWriteSideMapping<TEvent, THandler, TReturn>(mapEvents);
         return this;
     }
 
@@ -240,7 +240,7 @@ public class Configuration
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public Configuration RegisterReadSideEventHandler<TEvent, THandler>()
     {
-        ReadSideEventHandlerMappings.AddMapping<TEvent, THandler>();
+        ReadSideEventHandlerMappings.AddReadSideMapping<TEvent, THandler>();
         return this;
     }
 

@@ -1,4 +1,5 @@
 ﻿using HerrGeneral.Core.Error;
+using System.Reflection;
 
 namespace HerrGeneral.Core.Registration;
 
@@ -8,8 +9,6 @@ namespace HerrGeneral.Core.Registration;
 internal class EventHandlerMappingRegistration
 {
     private readonly Dictionary<Type, EventHandlerMapping> _handlerMappers = new();
-    
-    #region Event Mapping Lookup
 
     /// <summary>
     /// Finds and returns the handler mapping for a given event type
@@ -34,38 +33,17 @@ internal class EventHandlerMappingRegistration
     /// </summary>
     public IEnumerable<EventHandlerMapping> All() => _handlerMappers.Values;
 
-    #endregion
-    
     /// <summary>
     /// Adds a mapping for an event type to a handler with a return value conversion
     /// </summary>
-    public EventHandlerMappingRegistration AddMapping<TEvent, THandler, THandlerReturn>(
+    public EventHandlerMappingRegistration AddWriteSideMapping<TEvent, THandler, THandlerReturn>(
         Func<THandlerReturn, IEnumerable<object>> mapEvents)
     {
-        var handlerType = typeof(THandler);
+        var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
 
-        // Find a method that takes a parameter of type TEvent
-        var methodInfo = handlerType.FindMethodWithUniqueParameterOfType(typeof(TEvent))
-            ?? throw new NotSupportedException($"No method that accepts a unique parameter of type '{typeof(TEvent)}' was found on type '{typeof(THandler).Name}'");
+        ValidateReturnTypeMatches<THandlerReturn>(methodInfo);
 
-        // Verify the method's return type matches THandlerReturn
-        var returnType = methodInfo.ReturnType;
-        if (returnType != typeof(THandlerReturn))
-            throw new TypeMismatchInMappingDefinitionException(typeof(THandlerReturn), methodInfo);
-
-        // Ensure the handler type is generic
-        if (!handlerType.IsGenericType)
-            throw new HandlerTypeMustBeGenericMappingDefinitionException(handlerType);
-
-        // Register the mapping
-        _handlerMappers.Add(
-            typeof(TEvent),
-            new EventHandlerMapping(
-                methodInfo,
-                handlerType.GetGenericTypeDefinition(),
-                o => mapEvents((THandlerReturn)o)
-            )
-        );
+        RegisterMapping<TEvent>(methodInfo, handlerType, o => mapEvents((THandlerReturn)o));
 
         return this;
     }
@@ -73,27 +51,74 @@ internal class EventHandlerMappingRegistration
     /// <summary>
     /// Adds a mapping for an event type to a handler without return value conversion
     /// </summary>
-    public EventHandlerMappingRegistration AddMapping<TEvent, THandler>()
+    public EventHandlerMappingRegistration AddWriteSideMapping<TEvent, THandler>()
+    {
+        var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
+
+        ValidateReturnTypeImplementsIEnumerable(methodInfo, handlerType);
+
+        RegisterMapping<TEvent>(methodInfo, handlerType, null);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a mapping for an event type to a handler for read-side operations
+    /// </summary>
+    public EventHandlerMappingRegistration AddReadSideMapping<TEvent, THandler>()
+    {
+        var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
+
+        RegisterMapping<TEvent>(methodInfo, handlerType, null);
+
+        return this;
+    }
+
+    private static (MethodInfo methodInfo, Type handlerType) ValidateHandlerAndGetMethod<TEvent, THandler>()
     {
         var handlerType = typeof(THandler);
 
-        // Find a method that takes a parameter of type TEvent
+        // Find method that accepts the event type
         var methodInfo = handlerType.FindMethodWithUniqueParameterOfType(typeof(TEvent))
-            ?? throw new NotSupportedException($"No method that accepts a unique parameter of type '{typeof(TEvent)}' was found on type '{typeof(THandler).Name}'");
+                         ?? throw new NotSupportedException(
+                             $"No method that accepts a unique parameter of type '{typeof(TEvent)}' " +
+                             $"was found on type '{handlerType.Name}'");
 
         // Ensure the handler type is generic
-        if (!handlerType.IsGenericType)
-            throw new HandlerTypeMustBeGenericMappingDefinitionException(handlerType);
+        return handlerType.IsGenericType 
+            ? (methodInfo, handlerType) 
+            : throw new HandlerTypeMustBeGenericMappingDefinitionException(handlerType);
+    }
 
-        // Register the mapping
+    private static void ValidateReturnTypeMatches<THandlerReturn>(MethodInfo methodInfo)
+    {
+        if (methodInfo.ReturnType != typeof(THandlerReturn))
+            throw new TypeMismatchInMappingDefinitionException(typeof(THandlerReturn), methodInfo);
+    }
+
+    private static void ValidateReturnTypeImplementsIEnumerable(MethodInfo methodInfo, Type handlerType)
+    {
+        if (!typeof(IEnumerable<object>).IsAssignableFrom(methodInfo.ReturnType))
+        {
+            throw new InvalidOperationException(
+                $"Method '{methodInfo.Name}' in handler type '{handlerType.Name}' must return a type " +
+                $"that implements IEnumerable<object>. Current return type is '{methodInfo.ReturnType.Name}'. " +
+                $"Either change the return type or use {nameof(Configuration.RegisterWriteSideEventHandlerWithMapping)} " +
+                $"to provide a conversion function.");
+        }
+    }
+
+    private void RegisterMapping<TEvent>(
+        MethodInfo methodInfo, 
+        Type handlerType, 
+        Func<object, IEnumerable<object>>? eventMapper)
+    {
         _handlerMappers.Add(
             typeof(TEvent),
             new EventHandlerMapping(
                 methodInfo,
                 handlerType.GetGenericTypeDefinition(),
-                null)
+                eventMapper)
         );
-
-        return this;
     }
 }
