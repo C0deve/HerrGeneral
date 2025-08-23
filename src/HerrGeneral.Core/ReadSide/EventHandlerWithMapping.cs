@@ -11,7 +11,7 @@ namespace HerrGeneral.Core.ReadSide;
 /// <typeparam name="TEvent"></typeparam>
 /// <typeparam name="THandler"></typeparam>
 internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IReadSideEventHandlerMappings eventHandlerMappingProvider)
-    : IEventHandler<TEvent>
+    : IEventHandler<TEvent>, IHandlerTypeProvider
     where TEvent : notnull
     where THandler : notnull
 {
@@ -29,4 +29,6 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IRead
             throw e.InnerException ?? e;
         }
     }
+
+    public Type GetHandlerType() => typeof(THandler);
 }

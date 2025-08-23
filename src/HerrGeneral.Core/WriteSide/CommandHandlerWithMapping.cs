@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using HerrGeneral.Core.Error;
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -13,7 +14,7 @@ namespace HerrGeneral.Core.WriteSide;
 /// <typeparam name="THandler"></typeparam>
 /// <typeparam name="TResult"></typeparam>
 internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler handler, CommandHandlerMappings mappingProvider)
-    : ICommandHandler<TCommand, TResult>
+    : ICommandHandler<TCommand, TResult>, IHandlerTypeProvider
     where TCommand : notnull
     where THandler : notnull
 {
@@ -27,7 +28,7 @@ internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler h
         try
         {
             var result = handleMethod.Invoke(handler, [command]) ?? throw new InvalidOperationException();
-            
+
             try
             {
                 var events = mapping.MapEvents(result);
@@ -50,4 +51,6 @@ internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler h
             throw e.InnerException ?? e;
         }
     }
+
+    public Type GetHandlerType() => typeof(THandler);
 }

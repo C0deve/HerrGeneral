@@ -1,4 +1,5 @@
 using HerrGeneral.Core.Error;
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -33,7 +34,10 @@ internal static class EventHandlerPipeline
 
             try
             {
-                tracer.HandleEvent(handler.GetType());
+                if (handler is IHandlerTypeProvider handlerTypeProvider)
+                    tracer.HandleEvent(handlerTypeProvider.GetHandlerType());
+                else
+                    tracer.HandleEvent(handler.GetType());
                 return next(@event);
             }
             catch (EventHandlerDomainException e)

@@ -13,7 +13,10 @@ internal static class ReadSidePipeline
         CommandExecutionTracer? tracer) =>
         @event =>
         {
-            tracer?.HandleEvent(handler.GetType());
+            if (handler is IHandlerTypeProvider handlerTypeProvider)
+                tracer?.HandleEvent(handlerTypeProvider.GetHandlerType());
+            else
+                tracer?.HandleEvent(handler.GetType());
             next(@event);
         };
 }

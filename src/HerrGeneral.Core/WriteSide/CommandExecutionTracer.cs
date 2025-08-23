@@ -18,8 +18,10 @@ internal class CommandExecutionTracer
             .Select(_ => Indent)
             .Aggregate(string.Empty, (s, s1) => s + s1);
 
-    public void StartHandlingCommand(string type) =>
-        _stringBuilder.AppendLine($"<------------------- {type} thread<{Environment.CurrentManagedThreadId}> ------------------->");
+    public void StartHandlingCommand(string type, Type handlerType) =>
+        _stringBuilder
+            .AppendLine($"<------------------- {type} thread<{Environment.CurrentManagedThreadId}> ------------------->")
+            .AppendLine($"-> Handled by {handlerType}");
 
     public void StopHandlingCommand(string type, TimeSpan elapsed) =>
         _stringBuilder.AppendLine($"<------------------- {type} Finished {elapsed:c} -------------------/>");
@@ -63,4 +65,6 @@ internal class CommandExecutionTracer
         _stringBuilder.AppendLine($"{Indent}{@event.GetType()}");
 
     public string BuildString() => _stringBuilder.ToString();
+
+    public void AddTrace(string trace)=> _stringBuilder.AppendLine(trace);
 }

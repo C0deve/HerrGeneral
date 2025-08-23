@@ -22,14 +22,16 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
         var tracer = serviceProvider.GetService<CommandExecutionTracer>();
         var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
-        
+        var handlerType = commandHandler is IHandlerTypeProvider handlerTypeProvider 
+            ? handlerTypeProvider.GetHandlerType() 
+            : commandHandler.GetType();
         return
             Start(commandHandler)
                 .WithDomainExceptionMapping(domainExceptionMapper)
                 .WithWriteSideDispatching(writeSideEventDispatcher)
                 .WithReadSideDispatching(readSideEventDispatcher)
                 .WithUnitOfWork(unitOfWork)
-                .WithTracer(logger, tracer);
+                .WithTracer(handlerType, logger, tracer);
     }
 
     private static CommandPipeline.HandlerDelegate<TCommand, TReturn> Start<TReturn>(ICommandHandler<TCommand, TReturn> commandHandler) =>

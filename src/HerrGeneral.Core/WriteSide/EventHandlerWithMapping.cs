@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using HerrGeneral.Core.Error;
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.WriteSide;
 
@@ -13,7 +14,7 @@ namespace HerrGeneral.Core.WriteSide;
 /// <typeparam name="TEvent"></typeparam>
 /// <typeparam name="THandler"></typeparam>
 internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWriteSideEventHandlerMappings eventHandlerMappingsProvider)
-    : IEventHandler<TEvent>
+    : IEventHandler<TEvent>, IHandlerTypeProvider
     where TEvent : notnull
     where THandler : notnull
 {
@@ -62,4 +63,6 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWrit
             throw e.InnerException ?? e;
         }
     }
+
+    public Type GetHandlerType() => typeof(THandler);
 }

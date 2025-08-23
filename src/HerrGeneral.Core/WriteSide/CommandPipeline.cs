@@ -28,8 +28,8 @@ internal static class CommandPipeline
         };
     
 
-    public static HandlerDelegate<TCommand, TResult> WithTracer<TCommand, TResult>(
-        this HandlerDelegate<TCommand, TResult> next,
+    public static HandlerDelegate<TCommand, TResult> WithTracer<TCommand, TResult>(this HandlerDelegate<TCommand, TResult> next,
+        Type handlerType,
         ILogger<ICommandHandler<TCommand, TResult>>? logger,
         CommandExecutionTracer? commandExecutionTracer) =>
         commandExecutionTracer is null
@@ -42,7 +42,7 @@ internal static class CommandPipeline
                 var commandType = typeof(TCommand).GetFriendlyName();
 
                 commandExecutionTracer
-                    .StartHandlingCommand(commandType);
+                    .StartHandlingCommand(commandType, handlerType);
 
                 watch.Start();
                 try
