@@ -19,7 +19,7 @@ public class TracingShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<CommandTracker3>()
+            .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(PingWithDependenceOnHerrGeneral).Namespace!)

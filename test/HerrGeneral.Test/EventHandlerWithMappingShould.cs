@@ -16,16 +16,16 @@ public class EventHandlerWithMappingShould
         var mappers = new EventHandlerMappingRegistration();
         mappers.AddWriteSideMapping<EventBase, ILocalEventHandler<EventBase>, MyEventHandlerResult>(x => x.Events);
         
-        var commandTracker2 = new CommandTracker2();
-        var sut = new EventHandlerWithMapping<Pong, PongHandler>(new PongHandler(commandTracker2,
-                new EventTracker()),
+        var eventTracker = new EventTracker();
+        var sut = new EventHandlerWithMapping<Pong, PongHandler>(new PongHandler(eventTracker),
             new EventHandlerMappings(mappers));
 
         var sourceCommandId = Guid.NewGuid();
         sut.Handle(new Pong(sourceCommandId, Guid.NewGuid()));
 
-        commandTracker2
-            .HasHandled(sourceCommandId)
-            .ShouldBeTrue();
+        eventTracker
+            .GetEventsWithSourceCommandId(sourceCommandId)
+            .Count()
+            .ShouldBe(1);
     }
 }

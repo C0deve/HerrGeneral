@@ -19,7 +19,6 @@ public class SendWithMappingShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<CommandTracker2>()
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
@@ -74,8 +73,8 @@ public class SendWithMappingShould
         _serviceProvider
             .GetRequiredService<EventTracker>()
             .GetEventsWithSourceCommandId(ping.Id)
-            .Count()
-            .ShouldBe(3);
+            .Select(x => x.GetType().Name)
+            .ShouldBe([nameof(Pong), nameof(PongPong), nameof(PongPongPong)]);
     }
 
     [Fact]
@@ -88,8 +87,9 @@ public class SendWithMappingShould
 
         _serviceProvider
             .GetRequiredService<AReadModel>()
-            .HasHandled(ping.Id)
-            .ShouldBeTrue();
+            .GetEventsWithSourceCommandId(ping.Id)
+            .Select(x => x.GetType().Name)
+            .ShouldBe([nameof(Pong), nameof(PongPong), nameof(PongPongPong)]);
     }
 
 
@@ -102,8 +102,8 @@ public class SendWithMappingShould
 
         _serviceProvider
             .GetRequiredService<AReadModel>()
-            .HasHandled(command.Id)
-            .ShouldBeFalse();
+            .GetEventsWithSourceCommandId(command.Id)
+            .ShouldBeEmpty();
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class SendWithMappingShould
 
         _serviceProvider
             .GetRequiredService<AReadModel>()
-            .HasHandled(command.Id)
-            .ShouldBeFalse();
+            .GetEventsWithSourceCommandId(command.Id)
+            .ShouldBeEmpty();
     }
 }

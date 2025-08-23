@@ -19,7 +19,7 @@ public class SendWitHerrGeneralDependencyShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<CommandTracker3>()
+            .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(PingWithDependenceOnHerrGeneral).Namespace!)
@@ -44,9 +44,10 @@ public class SendWitHerrGeneralDependencyShould
             .AssertSendFrom(_mediator);
 
         _serviceProvider
-            .GetRequiredService<CommandTracker3>()
-            .HasHandled(command.Id)
-            .ShouldBeTrue();
+            .GetRequiredService<EventTracker>()
+            .GetEventsWithSourceCommandId(command.Id)
+            .Select(x => x.GetType().Name)
+            .ShouldBe([nameof(Pong), nameof(PongPong)]);
     }
 
     [Fact]
@@ -58,7 +59,8 @@ public class SendWitHerrGeneralDependencyShould
 
         _serviceProvider
             .GetRequiredService<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
-            .HasHandled(command.Id)
-            .ShouldBeTrue();
+            .GetEventsWithSourceCommandId(command.Id)
+            .Select(x => x.GetType().Name)
+            .ShouldBe([nameof(Pong)]);
     }
 }

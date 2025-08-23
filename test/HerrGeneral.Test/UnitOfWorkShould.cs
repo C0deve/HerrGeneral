@@ -18,8 +18,6 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddSingleton<EventTracker>()
-            .AddSingleton<CommandTracker2>()
-            .AddSingleton<CommandTracker3>()
             .AddHerrGeneralTestLogger(output)
             .AddHerrGeneral(scanner =>
                 scanner
@@ -42,8 +40,6 @@ public class UnitOfWorkShould(ITestOutputHelper output)
             .AddHerrGeneralTestLogger(output)
             .AddScoped<IUnitOfWork>(_ => unitOfWork)
             .AddSingleton<EventTracker>()
-            .AddSingleton<CommandTracker2>()
-            .AddSingleton<CommandTracker3>()
             .AddSingleton<AReadModelWithMultipleHandlers>()
             .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
             .AddHerrGeneral(scanner =>
