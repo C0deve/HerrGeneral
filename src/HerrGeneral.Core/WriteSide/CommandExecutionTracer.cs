@@ -30,6 +30,15 @@ internal class CommandExecutionTracer
         _stringBuilder
             .AppendLine($"|| Publish Write Side on thread<{Environment.CurrentManagedThreadId}>");
 
+    public void StartUnitOfWork() =>
+        _stringBuilder.AppendLine("Start Unit of Work");
+    public void CommitUnitOfWork() =>
+        _stringBuilder.AppendLine("Commit Unit of Work");
+    public void RollbackUnitOfWork() =>
+        _stringBuilder.AppendLine("Rollback Unit of Work");
+    public void DisposeUnitOfWork() =>
+        _stringBuilder.AppendLine("Dispose Unit of Work");
+    
     public void PublishEventOnWriteSide(object @event) =>
         _stringBuilder
             .AppendLine($"{Indent}{@event.GetType()}");

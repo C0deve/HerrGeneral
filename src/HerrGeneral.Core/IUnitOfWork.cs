@@ -4,7 +4,7 @@
 /// Interface of the unit of work.
 /// One unit of per command handler
 /// </summary>
-public interface IUnitOfWork
+public interface IUnitOfWork : IDisposable
 {
     /// <summary>
     /// Starts the transaction associated with unit of work
@@ -21,8 +21,4 @@ public interface IUnitOfWork
     /// </summary>
     void RollBack();
 
-    /// <summary>
-    /// Disposes the transaction associated with unit of work
-    /// </summary>
-    void Dispose();
 }

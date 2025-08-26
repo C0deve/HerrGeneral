@@ -95,10 +95,6 @@ internal static class CommandPipeline
                 unitOfWork?.RollBack();
                 throw;
             }
-            finally
-            {
-                unitOfWork?.Dispose();
-            }
         };
 
     public static HandlerDelegate<TCommand, TResult> WithWriteSideDispatching<TCommand, TResult>(
