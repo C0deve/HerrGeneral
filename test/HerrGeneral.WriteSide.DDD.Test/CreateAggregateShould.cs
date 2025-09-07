@@ -18,7 +18,7 @@ public class CreateAggregateShould
     public CreateAggregateShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
+            .AddSingleton<IAggregateRepository<Person>, Repository<Person>>()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<FriendAddedCounter>(_ => new FriendAddedCounter())
             .AddHerrGeneral(configuration =>
@@ -53,7 +53,7 @@ public class CreateAggregateShould
         await new CreatePerson("John", "Alfred").SendFrom(_mediator);
 
         _container.GetRequiredService<Friends>()
-            .Names()
+            .All()
             .ShouldBe(["Alfred"]);
     }
 }

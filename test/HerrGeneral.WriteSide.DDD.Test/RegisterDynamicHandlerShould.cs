@@ -16,7 +16,7 @@ public class RegisterDynamicHandlersShould
     public RegisterDynamicHandlersShould(ITestOutputHelper output) =>
         _container = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
+            .AddSingleton<IAggregateRepository<Person>, Repository<Person>>()
             .AddSingleton<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
             .AddHerrGeneral(scanner => scanner)
             .RegisterDDDHandlers(typeof(Person).Assembly)

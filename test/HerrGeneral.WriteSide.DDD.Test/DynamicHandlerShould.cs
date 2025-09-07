@@ -16,7 +16,7 @@ public class DynamicHandlerShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
+            .AddSingleton<IAggregateRepository<Person>, Repository<Person>>()
             .AddSingleton<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
             .AddHerrGeneral(configuration => configuration)
             .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly);

@@ -19,7 +19,7 @@ public class ChangeAggregateShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
+            .AddSingleton<IAggregateRepository<Person>, Repository<Person>>()
             .AddSingleton<FriendAddedCounter>()
             .AddHerrGeneral(configuration =>
                 configuration
@@ -62,7 +62,7 @@ public class ChangeAggregateShould
                 new AddFriend("Adams", personId).SendFrom(_mediator));
 
         _container.GetRequiredService<Friends>()
-            .Names()
+            .All()
             .ShouldBe(["Alfred", "Adams"]);
     }
 }
