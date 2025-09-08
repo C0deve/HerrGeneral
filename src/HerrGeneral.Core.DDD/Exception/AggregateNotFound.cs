@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral.WriteSide.DDD.Exception;
+﻿namespace HerrGeneral.Core.DDD.Exception;
 
 /// <summary>
 /// Aggregate not found implementation

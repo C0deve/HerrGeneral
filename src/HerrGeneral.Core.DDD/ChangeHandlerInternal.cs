@@ -1,6 +1,6 @@
+using HerrGeneral.Core.DDD.Exception;
 using HerrGeneral.WriteSide;
 using HerrGeneral.WriteSide.DDD;
-using HerrGeneral.WriteSide.DDD.Exception;
 
 namespace HerrGeneral.Core.DDD;
 
