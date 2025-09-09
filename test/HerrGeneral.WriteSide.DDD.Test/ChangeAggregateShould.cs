@@ -4,6 +4,8 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
@@ -19,14 +21,15 @@ public class ChangeAggregateShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<Person>, Repository<Person>>()
-            .AddSingleton<FriendAddedCounter>()
+            .AddSingleton<IAggregateRepository<TheAggregate>, Repository<TheAggregate>>()
+            .AddSingleton<ChangesCounter>()
+            .AddSingleton<AProjection>()
             .AddHerrGeneral(configuration =>
                 configuration
-                    .ScanReadSideOn(typeof(Person).Assembly, typeof(Friends).Namespace!)
+                    .ScanReadSideOn(typeof(AProjection).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
             )
-            .RegisterDDDHandlers(typeof(Person).Assembly);
-        
+            .RegisterDDDHandlers(typeof(TheAggregate).Assembly);
+
         _container = services.BuildServiceProvider();
 
         _mediator = _container.GetRequiredService<Mediator>();
@@ -34,35 +37,38 @@ public class ChangeAggregateShould
 
     [Fact]
     public async Task Change() =>
-        await new CreatePerson("John", "Alfred")
+        await new CreateTheAggregate("John")
             .SendFrom(_mediator)
             .Then(personId =>
-                new AddFriend("Adams", personId).SendFrom(_mediator))
+                new ChangeTheAggregate("Adams", personId).SendFrom(_mediator))
             .ShouldSuccess();
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        await new CreatePerson("John", "Alfred")
+        await new CreateTheAggregate("John")
             .SendFrom(_mediator)
             .Then(personId =>
-                new AddFriend("Adams", personId).SendFrom(_mediator));
+                new ChangeTheAggregate("Adams", personId).SendFrom(_mediator))
+            .ShouldSuccess();
 
-        _container.GetRequiredService<FriendAddedCounter>()
-            .Value
+        _container.GetRequiredService<ChangesCounter>()
+            .Count
             .ShouldBe(2);
     }
 
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreatePerson("John", "Alfred")
+        await new CreateTheAggregate("John")
             .SendFrom(_mediator)
             .Then(personId =>
-                new AddFriend("Adams", personId).SendFrom(_mediator));
+                new ChangeTheAggregate("Adams", personId).SendFrom(_mediator))
+            .ShouldSuccess();
 
-        _container.GetRequiredService<Friends>()
+        _container.GetRequiredService<AProjection>()
             .All()
-            .ShouldBe(["Alfred", "Adams"]);
+            .Select(x => x.Name)
+            .ShouldBe(["Adams"]);
     }
 }

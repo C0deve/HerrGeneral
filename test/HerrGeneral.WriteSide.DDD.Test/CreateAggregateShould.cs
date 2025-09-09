@@ -4,6 +4,8 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 using Xunit.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -18,14 +20,15 @@ public class CreateAggregateShould
     public CreateAggregateShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddSingleton<IAggregateRepository<Person>, Repository<Person>>()
+            .AddSingleton<IAggregateRepository<TheAggregate>, Repository<TheAggregate>>()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<FriendAddedCounter>(_ => new FriendAddedCounter())
+            .AddSingleton<ChangesCounter>()
+            .AddSingleton<AProjection>()
             .AddHerrGeneral(configuration =>
                 configuration
-                    .ScanReadSideOn(typeof(Person).Assembly, typeof(Friends).Namespace!)
+                    .ScanReadSideOn(typeof(TheAggregate).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
             )
-            .RegisterDDDHandlers(typeof(Person).Assembly);
+            .RegisterDDDHandlers(typeof(TheAggregate).Assembly);
 
         _container = services.BuildServiceProvider();
 
@@ -34,26 +37,27 @@ public class CreateAggregateShould
 
     [Fact]
     public async Task Create() =>
-        await new CreatePerson("John", "Alfred").SendFrom(_mediator);
+        await new CreateTheAggregate("John").SendFrom(_mediator);
 
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        await new CreatePerson("John", "Alfred").SendFrom(_mediator);
+        await new CreateTheAggregate("John").SendFrom(_mediator);
 
-        _container.GetRequiredService<FriendAddedCounter>()
-            .Value
+        _container.GetRequiredService<ChangesCounter>()
+            .Count
             .ShouldBe(1);
     }
 
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreatePerson("John", "Alfred").SendFrom(_mediator);
+        await new CreateTheAggregate("John").SendFrom(_mediator);
 
-        _container.GetRequiredService<Friends>()
+        _container.GetRequiredService<AProjection>()
             .All()
-            .ShouldBe(["Alfred"]);
+            .Select(x => x.Name)
+            .ShouldBe(["John"]);
     }
 }

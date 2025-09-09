@@ -1,5 +1,6 @@
 ﻿using HerrGeneral.WriteSide.DDD.Exception;
 using HerrGeneral.WriteSide.DDD.Test.Data;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
 using Shouldly;
 
 namespace HerrGeneral.WriteSide.DDD.Test;
@@ -9,7 +10,7 @@ public class AggregateShould
     [Fact]
     public void AddNewEventOnEmit()
     {
-        var person = new Person(Guid.NewGuid(), "John", "Alfred", Guid.NewGuid())
+        var person = new TheAggregate(Guid.NewGuid(), "John", Guid.NewGuid())
             .AddFriend("Smith", Guid.NewGuid())
             .AddFriend("Adams", Guid.NewGuid());
 
@@ -19,7 +20,7 @@ public class AggregateShould
     [Fact]
     public void ClearNewEvents()
     {
-        var person = new Person(Guid.NewGuid(), "John", "Alfred", Guid.NewGuid())
+        var person = new TheAggregate(Guid.NewGuid(), "John", Guid.NewGuid())
             .AddFriend("Smith", Guid.NewGuid())
             .AddFriend("Adams", Guid.NewGuid());
 
@@ -32,7 +33,7 @@ public class AggregateShould
 
     [Fact]
     public void ThrowIfAnEventIsEmitWithADifferentAggregateId() =>
-        Should.Throw<IdMismatchOnEventEmit<Person>>(() =>
-            new Person(Guid.NewGuid(), "John", "Alfred", Guid.NewGuid()).AddFriendWithDifferentAggregateId("Smith", Guid.NewGuid())
+        Should.Throw<IdMismatchOnEventEmit<TheAggregate>>(() =>
+            new TheAggregate(Guid.NewGuid(), "John", Guid.NewGuid()).AddFriendWithDifferentAggregateId("Smith", Guid.NewGuid())
         );
 }

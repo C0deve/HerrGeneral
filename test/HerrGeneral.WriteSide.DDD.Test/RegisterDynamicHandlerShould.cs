@@ -3,6 +3,8 @@ using HerrGeneral.Core.DDD;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
@@ -16,10 +18,10 @@ public class RegisterDynamicHandlersShould
     public RegisterDynamicHandlersShould(ITestOutputHelper output) =>
         _container = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<Person>, Repository<Person>>()
-            .AddSingleton<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
+            .AddSingleton<IAggregateRepository<TheAggregate>, Repository<TheAggregate>>()
+            .AddSingleton<IAggregateFactory<TheAggregate>, DefaultAggregateFactory<TheAggregate>>()
             .AddHerrGeneral(scanner => scanner)
-            .RegisterDDDHandlers(typeof(Person).Assembly)
+            .RegisterDDDHandlers(typeof(TheAggregate).Assembly)
             .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly)
             .BuildServiceProvider();
 
@@ -33,21 +35,21 @@ public class RegisterDynamicHandlersShould
     [Fact]
     public void NotRegisterDynamicHandlersForChangeAggregateCommandWithHandler() =>
         _container
-            .GetServices<ICommandHandler<AddFriend, Unit>>()
+            .GetServices<ICommandHandler<ChangeTheAggregate, Unit>>()
             .Count()
             .ShouldBe(1);
 
     [Fact]
     public void RegisterDynamicHandlersForCreateAggregateCommandWithoutHandler() =>
         _container
-            .GetServices<ICommandHandler<ACreateCommandWithoutHandler, Guid>>()
+            .GetServices<ICommandHandler<CreateTheAggregateNoHandler, Guid>>()
             .Count()
             .ShouldBe(1);
 
     [Fact]
     public void NotRegisterDynamicHandlersForCreateAggregateCommandWithHandler() =>
         _container
-            .GetServices<ICommandHandler<CreatePerson, Guid>>()
+            .GetServices<ICommandHandler<CreateTheAggregate, Guid>>()
             .Count()
             .ShouldBe(1);
 }

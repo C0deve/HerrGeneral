@@ -3,6 +3,8 @@ using HerrGeneral.Core.DDD;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
@@ -16,8 +18,8 @@ public class DynamicHandlerShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<Person>, Repository<Person>>()
-            .AddSingleton<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
+            .AddSingleton<IAggregateRepository<TheAggregate>, Repository<TheAggregate>>()
+            .AddSingleton<IAggregateFactory<TheAggregate>, DefaultAggregateFactory<TheAggregate>>()
             .AddHerrGeneral(configuration => configuration)
             .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly);
 
@@ -28,14 +30,14 @@ public class DynamicHandlerShould
 
 [Fact]
 public async Task HandleAChangeCommandWithoutHandler() =>
-    await new ACreateCommandWithoutHandler("John", "Alfred")
+    await new CreateTheAggregateNoHandler("John", "Alfred")
         .SendFrom(_mediator)
         .Then(personId =>
             new AChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator));
 
 [Fact]
 public async Task HandleASecondChangeCommandWithoutHandler() =>
-    await new ACreateCommandWithoutHandler("John", "Alfred")
+    await new CreateTheAggregateNoHandler("John", "Alfred")
         .SendFrom(_mediator)
         .Then(personId =>
             new ASecondChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator));
@@ -43,11 +45,11 @@ public async Task HandleASecondChangeCommandWithoutHandler() =>
 
 [Fact]
 public async Task HandleACreateCommandWithoutHandler() =>
-    await new ACreateCommandWithoutHandler("John", "Alfred").SendFrom(_mediator);
+    await new CreateTheAggregateNoHandler("John", "Alfred").SendFrom(_mediator);
 
 [Fact]
 public async Task ThrowIfExecuteMethodNotFound() =>
-    await new ACreateCommandWithoutHandler("John", "Alfred")
+    await new CreateTheAggregateNoHandler("John", "Alfred")
         .SendFrom(_mediator)
         .Then(personId =>
             new AThirdChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator))
@@ -56,7 +58,7 @@ public async Task ThrowIfExecuteMethodNotFound() =>
 
 [Fact]
 public async Task ThrowIfConstructorNotFound() =>
-    await new ASecondCreateCommandWithoutHandler()
+    await new CreateTheAggregateNoHandlerWithFailure()
         .SendFrom(_mediator)
         .ShouldFailWithPanicExceptionOfType<MissingMethodException, Guid>();
 
