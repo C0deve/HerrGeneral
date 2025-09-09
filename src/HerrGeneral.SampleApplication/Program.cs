@@ -1,9 +1,12 @@
 ﻿using HerrGeneral.Core;
 using HerrGeneral.Core.DDD;
 using HerrGeneral.Core.Registration;
-using HerrGeneral.SampleApplication.ReadSide;
-using HerrGeneral.SampleApplication.WriteSide;
-using HerrGeneral.WriteSide.DDD;
+using HerrGeneral.SampleApplication.Bank.Infrastructure;
+using HerrGeneral.SampleApplication.Bank.ReadModel;
+using HerrGeneral.SampleApplication.Bank.WriteSide;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Account;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Command;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Card;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -11,48 +14,57 @@ var services = new ServiceCollection()
     .AddLogging(builder => builder
         .SetMinimumLevel(LogLevel.Debug)
         .AddSimpleConsole())
-    .AddSingleton<IAggregateRepository<Person>, PersonRepository>()
-    .AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>()
+    .AddSingleton<IAggregateRepository<BankAccount>, Repository<BankAccount>>()
+    .AddSingleton<IAggregateRepository<BankCard>, Repository<BankCard>>()
+    .AddSingleton<HerrGeneral.WriteSide.DDD.IAggregateRepository<BankAccount>>(provider => provider.GetRequiredService<IAggregateRepository<BankAccount>>())
+    .AddSingleton<HerrGeneral.WriteSide.DDD.IAggregateRepository<BankCard>>(provider => provider.GetRequiredService<IAggregateRepository<BankCard>>())
+    .AddSingleton<BankCardProjection>()
+    .AddSingleton<AccountProjection>()
     .AddHerrGeneral(configuration =>
-            configuration
-                .ScanReadSideOn(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
-        )
-    .RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
+        configuration
+            .ScanReadSideOn(typeof(AccountProjection).Assembly, "HerrGeneral.SampleApplication.Bank.ReadModel")
+            .ScanWriteSideOn(typeof(BankCard).Assembly, "HerrGeneral.SampleApplication.Bank.WriteSide")
+    )
+    .RegisterDDDHandlers(typeof(BankCard).Assembly);
 
 var serviceProvider = services.BuildServiceProvider();
 Console.WriteLine("Initialization Ok");
 
 var mediator = serviceProvider.GetRequiredService<Mediator>();
 
-var smithId = Guid.Empty;
+var accountId = Guid.Empty;
 
-Console.WriteLine("Creating Smith");
+Console.WriteLine("Creating Smith account...");
 
 await mediator
-    .Send<Guid>(new CreatePerson("Smith", "Adams"))
-    .Then(personId =>
+    .Send<Guid>(new CreateBankAccount("AC-3215", "Smith", 1000))
+    .Then(id =>
     {
-        smithId = personId;
-        DisplayFriend(serviceProvider, smithId);
-        Console.WriteLine("Set Theo as a friend");
-        return mediator.Send(new SetFriend(personId, "Theo"));
+        accountId = id;
+        DisplayAccount(serviceProvider, accountId);
+        Console.WriteLine("Withdraw 1000 €...");
+        return mediator.Send(new DepositMoney(accountId, 1000, "Anniversaire :D"));
     })
     .Then(() =>
     {
-        DisplayFriend(serviceProvider, smithId);
+        DisplayAccount(serviceProvider, accountId);
         Console.WriteLine("Set Alfred as a friend");
-        return mediator.Send(new SetFriend(smithId, "Alfred"));
+        return mediator.Send(new WithdrawMoney(accountId, 100, "Food"));
     })
-    .Match(() => DisplayFriend(serviceProvider, smithId),
+    .Match(() => DisplayAccount(serviceProvider, accountId),
         _ => Console.WriteLine("Fail"),
         _ => Console.WriteLine("Fail"));
 
+Console.WriteLine("Transaction history:");
+foreach (var transactionHistoryItem in serviceProvider.GetRequiredService<TransactionHistory>().All()) 
+    Console.WriteLine($"{transactionHistoryItem.AccountNumber} {transactionHistoryItem.CardNumber} {transactionHistoryItem.Amount} {transactionHistoryItem.Description}");
 
 Console.ReadKey();
 return;
 
-void DisplayFriend(IServiceProvider serviceProvider1, Guid guid)
+void DisplayAccount(IServiceProvider serviceProvider1, Guid guid)
 {
-    var rm = serviceProvider1.GetRequiredService<PersonFriendRM.PersonFriendRMRepository>().Get(guid);
-    Console.WriteLine($"{rm.Person} friend is {rm.Friend}.");
+    var rm = serviceProvider1.GetRequiredService<AccountProjection>().All().First(x => x.Id == guid);
+    Console.WriteLine($"{rm.AccountNumber} {rm.OwnerName} created at {rm.CreatedAt:D} balance is {rm.Balance}.");
+    Console.WriteLine($"Card numbers: {string.Join(", ", rm.AssociatedCards)}.");
 }
