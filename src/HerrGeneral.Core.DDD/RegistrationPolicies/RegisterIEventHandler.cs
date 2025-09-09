@@ -18,20 +18,31 @@ internal class RegisterIEventHandler : IRegistrationPolicy
 
         foreach (var externalWriteSideEventHandler in externalHandlers)
         {
-            var genericArguments = externalWriteSideEventHandler.GetInterface(_handlerInterface.Name)?.GetGenericArguments()
-                                   ?? throw new InvalidOperationException($"Interface {_handlerInterface.Name} not found on {externalWriteSideEventHandler.GetFriendlyName()}");
-            
-            var eventType = genericArguments[0];
-            
-            var @interface = TypeDefinition.WriteSideEventHandlerInterface.MakeGenericType(eventType);
-            var internalHandler = typeof(EventHandlerInternal<,>).MakeGenericType(eventType, externalWriteSideEventHandler);
+            var handlerInterfaces = externalWriteSideEventHandler.GetInterfaces()
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == _handlerInterface)
+                .ToList();
 
-            serviceCollection.TryAddTransient(externalWriteSideEventHandler);
-            
-            serviceCollection.AddTransient(
-                @interface,
-                internalHandler);
-            
+            if (handlerInterfaces.Count == 0)
+                throw new InvalidOperationException($"Interface {_handlerInterface.Name} not found on {externalWriteSideEventHandler.GetFriendlyName()}");
+
+            foreach (var genericArguments in 
+                     handlerInterfaces
+                         .Select(handlerInterface => handlerInterface.GetGenericArguments())) 
+                RegisterEventHandlerServices(serviceCollection, genericArguments, externalWriteSideEventHandler);
         }
+    }
+
+    private static void RegisterEventHandlerServices(IServiceCollection serviceCollection, Type[] genericArguments, Type externalWriteSideEventHandler)
+    {
+        var eventType = genericArguments[0];
+            
+        var @interface = TypeDefinition.WriteSideEventHandlerInterface.MakeGenericType(eventType);
+        var internalHandler = typeof(EventHandlerInternal<,>).MakeGenericType(eventType, externalWriteSideEventHandler);
+
+        serviceCollection.TryAddTransient(externalWriteSideEventHandler);
+            
+        serviceCollection.AddTransient(
+            @interface,
+            internalHandler);
     }
 }
