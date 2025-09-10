@@ -15,7 +15,7 @@ public record AnotherThingProjectionItem(
 /// Projection that tracks all created AnotherThing aggregates
 /// </summary>
 public class AnotherThingProjection : Projection<AnotherThingProjectionItem>,
-    HerrGeneral.ReadSide.IEventHandler<AnotherThingCreated>
+    HerrGeneral.ReadSide.IProjectionEventHandler<AnotherThingCreated>
 {
     /// <summary>
     /// Handles AnotherThingCreated event by adding to projection

@@ -18,13 +18,13 @@ public class SendWitHerrGeneralDependencyShould
     public SendWitHerrGeneralDependencyShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
+            .AddSingleton<ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler>()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(PingWithDependenceOnHerrGeneral).Namespace!)
-                    .ScanReadSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(ReadModelWithMultipleHandlersAndInheritingIEventHandler).Namespace!));
+                    .ScanReadSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler).Namespace!));
 
         _serviceProvider = services.BuildServiceProvider();
         _mediator = _serviceProvider.GetRequiredService<Mediator>();
@@ -59,7 +59,7 @@ public class SendWitHerrGeneralDependencyShould
             .AssertSendFrom(_mediator);
 
         _serviceProvider
-            .GetRequiredService<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
+            .GetRequiredService<ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler>()
             .GetEventsWithSourceCommandId(command.Id)
             .Select(x => x.GetType().Name)
             .ShouldBe([nameof(Pong)]);

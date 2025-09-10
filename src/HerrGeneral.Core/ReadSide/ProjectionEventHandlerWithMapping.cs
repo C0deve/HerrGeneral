@@ -10,8 +10,8 @@ namespace HerrGeneral.Core.ReadSide;
 /// <param name="eventHandlerMappingProvider"></param>
 /// <typeparam name="TEvent"></typeparam>
 /// <typeparam name="THandler"></typeparam>
-internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IReadSideEventHandlerMappings eventHandlerMappingProvider)
-    : IEventHandler<TEvent>, IHandlerTypeProvider
+internal class ProjectionEventHandlerWithMapping<TEvent, THandler>(THandler handler, IReadSideEventHandlerMappings eventHandlerMappingProvider)
+    : IProjectionEventHandler<TEvent>, IHandlerTypeProvider
     where TEvent : notnull
     where THandler : notnull
 {

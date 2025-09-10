@@ -1,3 +1,4 @@
+using HerrGeneral.ReadSide;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Event;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
@@ -18,10 +19,10 @@ public record AccountProjectionItem(
 /// Read-side handler for maintaining account projections
 /// </summary>
 public class AccountProjection : Projection<AccountProjectionItem>,
-    ReadSide.IEventHandler<AccountCreated>,
-    ReadSide.IEventHandler<MoneyDeposited>,
-    ReadSide.IEventHandler<MoneyWithdrawn>,
-    ReadSide.IEventHandler<BankCardCreated>
+    IProjectionEventHandler<AccountCreated>,
+    IProjectionEventHandler<MoneyDeposited>,
+    IProjectionEventHandler<MoneyWithdrawn>,
+    IProjectionEventHandler<BankCardCreated>
 
 {
     public void Handle(AccountCreated @event)

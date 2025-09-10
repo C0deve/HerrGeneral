@@ -18,13 +18,13 @@ public class TracingShould(ITestOutputHelper output)
     public async Task NotTraceWhenDisabled()
     {
         var services = new ServiceCollection()
-            .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
+            .AddSingleton<ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler>()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(PingWithDependenceOnHerrGeneral).Namespace!)
-                    .ScanReadSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(ReadModelWithMultipleHandlersAndInheritingIEventHandler).Namespace!)
+                    .ScanReadSideOn(typeof(PingWithDependenceOnHerrGeneral).Assembly, typeof(ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler).Namespace!)
                     .EnableCommandExecutionTracing(false));
 
         var serviceProvider = services.BuildServiceProvider();

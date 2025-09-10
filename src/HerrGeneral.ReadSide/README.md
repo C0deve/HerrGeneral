@@ -4,7 +4,7 @@
 
 (Optional)
 
-Interfaces IEventHandler for Herr General ReadSide.
+Interfaces IProjectionEventHandler : Defines a handler that processes events to update read-side projections
 
 Pros: no reflection to resolve handlers
 Cons: add a dependency on HerrGeneral

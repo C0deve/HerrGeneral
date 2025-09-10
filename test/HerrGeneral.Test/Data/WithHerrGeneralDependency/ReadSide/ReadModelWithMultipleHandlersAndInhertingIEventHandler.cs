@@ -1,12 +1,13 @@
+using HerrGeneral.ReadSide;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;
 
 namespace HerrGeneral.Test.Data.WithHerrGeneralDependency.ReadSide;
 
-public class ReadModelWithMultipleHandlersAndInheritingIEventHandler :
+public class ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler :
     EventTracker,
-    HerrGeneral.ReadSide.IEventHandler<Pong>,
-    HerrGeneral.ReadSide.IEventHandler<PongPong>,
-    HerrGeneral.ReadSide.IEventHandler<AnotherPong>
+    IProjectionEventHandler<Pong>,
+    IProjectionEventHandler<PongPong>,
+    IProjectionEventHandler<AnotherPong>
 {
     public void Handle(Pong notification) =>
         AddHandled(notification);

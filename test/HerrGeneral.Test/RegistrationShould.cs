@@ -80,12 +80,12 @@ public class RegistrationShould(ITestOutputHelper output)
         var container = services.BuildServiceProvider();
 
         container
-            .GetRequiredService<ReadSide.IEventHandler<AnotherPong>>()
-            .ShouldBeOfType<EventHandlerWithMapping<AnotherPong, AReadModelWithMultipleHandlers>>();
+            .GetRequiredService<ReadSide.IProjectionEventHandler<AnotherPong>>()
+            .ShouldBeOfType<ProjectionEventHandlerWithMapping<AnotherPong, AReadModelWithMultipleHandlers>>();
 
         container
-            .GetRequiredService<ReadSide.IEventHandler<Pong>>()
-            .ShouldBeOfType<EventHandlerWithMapping<Pong, AReadModelWithMultipleHandlers>>();
+            .GetRequiredService<ReadSide.IProjectionEventHandler<Pong>>()
+            .ShouldBeOfType<ProjectionEventHandlerWithMapping<Pong, AReadModelWithMultipleHandlers>>();
     }
 
     [Fact]

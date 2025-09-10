@@ -9,7 +9,7 @@ internal static class ReadSidePipeline
 
     public static EventHandlerDelegate<TEvent> WithReadSideHandlerLogging<TEvent>(
         this EventHandlerDelegate<TEvent> next,
-        IEventHandler<TEvent> handler,
+        IProjectionEventHandler<TEvent> handler,
         CommandExecutionTracer? tracer) =>
         @event =>
         {

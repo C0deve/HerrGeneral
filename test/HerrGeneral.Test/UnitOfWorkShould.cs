@@ -41,7 +41,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
             .AddScoped<IUnitOfWork>(_ => unitOfWork)
             .AddSingleton<EventTracker>()
             .AddSingleton<AReadModelWithMultipleHandlers>()
-            .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
+            .AddSingleton<ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler>()
             .AddHerrGeneral(scanner =>
                 scanner
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)

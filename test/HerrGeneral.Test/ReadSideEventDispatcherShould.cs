@@ -45,7 +45,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
                 Message = message;
         }
 
-        private record PongHandler : ReadSide.IEventHandler<Pong>
+        private record PongHandler : ReadSide.IProjectionEventHandler<Pong>
         {
             private readonly ReadModel _readModel;
 

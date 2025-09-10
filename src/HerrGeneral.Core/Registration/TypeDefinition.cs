@@ -20,6 +20,6 @@ internal static class TypeDefinition
     /// <summary>
     /// Event handler interface from read side
     /// </summary>
-    public static readonly Type ReadSideEventHandlerInterface = typeof(HerrGeneral.ReadSide.IEventHandler<>);
+    public static readonly Type ReadSideEventHandlerInterface = typeof(HerrGeneral.ReadSide.IProjectionEventHandler<>);
 
 }

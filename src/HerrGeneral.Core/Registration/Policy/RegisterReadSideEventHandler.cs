@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using HerrGeneral.ReadSide;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Core.Registration.Policy;
 
 /// <summary>
-/// Registers all handler on read side that inherits <see cref="HerrGeneral.ReadSide.IEventHandler{TEvent}"/>
+/// Registers all handler on read side that inherits <see cref="IProjectionEventHandler{TEvent}"/>
 /// </summary>
 internal class RegisterReadSideEventHandler : IRegistrationPolicy
 {

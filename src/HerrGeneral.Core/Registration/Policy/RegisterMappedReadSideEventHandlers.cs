@@ -32,8 +32,8 @@ internal class RegisterMappedReadSideEventHandlers(EventHandlerMappingRegistrati
 
         foreach (var scanResult in scanResults)
         {
-            var @interface = typeof(IEventHandler<>).MakeGenericType(scanResult.eventType);
-            var internalHandler = typeof(EventHandlerWithMapping<,>).MakeGenericType(scanResult.eventType, scanResult.externalHandlerType);
+            var @interface = typeof(IProjectionEventHandler<>).MakeGenericType(scanResult.eventType);
+            var internalHandler = typeof(ProjectionEventHandlerWithMapping<,>).MakeGenericType(scanResult.eventType, scanResult.externalHandlerType);
 
             serviceCollection.TryAddSingleton(scanResult.externalHandlerType);
             serviceCollection.AddTransient(@interface, internalHandler);

@@ -13,7 +13,7 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
     {
         var tracer = serviceProvider.GetService<CommandExecutionTracer>();
 
-        foreach (var handler in serviceProvider.GetServices<IEventHandler<TEvent>>())
+        foreach (var handler in serviceProvider.GetServices<IProjectionEventHandler<TEvent>>())
         {
             Start(handler)
                 .WithReadSideHandlerLogging(handler, tracer)
@@ -21,6 +21,6 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
         }
     }
     
-    private static ReadSidePipeline.EventHandlerDelegate<TEvent> Start(IEventHandler<TEvent> handler) =>
+    private static ReadSidePipeline.EventHandlerDelegate<TEvent> Start(IProjectionEventHandler<TEvent> handler) =>
         handler.Handle;
 }

@@ -1,4 +1,5 @@
-﻿using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Event;
+﻿using HerrGeneral.ReadSide;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Event;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
 namespace HerrGeneral.SampleApplication.Bank.ReadModel;
@@ -24,9 +25,9 @@ public record TransactionHistoryItem(
 /// Read-side handler for transaction history
 /// </summary>
 public class TransactionHistory : Projection<TransactionHistoryItem>,
-    ReadSide.IEventHandler<MoneyDeposited>,
-    ReadSide.IEventHandler<MoneyWithdrawn>,
-    ReadSide.IEventHandler<CardPaymentProcessed>
+    IProjectionEventHandler<MoneyDeposited>,
+    IProjectionEventHandler<MoneyWithdrawn>,
+    IProjectionEventHandler<CardPaymentProcessed>
 {
     public void Handle(MoneyDeposited @event) =>
         Add(new TransactionHistoryItem(

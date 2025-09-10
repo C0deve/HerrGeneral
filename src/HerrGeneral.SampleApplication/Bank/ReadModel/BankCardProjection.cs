@@ -1,4 +1,5 @@
-﻿using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
+﻿using HerrGeneral.ReadSide;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
 namespace HerrGeneral.SampleApplication.Bank.ReadModel;
 
@@ -18,11 +19,11 @@ public record BankCardProjectionItem(
     DateTime? LastTransactionDate = null);
 
 public class BankCardProjection : Projection<BankCardProjectionItem>,
-    ReadSide.IEventHandler<BankCardCreated>,
-    ReadSide.IEventHandler<CardPaymentProcessed>,
-    ReadSide.IEventHandler<BankCardBlocked>,
-    ReadSide.IEventHandler<BankCardUnblocked>,
-    ReadSide.IEventHandler<CardDailyLimitUpdated>
+    IProjectionEventHandler<BankCardCreated>,
+    IProjectionEventHandler<CardPaymentProcessed>,
+    IProjectionEventHandler<BankCardBlocked>,
+    IProjectionEventHandler<BankCardUnblocked>,
+    IProjectionEventHandler<CardDailyLimitUpdated>
 {
     public void Handle(BankCardCreated @event) =>
         Add(
