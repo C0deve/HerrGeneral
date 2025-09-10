@@ -5,7 +5,7 @@ namespace HerrGeneral.Core.Registration;
 internal static class TypeExtensions
 {
     public static bool IsInNameSpace(this Type type, ICollection<string> nameSpaces) =>
-        type.Namespace is not null && nameSpaces.Contains(type.Namespace);
+        type.Namespace is not null && nameSpaces.Any(nameSpace => type.Namespace.StartsWith(nameSpace));
 
     public static bool IsAssignableFromOpenType(this Type type, Type openType)
     {

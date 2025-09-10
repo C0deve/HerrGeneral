@@ -8,20 +8,20 @@ namespace HerrGeneral.Scanner.Test
     public class ScannerShould
     {
         [Fact]
-        public void Get_all_concrete_class() =>
+        public void GetAllConcreteClass() =>
             Core.Registration.Scanner.Scan([
                         new ScanParam(typeof(Command1).Assembly)
                     ],
                     [typeof(ICommandHandler<>)])
                 [typeof(ICommandHandler<>)]
                 .ShouldBe([
-                    typeof(Command3.Command1Handler),
+                    typeof(Command3.Command3Handler),
                     typeof(Command1.Command1Handler),
                     typeof(Command2Handler),
                 ]);
 
         [Fact]
-        public void Get_all_concrete_class_filtered_by_namespace() =>
+        public void GetAllConcreteClassFilteredByNamespace() =>
             HerrGeneral.Core.Registration.Scanner.Scan([
                         new ScanParam(typeof(Command1).Assembly,
                             typeof(Command3).Namespace!)
@@ -29,7 +29,21 @@ namespace HerrGeneral.Scanner.Test
                     [typeof(ICommandHandler<>)])
                 [typeof(ICommandHandler<>)]
                 .ShouldBe([
-                    typeof(Command3.Command1Handler)
+                    typeof(Command3.Command3Handler)
+                ]);
+        
+        [Fact]
+        public void GetAllConcreteClassFilteredByParentNamespace() =>
+            HerrGeneral.Core.Registration.Scanner.Scan([
+                        new ScanParam(typeof(Command1).Assembly,
+                            typeof(Command1).Namespace!)
+                    ],
+                    [typeof(ICommandHandler<>)])
+                [typeof(ICommandHandler<>)]
+                .ShouldBe([
+                    typeof(Command3.Command3Handler),
+                    typeof(Command1.Command1Handler),
+                    typeof(Command2Handler),
                 ]);
         
     }
@@ -60,7 +74,7 @@ namespace HerrGeneral.Scanner.Test
     {
         internal record Command3
         {
-            public class Command1Handler : ICommandHandler<Command3>
+            public class Command3Handler : ICommandHandler<Command3>
             {
                 public IEnumerable<object> Handle(Command3 command) => [];
             }

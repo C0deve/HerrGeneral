@@ -5,12 +5,12 @@ namespace HerrGeneral.Core.Registration;
 
 internal static class AssemblyExtensions
 {
-    public static ReadOnlyDictionary<Type, HashSet<Type>> ScanForOpenTypes(this Assembly assembly, HashSet<string> nameSpaces, params HashSet<Type> openTypes) =>
+    public static ReadOnlyDictionary<Type, HashSet<Type>> MapImplementationsFromOpenTypes(this Assembly assembly, HashSet<string> nameSpaces, params HashSet<Type> openTypes) =>
         assembly
             .GetConcreteTypes(nameSpaces)
-            .ScanForOpenTypes(openTypes);
+            .MapImplementationsFromOpenTypes(openTypes);
 
-    private static ReadOnlyDictionary<Type, HashSet<Type>> ScanForOpenTypes(this IEnumerable<Type> types, IReadOnlyCollection<Type> openTypes)
+    private static ReadOnlyDictionary<Type, HashSet<Type>> MapImplementationsFromOpenTypes(this IEnumerable<Type> types, IReadOnlyCollection<Type> openTypes)
     {
         var query =
             from type in types
