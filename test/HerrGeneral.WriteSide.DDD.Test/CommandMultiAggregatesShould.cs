@@ -1,4 +1,4 @@
-﻿using HerrGeneral.Core;
+using HerrGeneral.Core;
 using HerrGeneral.Core.DDD;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
@@ -7,18 +7,19 @@ using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.AnotherThing;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
-using Xunit.Abstractions;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.InnerHandler;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using Xunit.Abstractions;
 
 namespace HerrGeneral.WriteSide.DDD.Test;
 
-public class CreateAggregateShould
+public class CommandMultiAggregatesShould
 {
     private readonly Mediator _mediator;
     private readonly IServiceProvider _container;
 
-    public CreateAggregateShould(ITestOutputHelper output)
+    public CommandMultiAggregatesShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
@@ -40,47 +41,32 @@ public class CreateAggregateShould
     }
 
     [Fact]
-    public async Task Create() =>
-        await new CreateTheThing("John")
-            .SendFrom(_mediator)
-            .ShouldSuccess();
-
-
-    [Fact]
-    public async Task DispatchEventsOnWriteSide()
+    public async Task Success()
     {
-        await new CreateTheThing("John")
-            .SendFrom(_mediator)
-            .ShouldSuccess();
+        await new CreateTheThing("John").AssertSendFrom<Guid>(_mediator);
+        await new CreateTheThing("Doe").AssertSendFrom<Guid>(_mediator);
 
-        _container.GetRequiredService<ChangesCounter>()
-            .Count
-            .ShouldBe(1);
-    }
-    
-    [Fact]
-    public async Task DispatchEventsCreatedInWriteSideEventHandler()
-    {
-        await new CreateTheThing("John")
-            .SendFrom(_mediator)
-            .ShouldSuccess();
-
-        _container.GetRequiredService<AnotherThingProjection>()
+        await new DeleteAllTheThings().SendFrom(_mediator).ShouldSuccess();
+        
+        var repository = _container.GetRequiredService<IAggregateRepository<TheThing>>();
+        _container.GetRequiredService<TheThingTracker>()
             .All()
-            .Select(x => x.Name)
-            .ShouldBe(["Related to John"]);
+            .Select(repository.Get)
+            .Select(list => list.ShouldNotBeNull().IsDeleted)
+            .ShouldBe([true, true]);
     }
 
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreateTheThing("John")
-            .SendFrom(_mediator)
-            .ShouldSuccess();
+        await new CreateTheThing("John").AssertSendFrom<Guid>(_mediator);
+        await new CreateTheThing("Doe").AssertSendFrom<Guid>(_mediator);
 
+        await new DeleteAllTheThings().AssertSendFrom(_mediator);
+        
         _container.GetRequiredService<AProjection>()
             .All()
-            .Select(x => x.Name)
-            .ShouldBe(["John"]);
+            .Select(item => item.IsDeleted)
+            .ShouldBe([true, true]);
     }
 }

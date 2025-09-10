@@ -14,7 +14,7 @@ namespace HerrGeneral.Core.DDD;
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
-internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Unit> 
+internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Unit>
     where TAggregate : Aggregate<TAggregate>
     where TCommand : Change<TAggregate>
     where THandler : IChangeHandler<TAggregate, TCommand>
@@ -43,11 +43,10 @@ internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandH
         _repository.Save(aggregate);
         var result = (aggregate.NewEvents, Unit.Default);
         aggregate.ClearNewEvents();
-        
+
         return result;
     }
 
     private TAggregate GetAggregate(TCommand command) =>
         _repository.Get(command.AggregateId) ?? throw new AggregateNotFound<TAggregate>(command.AggregateId);
-
 }

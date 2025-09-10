@@ -13,16 +13,32 @@ public class TheThing : Aggregate<TheThing>
     public TheThing(Guid id, string name, Guid commandId) : base(id)
     {
         Name = name;
+        IsDeleted = false;
         Emit(new TheThingIsCreated(name, commandId, Id));
     }
 
     public string Name { get; }
+    public bool IsDeleted { get; private set; }
 
     public TheThing AddFriend(string friendName, Guid sourceCommandId) =>
         Emit(new TheThingHasChanged(friendName, sourceCommandId, Id));
 
     public TheThing AddFriendWithDifferentAggregateId(string friendName, Guid sourceCommandId) =>
         Emit(new TheThingHasChanged(friendName, sourceCommandId, Guid.NewGuid()));
+
+    /// <summary>
+    /// Deletes the TheThing aggregate
+    /// </summary>
+    /// <param name="sourceCommandId">The command ID that initiated the deletion</param>
+    /// <returns>Updated aggregate with deleted status</returns>
+    public TheThing Delete(Guid sourceCommandId)
+    {
+        if (IsDeleted)
+            return this;
+
+        IsDeleted = true;
+        return Emit(new TheThingDeleted(Name, sourceCommandId, Id));
+    }
 
     // ReSharper disable once UnusedMember.Global
     internal TheThing Execute(AChangeCommandWithoutHandler changeCommand) =>

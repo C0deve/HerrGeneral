@@ -57,7 +57,12 @@ public static class ServiceExtension
     {
         Registration.ServiceExtension.Register(
             serviceCollection, 
-            [new RegisterICreateHandler(), new RegisterIChangeHandler(), new RegisterIEventHandler()], 
+            [
+                new RegisterICreateHandler(), 
+                new RegisterIChangeHandler(), 
+                new RegisterIEventHandler(),
+                new RegisterIChangeMultiHandler()
+            ], 
             [new ScanParam(assembly)]);
         
         return serviceCollection;
