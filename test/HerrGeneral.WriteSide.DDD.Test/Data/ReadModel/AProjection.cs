@@ -5,13 +5,13 @@ namespace HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
 public record AProjectionItem(Guid TheAggregateId, string Name);
 
 public class AProjection : Projection<AProjectionItem>,
-    HerrGeneral.ReadSide.IEventHandler<TheAggregateIsCreated>,
-    HerrGeneral.ReadSide.IEventHandler<TheAggregateHasChanged>
+    HerrGeneral.ReadSide.IEventHandler<TheThingIsCreated>,
+    HerrGeneral.ReadSide.IEventHandler<TheThingHasChanged>
 {
-    public void Handle(TheAggregateIsCreated notification) =>
+    public void Handle(TheThingIsCreated notification) =>
         Add(new AProjectionItem(notification.AggregateId, notification.Name));
 
-    public void Handle(TheAggregateHasChanged notification) =>
+    public void Handle(TheThingHasChanged notification) =>
         Update(
             item => item.TheAggregateId == notification.AggregateId,
             item => item with { Name = notification.Name }

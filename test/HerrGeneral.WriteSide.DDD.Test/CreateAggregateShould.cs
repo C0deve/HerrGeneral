@@ -4,6 +4,7 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.AnotherThing;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 using Xunit.Abstractions;
@@ -20,15 +21,17 @@ public class CreateAggregateShould
     public CreateAggregateShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddSingleton<IAggregateRepository<TheAggregate>, Repository<TheAggregate>>()
             .AddHerrGeneralTestLogger(output)
+            .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
+            .AddSingleton<IAggregateRepository<AnotherThing>, Repository<AnotherThing>>()
             .AddSingleton<ChangesCounter>()
             .AddSingleton<AProjection>()
             .AddHerrGeneral(configuration =>
                 configuration
-                    .ScanReadSideOn(typeof(TheAggregate).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
+                    .ScanWriteSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide")
+                    .ScanReadSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
             )
-            .RegisterDDDHandlers(typeof(TheAggregate).Assembly);
+            .RegisterDDDHandlers(typeof(TheThing).Assembly);
 
         _container = services.BuildServiceProvider();
 
@@ -37,23 +40,42 @@ public class CreateAggregateShould
 
     [Fact]
     public async Task Create() =>
-        await new CreateTheAggregate("John").SendFrom(_mediator);
+        await new CreateTheThing("John")
+            .SendFrom(_mediator)
+            .ShouldSuccess();
 
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        await new CreateTheAggregate("John").SendFrom(_mediator);
+        await new CreateTheThing("John")
+            .SendFrom(_mediator)
+            .ShouldSuccess();
 
         _container.GetRequiredService<ChangesCounter>()
             .Count
             .ShouldBe(1);
     }
+    
+    [Fact]
+    public async Task DispatchEventsCreatedInWriteSideEventHandler()
+    {
+        await new CreateTheThing("John")
+            .SendFrom(_mediator)
+            .ShouldSuccess();
+
+        _container.GetRequiredService<AnotherThingProjection>()
+            .All()
+            .Select(x => x.Name)
+            .ShouldBe(["Related to John"]);
+    }
 
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreateTheAggregate("John").SendFrom(_mediator);
+        await new CreateTheThing("John")
+            .SendFrom(_mediator)
+            .ShouldSuccess();
 
         _container.GetRequiredService<AProjection>()
             .All()

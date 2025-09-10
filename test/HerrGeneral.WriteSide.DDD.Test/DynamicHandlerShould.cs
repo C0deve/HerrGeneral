@@ -18,8 +18,8 @@ public class DynamicHandlerShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<TheAggregate>, Repository<TheAggregate>>()
-            .AddSingleton<IAggregateFactory<TheAggregate>, DefaultAggregateFactory<TheAggregate>>()
+            .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
+            .AddSingleton<IAggregateFactory<TheThing>, DefaultAggregateFactory<TheThing>>()
             .AddHerrGeneral(configuration => configuration)
             .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly);
 
@@ -30,14 +30,14 @@ public class DynamicHandlerShould
 
 [Fact]
 public async Task HandleAChangeCommandWithoutHandler() =>
-    await new CreateTheAggregateNoHandler("John", "Alfred")
+    await new CreateTheThingNoHandler("John")
         .SendFrom(_mediator)
         .Then(personId =>
             new AChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator));
 
 [Fact]
 public async Task HandleASecondChangeCommandWithoutHandler() =>
-    await new CreateTheAggregateNoHandler("John", "Alfred")
+    await new CreateTheThingNoHandler("John")
         .SendFrom(_mediator)
         .Then(personId =>
             new ASecondChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator));
@@ -45,11 +45,11 @@ public async Task HandleASecondChangeCommandWithoutHandler() =>
 
 [Fact]
 public async Task HandleACreateCommandWithoutHandler() =>
-    await new CreateTheAggregateNoHandler("John", "Alfred").SendFrom(_mediator);
+    await new CreateTheThingNoHandler("John").SendFrom(_mediator);
 
 [Fact]
 public async Task ThrowIfExecuteMethodNotFound() =>
-    await new CreateTheAggregateNoHandler("John", "Alfred")
+    await new CreateTheThingNoHandler("John")
         .SendFrom(_mediator)
         .Then(personId =>
             new AThirdChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator))
@@ -58,7 +58,7 @@ public async Task ThrowIfExecuteMethodNotFound() =>
 
 [Fact]
 public async Task ThrowIfConstructorNotFound() =>
-    await new CreateTheAggregateNoHandlerWithFailure()
+    await new CreateTheThingNoHandlerWithFailure()
         .SendFrom(_mediator)
         .ShouldFailWithPanicExceptionOfType<MissingMethodException, Guid>();
 

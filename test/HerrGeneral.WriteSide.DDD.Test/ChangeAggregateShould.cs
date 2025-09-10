@@ -4,6 +4,7 @@ using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.AnotherThing;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,14 +22,16 @@ public class ChangeAggregateShould
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<TheAggregate>, Repository<TheAggregate>>()
+            .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
+            .AddSingleton<IAggregateRepository<AnotherThing>, Repository<AnotherThing>>()
             .AddSingleton<ChangesCounter>()
             .AddSingleton<AProjection>()
             .AddHerrGeneral(configuration =>
                 configuration
+                    .ScanWriteSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide")
                     .ScanReadSideOn(typeof(AProjection).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
             )
-            .RegisterDDDHandlers(typeof(TheAggregate).Assembly);
+            .RegisterDDDHandlers(typeof(TheThing).Assembly);
 
         _container = services.BuildServiceProvider();
 
@@ -37,19 +40,19 @@ public class ChangeAggregateShould
 
     [Fact]
     public async Task Change() =>
-        await new CreateTheAggregate("John")
+        await new CreateTheThing("John")
             .SendFrom(_mediator)
             .Then(personId =>
-                new ChangeTheAggregate("Adams", personId).SendFrom(_mediator))
+                new ChangeTheThing("Adams", personId).SendFrom(_mediator))
             .ShouldSuccess();
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        await new CreateTheAggregate("John")
+        await new CreateTheThing("John")
             .SendFrom(_mediator)
             .Then(personId =>
-                new ChangeTheAggregate("Adams", personId).SendFrom(_mediator))
+                new ChangeTheThing("Adams", personId).SendFrom(_mediator))
             .ShouldSuccess();
 
         _container.GetRequiredService<ChangesCounter>()
@@ -60,10 +63,10 @@ public class ChangeAggregateShould
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreateTheAggregate("John")
+        await new CreateTheThing("John")
             .SendFrom(_mediator)
             .Then(personId =>
-                new ChangeTheAggregate("Adams", personId).SendFrom(_mediator))
+                new ChangeTheThing("Adams", personId).SendFrom(_mediator))
             .ShouldSuccess();
 
         _container.GetRequiredService<AProjection>()
@@ -71,4 +74,6 @@ public class ChangeAggregateShould
             .Select(x => x.Name)
             .ShouldBe(["Adams"]);
     }
+    
+    
 }

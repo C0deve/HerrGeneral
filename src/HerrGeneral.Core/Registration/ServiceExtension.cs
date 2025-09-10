@@ -76,6 +76,8 @@ public static class ServiceExtension
             .ToHashSet();
         var externalHandlers = Scanner.Scan(scanParams, openTypesToScan);
 
+        if (externalHandlers.Count == 0) return;
+        
         foreach (var policy in policies)
             policy.Register(serviceCollection, externalHandlers);
     }

@@ -10,7 +10,7 @@ public class AggregateShould
     [Fact]
     public void AddNewEventOnEmit()
     {
-        var person = new TheAggregate(Guid.NewGuid(), "John", Guid.NewGuid())
+        var person = new TheThing(Guid.NewGuid(), "John", Guid.NewGuid())
             .AddFriend("Smith", Guid.NewGuid())
             .AddFriend("Adams", Guid.NewGuid());
 
@@ -20,7 +20,7 @@ public class AggregateShould
     [Fact]
     public void ClearNewEvents()
     {
-        var person = new TheAggregate(Guid.NewGuid(), "John", Guid.NewGuid())
+        var person = new TheThing(Guid.NewGuid(), "John", Guid.NewGuid())
             .AddFriend("Smith", Guid.NewGuid())
             .AddFriend("Adams", Guid.NewGuid());
 
@@ -33,7 +33,7 @@ public class AggregateShould
 
     [Fact]
     public void ThrowIfAnEventIsEmitWithADifferentAggregateId() =>
-        Should.Throw<IdMismatchOnEventEmit<TheAggregate>>(() =>
-            new TheAggregate(Guid.NewGuid(), "John", Guid.NewGuid()).AddFriendWithDifferentAggregateId("Smith", Guid.NewGuid())
+        Should.Throw<IdMismatchOnEventEmit<TheThing>>(() =>
+            new TheThing(Guid.NewGuid(), "John", Guid.NewGuid()).AddFriendWithDifferentAggregateId("Smith", Guid.NewGuid())
         );
 }

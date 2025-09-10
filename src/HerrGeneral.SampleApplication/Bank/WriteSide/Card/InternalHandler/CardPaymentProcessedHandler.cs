@@ -1,7 +1,7 @@
 ﻿using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.InnerHandler;
+namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.InternalHandler;
 
 /// <summary>
 /// Write-side handler for card payment fraud detection
@@ -9,10 +9,10 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.InnerHandler;
 public class CardPaymentProcessedHandler(
     ICardFraudDetectionService fraudDetection,
     INotificationService notification)
-    : IEventHandler<CardPaymentProcessed>
+    : IEventHandler<CardPaymentProcessed, BankCard>
 {
 
-    public IEnumerable<object> Handle(CardPaymentProcessed @event)
+    public IEnumerable<BankCard> Handle(CardPaymentProcessed @event)
     {
         // Fraud detection for card payments
         if (fraudDetection.IsSuspiciousCardPayment(@event.CardNumber, @event.Amount, @event.MerchantName)) 

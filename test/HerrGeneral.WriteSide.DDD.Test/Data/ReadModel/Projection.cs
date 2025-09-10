@@ -14,4 +14,6 @@ public abstract class Projection<T>
             .ToList()
             .ForEach(item => 
                 _data[_data.IndexOf(item)] = action(item));
+    
+    protected IEnumerable<T> Find(Func<T, bool> predicate) => _data.Where(predicate);
 }

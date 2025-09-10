@@ -1,5 +1,4 @@
-﻿using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Command;
-using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
+﻿using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 using HerrGeneral.WriteSide.DDD;
 using Microsoft.Extensions.Logging;
 
@@ -11,28 +10,22 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.CrossAggregateHan
 public class DebitAccountOnCardPayment(
     IAggregateRepository<BankAccount> accountRepository,
     ILogger<DebitAccountOnCardPayment> logger)
-    : IEventHandler<CardPaymentProcessed>
+    : IEventHandler<CardPaymentProcessed, BankAccount>
 {
-    public IEnumerable<object> Handle(CardPaymentProcessed @event)
+    public IEnumerable<BankAccount> Handle(CardPaymentProcessed @event)
     {
-            // Find the associated bank account (in a real system, you'd have this relationship stored)
-            var accounts = accountRepository.FindBySpecification(
-                account => account.AccountNumber == @event.CardNumber[..4]); // Simplified lookup
+        // Find the associated bank account (in a real system, you'd have this relationship stored)
+        var accounts = accountRepository.FindBySpecification(account => account.AccountNumber == @event.CardNumber[..4]); // Simplified lookup
 
-            var account = accounts.FirstOrDefault();
-            if (account != null)
-            {
-                // Debit the account balance
-                var withdrawCommand = new WithdrawMoney(account.Id, @event.Amount, $"Card payment: {@event.MerchantName}");
-                account.Withdraw(@event.Amount, $"Card payment: {@event.MerchantName}", @event.SourceCommandId);
+        var account = accounts.FirstOrDefault();
+        if (account == null) yield break;
 
-                 accountRepository.Save(account);
+        // Debit the account balance
+        account.Withdraw(@event.Amount, $"Card payment: {@event.MerchantName}", @event.SourceCommandId);
 
-                logger.LogInformation("Debited {Amount} from account {AccountNumber} for card payment at {Merchant}", 
-                    @event.Amount, account.AccountNumber, @event.MerchantName);
-            }
-
-            return [];
-
+        logger.LogInformation("Debited {Amount} from account {AccountNumber} for card payment at {Merchant}",
+            @event.Amount, account.AccountNumber, @event.MerchantName);
+        
+        yield return account;
     }
 }

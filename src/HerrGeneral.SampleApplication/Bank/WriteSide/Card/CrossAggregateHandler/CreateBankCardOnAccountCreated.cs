@@ -17,19 +17,16 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.CrossAggregateHandle
 /// <seealso cref="AccountCreated"/>
 /// <seealso cref="HerrGeneral.WriteSide.DDD.IAggregateRepository{T}"/>
 /// <seealso cref="BankCard"/>
-public class CreateBankCardOnAccountCreated(IAggregateRepository<BankCard> bankCardRepository) : IEventHandler<AccountCreated>
+public class CreateBankCardOnAccountCreated(IAggregateRepository<BankCard> bankCardRepository) : IEventHandler<AccountCreated, BankCard>
 {
-    public IEnumerable<object> Handle(AccountCreated @event)
+    public IEnumerable<BankCard> Handle(AccountCreated @event)
     {
-        var bankCard = new BankCard(Guid.NewGuid(),
+        yield return new BankCard(Guid.NewGuid(),
             @event.AggregateId,
             @event.AccountNumber,
             @event.OwnerName,
             CardType.Credit,
             @event.SourceCommandId);
-
-        bankCardRepository.Save(bankCard);
-        return bankCard.NewEvents;
     }
 }
 

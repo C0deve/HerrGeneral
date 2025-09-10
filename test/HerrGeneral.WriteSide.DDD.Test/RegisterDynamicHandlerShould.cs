@@ -18,10 +18,10 @@ public class RegisterDynamicHandlersShould
     public RegisterDynamicHandlersShould(ITestOutputHelper output) =>
         _container = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
-            .AddSingleton<IAggregateRepository<TheAggregate>, Repository<TheAggregate>>()
-            .AddSingleton<IAggregateFactory<TheAggregate>, DefaultAggregateFactory<TheAggregate>>()
+            .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
+            .AddSingleton<IAggregateFactory<TheThing>, DefaultAggregateFactory<TheThing>>()
             .AddHerrGeneral(scanner => scanner)
-            .RegisterDDDHandlers(typeof(TheAggregate).Assembly)
+            .RegisterDDDHandlers(typeof(TheThing).Assembly)
             .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly)
             .BuildServiceProvider();
 
@@ -35,21 +35,21 @@ public class RegisterDynamicHandlersShould
     [Fact]
     public void NotRegisterDynamicHandlersForChangeAggregateCommandWithHandler() =>
         _container
-            .GetServices<ICommandHandler<ChangeTheAggregate, Unit>>()
+            .GetServices<ICommandHandler<ChangeTheThing, Unit>>()
             .Count()
             .ShouldBe(1);
 
     [Fact]
     public void RegisterDynamicHandlersForCreateAggregateCommandWithoutHandler() =>
         _container
-            .GetServices<ICommandHandler<CreateTheAggregateNoHandler, Guid>>()
+            .GetServices<ICommandHandler<CreateTheThingNoHandler, Guid>>()
             .Count()
             .ShouldBe(1);
 
     [Fact]
     public void NotRegisterDynamicHandlersForCreateAggregateCommandWithHandler() =>
         _container
-            .GetServices<ICommandHandler<CreateTheAggregate, Guid>>()
+            .GetServices<ICommandHandler<CreateTheThing, Guid>>()
             .Count()
             .ShouldBe(1);
 }
