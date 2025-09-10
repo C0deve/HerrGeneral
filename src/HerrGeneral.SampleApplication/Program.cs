@@ -20,6 +20,7 @@ var services = new ServiceCollection()
     .AddSingleton<HerrGeneral.WriteSide.DDD.IAggregateRepository<BankCard>>(provider => provider.GetRequiredService<IAggregateRepository<BankCard>>())
     .AddSingleton<BankCardProjection>()
     .AddSingleton<AccountProjection>()
+    .AddSingleton<TransactionHistory>()
     .AddHerrGeneral(configuration =>
         configuration
             .ScanReadSideOn(typeof(AccountProjection).Assembly, "HerrGeneral.SampleApplication.Bank.ReadModel")

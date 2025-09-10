@@ -14,6 +14,7 @@ namespace HerrGeneral.ReadSideEventDispatcher.Test
         public void Dispatch_event()
         {
             var services = new ServiceCollection()
+                .AddSingleton<PongHandler>()
                 .AddHerrGeneralTestLogger(output)
                 .AddHerrGeneral(scanner =>
                     scanner

@@ -18,6 +18,7 @@ public class SendWitHerrGeneralDependencyShould
     public SendWitHerrGeneralDependencyShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
+            .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>

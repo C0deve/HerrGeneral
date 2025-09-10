@@ -18,6 +18,7 @@ public class TracingShould(ITestOutputHelper output)
     public async Task NotTraceWhenDisabled()
     {
         var services = new ServiceCollection()
+            .AddSingleton<ReadModelWithMultipleHandlersAndInheritingIEventHandler>()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>

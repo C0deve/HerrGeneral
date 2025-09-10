@@ -26,6 +26,7 @@ public class ChangeAggregateShould
             .AddSingleton<IAggregateRepository<AnotherThing>, Repository<AnotherThing>>()
             .AddSingleton<ChangesCounter>()
             .AddSingleton<AProjection>()
+            .AddSingleton<AnotherThingProjection>()
             .AddSingleton<TheThingTracker>()
             .AddHerrGeneral(configuration =>
                 configuration

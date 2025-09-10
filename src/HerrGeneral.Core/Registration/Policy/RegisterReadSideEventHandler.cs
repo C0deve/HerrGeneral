@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.Core.Registration.Policy;
 
@@ -19,8 +18,6 @@ internal class RegisterReadSideEventHandler : IRegistrationPolicy
 
         foreach (var externalEventHandler in externalReadSideEventHandlers)
         {
-            serviceCollection.TryAddSingleton(externalEventHandler);
-
             foreach (var @interface in externalEventHandler
                          .GetInterfacesHavingGenericOpenType(_handlerInterface))
             {
