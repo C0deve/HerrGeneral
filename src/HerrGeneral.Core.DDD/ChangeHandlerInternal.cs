@@ -1,4 +1,5 @@
 using HerrGeneral.Core.DDD.Exception;
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide;
 using HerrGeneral.WriteSide.DDD;
 
@@ -14,7 +15,7 @@ namespace HerrGeneral.Core.DDD;
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
-internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Unit>
+internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Unit>, IHandlerTypeProvider
     where TAggregate : Aggregate<TAggregate>
     where TCommand : Change<TAggregate>
     where THandler : IChangeHandler<TAggregate, TCommand>
@@ -49,4 +50,6 @@ internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandH
 
     private TAggregate GetAggregate(TCommand command) =>
         _repository.Get(command.AggregateId) ?? throw new AggregateNotFound<TAggregate>(command.AggregateId);
+
+    public Type GetHandlerType() => typeof(THandler);
 }

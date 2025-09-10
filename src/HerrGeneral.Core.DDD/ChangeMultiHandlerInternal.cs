@@ -1,3 +1,4 @@
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide;
 using HerrGeneral.WriteSide.DDD;
 
@@ -5,7 +6,7 @@ namespace HerrGeneral.Core.DDD;
 
 internal class ChangeMultiHandlerInternal<TAggregate, TCommand, THandler>(
     IAggregateRepository<TAggregate> repository,
-    THandler handler) : ICommandHandler<TCommand, Unit>
+    THandler handler) : ICommandHandler<TCommand, Unit>, IHandlerTypeProvider
     where TAggregate : Aggregate<TAggregate>
     where THandler : IChangeMultiHandler<TAggregate, TCommand>
 {
@@ -28,4 +29,6 @@ internal class ChangeMultiHandlerInternal<TAggregate, TCommand, THandler>(
 
         return (newEvents, Unit.Default);
     }
+    
+    public Type GetHandlerType() => typeof(THandler);
 }

@@ -1,4 +1,5 @@
-﻿using HerrGeneral.WriteSide.DDD;
+﻿using HerrGeneral.Core.ReadSide;
+using HerrGeneral.WriteSide.DDD;
 
 namespace HerrGeneral.Core.DDD;
 
@@ -13,7 +14,7 @@ namespace HerrGeneral.Core.DDD;
 /// <param name="repository">The repository responsible for aggregate persistence</param>
 internal class EventHandlerInternal<TEvent, THandler, TAggregate>(
     THandler handler,
-    IAggregateRepository<TAggregate> repository) : HerrGeneral.WriteSide.IEventHandler<TEvent>
+    IAggregateRepository<TAggregate> repository) : HerrGeneral.WriteSide.IEventHandler<TEvent>, IHandlerTypeProvider
     where THandler : IEventHandler<TEvent, TAggregate>
     where TAggregate : Aggregate<TAggregate>
 {
@@ -36,4 +37,6 @@ internal class EventHandlerInternal<TEvent, THandler, TAggregate>(
 
         return eventsToDispatch;
     }
+    
+    public Type GetHandlerType() => typeof(THandler);
 }
