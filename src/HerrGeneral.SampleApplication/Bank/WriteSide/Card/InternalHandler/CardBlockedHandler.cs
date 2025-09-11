@@ -7,16 +7,14 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.InternalHandler;
 /// Write-side handler for automatic card blocking on suspicious activity
 /// </summary>
 public class CardBlockedHandler(INotificationService notification, ISecurityService security)
-    : IDomainEventHandler<BankCardBlocked, BankCard>
+    : IVoidDomainEventHandler<BankCardBlocked>
 {
-    public IEnumerable<BankCard> Handle(BankCardBlocked @event)
+    public void Handle(BankCardBlocked @event)
     {
         // Notify customer about card blocking
         notification.SendCardBlockedNotification(@event.CardNumber, @event.Reason);
 
         // Log security event
         security.LogCardBlockingEvent(@event.CardNumber, @event.Reason);
-
-        return [];
     }
 }

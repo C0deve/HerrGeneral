@@ -31,7 +31,6 @@ public class CommandMultiAggregatesShould
             .AddSingleton<TheThingTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
-                    .ScanWriteSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide")
                     .ScanReadSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
             )
             .RegisterDDDHandlers(typeof(TheThing).Assembly);

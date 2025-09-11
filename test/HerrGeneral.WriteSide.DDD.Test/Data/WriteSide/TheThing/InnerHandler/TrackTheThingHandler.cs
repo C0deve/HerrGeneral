@@ -3,18 +3,12 @@
 namespace HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.InnerHandler;
 
 public class TrackTheThingHandler(TheThingTracker tracker) :
-    IEventHandler<TheThingIsCreated>,
-    IEventHandler<TheThingHasChanged>
+    IVoidDomainEventHandler<TheThingIsCreated>,
+    IVoidDomainEventHandler<TheThingHasChanged>
 {
-    public IEnumerable<object> Handle(TheThingIsCreated notification)
-    {
+    public void Handle(TheThingIsCreated notification) => 
         tracker.Track(notification.AggregateId);
-        return [];
-    }
 
-    public IEnumerable<object> Handle(TheThingHasChanged notification)
-    {
+    public void Handle(TheThingHasChanged notification) => 
         tracker.UnTrack(notification.AggregateId);
-        return [];
-    }
 }

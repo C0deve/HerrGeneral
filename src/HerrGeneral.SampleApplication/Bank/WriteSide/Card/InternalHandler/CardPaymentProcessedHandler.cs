@@ -9,10 +9,10 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.InternalHandler;
 public class CardPaymentProcessedHandler(
     ICardFraudDetectionService fraudDetection,
     INotificationService notification)
-    : IDomainEventHandler<CardPaymentProcessed, BankCard>
+    : IVoidDomainEventHandler<CardPaymentProcessed>
 {
 
-    public IEnumerable<BankCard> Handle(CardPaymentProcessed @event)
+    public void Handle(CardPaymentProcessed @event)
     {
         // Fraud detection for card payments
         if (fraudDetection.IsSuspiciousCardPayment(@event.CardNumber, @event.Amount, @event.MerchantName)) 
@@ -21,7 +21,5 @@ public class CardPaymentProcessedHandler(
         // Alert when approaching daily limit
         if (@event.DailySpentTotal >= @event.DailySpentTotal / @event.Amount * 0.8m) // Approximating daily limit
             notification.SendDailyLimitWarning(@event.CardNumber, @event.DailySpentTotal);
-
-        return [];
     }
 }

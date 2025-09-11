@@ -61,6 +61,7 @@ public static class ServiceExtension
                 new RegisterICreateHandler(), 
                 new RegisterIChangeHandler(), 
                 new RegisterIDomainEventHandler(),
+                new RegisterIVoidDomainEventHandler(),
                 new RegisterIChangeMultiHandler()
             ], 
             [new ScanParam(assembly)]);
