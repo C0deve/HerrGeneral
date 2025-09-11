@@ -1,6 +1,5 @@
 ﻿using HerrGeneral.Core;
 using HerrGeneral.Core.DDD;
-using HerrGeneral.Core.Registration;
 using HerrGeneral.SampleApplication.Bank.Infrastructure;
 using HerrGeneral.SampleApplication.Bank.ReadModel;
 using HerrGeneral.SampleApplication.Bank.WriteSide;
@@ -25,8 +24,7 @@ var services = new ServiceCollection()
         configuration
             .ScanReadSideOn(typeof(AccountProjection).Assembly, "HerrGeneral.SampleApplication.Bank.ReadModel")
             .ScanWriteSideOn(typeof(BankCard).Assembly, "HerrGeneral.SampleApplication.Bank.WriteSide")
-    )
-    .RegisterDDDHandlers(typeof(BankCard).Assembly);
+    );
 
 var serviceProvider = services.BuildServiceProvider();
 Console.WriteLine("Initialization Ok");

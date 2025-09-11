@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using HerrGeneral.Core.DDD.RegistrationPolicies;
 using HerrGeneral.Core.Registration;
-using HerrGeneral.WriteSide.DDD;
+using HerrGeneral.Core.Registration.Policy;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.Core.DDD;
@@ -15,17 +15,6 @@ public static class ServiceExtension
     /// <summary>
     /// Checks if a service interface is already registered in the service collection
     /// </summary>
-    /// <typeparam name="TService">The service type to check</typeparam>
-    /// <param name="services">The service collection</param>
-    /// <returns>true if the service is already registered, otherwise false</returns>
-    public static bool IsServiceRegistered<TService>(this IServiceCollection services)
-    {
-        return services.Any(d => d.ServiceType == typeof(TService));
-    }
-
-    /// <summary>
-    /// Checks if a service interface is already registered in the service collection
-    /// </summary>
     /// <param name="services">The service collection</param>
     /// <param name="serviceType">The service type to check</param>
     /// <returns>true if the service is already registered, otherwise false</returns>
@@ -33,7 +22,7 @@ public static class ServiceExtension
     {
         return services.Any(d => d.ServiceType == serviceType);
     }
-    
+
     /// <summary>
     /// Registers commands without declared handler
     /// </summary>
@@ -46,26 +35,47 @@ public static class ServiceExtension
 
         return serviceCollection;
     }
-    
+
     /// <summary>
-    /// Registers all handlers inheriting <see cref="ICreateHandler{TAggregate,TCommand}"/> and <see cref="IChangeHandler{TAggregate,TCommand}"/> 
+    /// Adds HerrGeneral framework services to the provided service collection.
+    /// <para>Quick Start:</para>
+    /// <code>
+    /// services
+    ///     .AddHerrGeneral(config => config
+    ///         .ScanWriteSideOn(typeof(BankAccount).Assembly)
+    ///         .ScanReadSideOn(typeof(AccountProjection).Assembly)
+    ///         .UseDomainException&lt;DomainExceptionBase&gt;());
+    /// </code>
+    /// 
+    /// <para>What this does:</para>
+    /// <list type="bullet">
+    /// <item>Set the location of your write side handlers (command and event handlers)</item>
+    /// <item>Set the location of your read side event handlers</item>
+    /// <item>Set the base type of your domain-specific exceptions</item>
+    /// </list>
     /// </summary>
-    /// <param name="serviceCollection"></param>
-    /// <param name="assembly"></param>
-    /// <returns></returns>
-    public static IServiceCollection RegisterDDDHandlers(this IServiceCollection serviceCollection, Assembly assembly)
+    /// <param name="serviceCollection">The service collection to which the services will be added.</param>
+    /// <param name="configurationDelegate">A delegate to configure the HerrGeneral framework settings.</param>
+    /// <returns>The updated service collection including the HerrGeneral services.</returns>
+    public static IServiceCollection AddHerrGeneral(
+        this IServiceCollection serviceCollection,
+        Func<Configuration, Configuration> configurationDelegate) =>
+        new ServiceConfigurator(new RegistrationPolicyProviderForDDD())
+            .ConfigureServiceCollection(serviceCollection, configurationDelegate);
+
+    /// <summary>
+    /// Custom policy manager with additional registration policies
+    /// </summary>
+    private class RegistrationPolicyProviderForDDD : RegistrationPolicyProvider
     {
-        Registration.ServiceExtension.Register(
-            serviceCollection, 
-            [
-                new RegisterICreateHandler(), 
-                new RegisterIChangeHandler(), 
-                new RegisterIDomainEventHandler(),
-                new RegisterIVoidDomainEventHandler(),
-                new RegisterIChangeMultiHandler()
-            ], 
-            [new ScanParam(assembly)]);
-        
-        return serviceCollection;
+        public override IRegistrationPolicy[] GetWriteSidePolicies(Configuration configuration) =>
+        [
+            new RegisterICreateHandler(),
+            new RegisterIChangeHandler(),
+            new RegisterIDomainEventHandler(),
+            new RegisterIVoidDomainEventHandler(),
+            new RegisterIChangeMultiHandler(),
+            ..base.GetWriteSidePolicies(configuration)
+        ];
     }
 }

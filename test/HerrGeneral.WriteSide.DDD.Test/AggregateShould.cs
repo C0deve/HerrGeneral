@@ -1,5 +1,4 @@
 ﻿using HerrGeneral.WriteSide.DDD.Exception;
-using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
 using Shouldly;
 

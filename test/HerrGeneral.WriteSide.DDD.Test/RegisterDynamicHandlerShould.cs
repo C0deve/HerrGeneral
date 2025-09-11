@@ -1,6 +1,5 @@
 ﻿using HerrGeneral.Core;
 using HerrGeneral.Core.DDD;
-using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
@@ -20,8 +19,11 @@ public class RegisterDynamicHandlersShould
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
             .AddSingleton<IAggregateFactory<TheThing>, DefaultAggregateFactory<TheThing>>()
-            .AddHerrGeneral(scanner => scanner)
-            .RegisterDDDHandlers(typeof(TheThing).Assembly)
+            .AddHerrGeneral(configuration => 
+                configuration
+                    .ScanWriteSideOn(
+                        typeof(TheThing).Assembly,
+                        "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide"))
             .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly)
             .BuildServiceProvider();
 

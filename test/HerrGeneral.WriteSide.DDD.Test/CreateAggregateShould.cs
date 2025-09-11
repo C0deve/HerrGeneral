@@ -1,6 +1,5 @@
 ﻿using HerrGeneral.Core;
 using HerrGeneral.Core.DDD;
-using HerrGeneral.Core.Registration;
 using HerrGeneral.Test.Extension;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
@@ -30,10 +29,10 @@ public class CreateAggregateShould
             .AddSingleton<TheThingTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
+                    .ScanWriteSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide")
                     .ScanReadSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
-            )
-            .RegisterDDDHandlers(typeof(TheThing).Assembly);
-
+            );
+        
         _container = services.BuildServiceProvider();
 
         _mediator = _container.GetRequiredService<Mediator>();

@@ -12,62 +12,16 @@ namespace HerrGeneral.Core.Registration;
 public static class ServiceExtension
 {
     /// <summary>
-    /// Configures the HerrGeneral framework within your application's service collection.
-    /// 
-    /// This method performs the following operations:
-    /// - Scans and registers all command handlers for processing commands
-    /// - Registers write side event handlers for state-changing operations
-    /// - Registers read side event handlers for updating projections and views
-    /// - Adds all required internal services for the framework to operate
+    /// Adds HerrGeneral framework services to the provided service collection.
     /// </summary>
-    /// <param name="serviceCollection">The application's service collection to which HerrGeneral services will be added</param>
-    /// <param name="configurationDelegate">A delegate function that configures HerrGeneral by specifying assemblies to scan and registering custom handlers</param>
-    /// <returns>The service collection with all HerrGeneral services registered</returns>
+    /// <param name="serviceCollection">The service collection to which the services will be added.</param>
+    /// <param name="configurationDelegate">A delegate to configure the HerrGeneral framework settings.</param>
+    /// <returns>The updated service collection including the HerrGeneral services.</returns>
     public static IServiceCollection AddHerrGeneral(
         this IServiceCollection serviceCollection,
-        Func<Configuration, Configuration> configurationDelegate
-    )
-    {
-        var configuration = configurationDelegate(new Configuration());
-        RegisterWriteSide(serviceCollection, configuration);
-        RegisterReadSide(serviceCollection, configuration);
-
-        if (configuration.IsTracingEnabled)
-            serviceCollection.AddScoped<CommandExecutionTracer>();
-        serviceCollection.AddScoped<ReadSideEventDispatcher>();
-        serviceCollection.AddScoped<WriteSideEventDispatcher>();
-        serviceCollection.AddSingleton<Mediator>();
-        serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
-        serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);
-        serviceCollection.AddSingleton<IWriteSideEventHandlerMappings>(_ => new Core.EventHandlerMappings(configuration.WriteSideEventHandlerMappings));
-        serviceCollection.AddSingleton<IReadSideEventHandlerMappings>(_ => new Core.EventHandlerMappings(configuration.ReadSideEventHandlerMappings));
-
-        return serviceCollection;
-    }
-
-    private static void RegisterWriteSide(IServiceCollection serviceCollection, Configuration configuration)
-    {
-        IRegistrationPolicy[] policies =
-        [
-            new RegisterMappedCommandHandlers(configuration.CommandHandlerMappings),
-            new RegisterICommandHandler(),
-            new RegisterMappedWriteSideEventHandlers(configuration.WriteSideEventHandlerMappings),
-            new RegisterWriteSideEventHandler()
-        ];
-
-        Register(serviceCollection, policies, configuration.WriteSideSearchParams);
-    }
-
-    private static void RegisterReadSide(IServiceCollection serviceCollection, Configuration configuration)
-    {
-        IRegistrationPolicy[] policies =
-        [
-            new RegisterReadSideEventHandler(),
-            new RegisterMappedReadSideEventHandlers(configuration.ReadSideEventHandlerMappings),
-        ];
-
-        Register(serviceCollection, policies, configuration.ReadSideSearchParams);
-    }
+        Func<Configuration, Configuration> configurationDelegate) =>
+        new ServiceConfigurator(new RegistrationPolicyProvider())
+            .ConfigureServiceCollection(serviceCollection, configurationDelegate);
 
     internal static void Register(IServiceCollection serviceCollection, IRegistrationPolicy[] policies, IEnumerable<ScanParam> scanParams)
     {
@@ -77,7 +31,7 @@ public static class ServiceExtension
         var externalHandlers = Scanner.Scan(scanParams, openTypesToScan);
 
         if (externalHandlers.Count == 0) return;
-        
+
         foreach (var policy in policies)
             policy.Register(serviceCollection, externalHandlers);
     }
