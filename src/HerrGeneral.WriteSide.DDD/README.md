@@ -2,33 +2,39 @@
 
 ## Overview
 
-HerrGeneral WriteSide DDD is a streamlined implementation of Domain Driven Design and CQRS write-side concepts. 
+HerrGeneral.WriteSide.DDD is a light implementation of Domain Driven Design and CQRS write-side concepts.
 This library aims to reduce boilerplate code while maintaining clean domain modeling practices.
 
 Key components you'll find:
-- **Rich aggregates** with integrated domain events
-- **Creation commands** with dedicated handlers for aggregate instantiation
-- **State change commands** with handlers for modifying aggregate state
+- **Aggregates** with integrated domain events
+- **Creation commands** with dedicated handlers for aggregate creation
+- **State change commands** with dedicated handlers for modifying aggregate state
+- **Simple Domain event handlers interface** for react to event dispatching
 
 ## NuGet Packages
 
-- **[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)**: Extended support for Domain-Driven Design patterns on the write side
+- **[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)** (in the domain)
 
+```
+dotnet add package HerrGeneral.WriteSide.DDD
+```
+- **[HerrGeneral.Core.DDD](https://www.nuget.org/packages/HerrGeneral.Core.DDD/)** (in the infrastructure):  
+The engine of HerrGeneral framework. Needed for adding HerrGeneral to the service container.
+
+```
+dotnet add package HerrGeneral.Core.DDD
+```
 ## Registration
 
 Integrating HerrGeneral.WriteSide.DDD into your application is straightforward with these registration steps:
 
 ```csharp
-// 1. Register command and domain event handlers from your domain assembly
-services.RegisterDDDHandlers(typeof(CreatePerson).Assembly);
-
-// 2. (Optional) Enable convention-based dynamic handlers to further reduce boilerplate
-// This registers handlers automatically for commands that follow conventions
-services.RegisterDynamicHandlers(typeof(CreatePerson).Assembly);
-
-// 3. Register the default aggregate factory for creating new aggregates
-// This factory automatically calls the appropriate constructor on your aggregate
-services.AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
+services
+    .AddHerrGeneral(configuration => configuration
+        // Register command handlers and domain event handlers from your specified assembly
+        .ScanWriteSideOn(<Your write side assembly>, "A optional parent namespace filter"))
+        // Optionally register an aggregate factory needed by INoHandlerCreate<Person> 
+        .AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
 ```
 
 This registration process intelligently scans your specified assemblies for command handlers and event handlers, registering them with the appropriate lifetime scopes in the dependency injection container.
@@ -84,8 +90,8 @@ public record SetFriend(Guid AggregateId, string Friend) : Change<Person>(Aggreg
 HerrGeneral offers a powerful convention-based approach that automatically generates command handlers at runtime. This eliminates handler boilerplate entirely when you follow simple naming conventions.
 
 ```csharp
-// Just define the command - no handler class needed!
-public record SetFriend(Guid AggregateId, string Friend) : Change<Person>(AggregateId);
+// Just define the command inheriting from INoHandlerChange<> - no handler class needed!
+public record SetFriend(Guid AggregateId, string Friend) : Change<Person>(AggregateId), INoHandlerChange<Person>;
 
 // Your aggregate implements the matching Execute method
 public class Person
@@ -140,7 +146,7 @@ public Person Execute(SetFriend command)
     this.Friend = command.Friend;
 
     // Optionally raise domain events
-    AddDomainEvent(new FriendChanged(this.Id, oldFriend, this.Friend));
+    Emit(new FriendChanged(this.Id, oldFriend, this.Friend));
 
     // Return the updated aggregate (this is required)
     return this;
@@ -205,20 +211,3 @@ To use dynamic command handlers, install the dedicated package:
 ```
 dotnet add package HerrGeneral.Core.DDD
 ```
-
-## Benefits of Using HerrGeneral.WriteSide.DDD
-
-- **Reduced Boilerplate**: Write significantly less infrastructure code with convention-based handlers
-- **Domain-Focused**: Keep your domain model clean and focused on business logic
-- **Flexible Implementation**: Choose between explicit handlers for complex scenarios or dynamic handlers for simpler cases
-- **Consistent Event Handling**: Automatic event dispatching ensures all domain events are properly processed
-- **Transaction Management**: All operations within a command are executed in a single transaction
-- **Clean Architecture Support**: Promotes separation of concerns between domain and infrastructure
-- **Progressive Adoption**: Can be introduced gradually into existing codebases
-
-## Common Usage Patterns
-
-- **Aggregate Root Management**: Perfect for creating and modifying aggregate roots following DDD principles
-- **CQRS Write Side**: Pairs well with separate read models for a full CQRS implementation
-- **Domain Event Sourcing**: Built-in domain event support complements event sourcing patterns
-- **Bounded Context Integration**: Helps maintain clean boundaries between different domain areas

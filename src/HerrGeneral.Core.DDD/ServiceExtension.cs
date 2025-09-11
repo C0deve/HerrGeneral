@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using HerrGeneral.Core.DDD.RegistrationPolicies;
+﻿using HerrGeneral.Core.DDD.RegistrationPolicies;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.Registration.Policy;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,30 +11,6 @@ namespace HerrGeneral.Core.DDD;
 /// </summary>
 public static class ServiceExtension
 {
-    /// <summary>
-    /// Checks if a service interface is already registered in the service collection
-    /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="serviceType">The service type to check</param>
-    /// <returns>true if the service is already registered, otherwise false</returns>
-    public static bool IsServiceRegistered(this IServiceCollection services, Type serviceType)
-    {
-        return services.Any(d => d.ServiceType == serviceType);
-    }
-
-    /// <summary>
-    /// Registers commands without declared handler
-    /// </summary>
-    /// <param name="serviceCollection"></param>
-    /// <param name="assembly"></param>
-    /// <returns></returns>
-    public static IServiceCollection RegisterDynamicHandlers(this IServiceCollection serviceCollection, Assembly assembly)
-    {
-        RegistrationPolicies.RegisterDynamicHandlers.Register(serviceCollection, assembly);
-
-        return serviceCollection;
-    }
-
     /// <summary>
     /// Adds HerrGeneral framework services to the provided service collection.
     /// <para>Quick Start:</para>
@@ -70,12 +45,14 @@ public static class ServiceExtension
     {
         public override IRegistrationPolicy[] GetWriteSidePolicies(Configuration configuration) =>
         [
+            ..base.GetWriteSidePolicies(configuration),
             new RegisterICreateHandler(),
             new RegisterIChangeHandler(),
             new RegisterIDomainEventHandler(),
             new RegisterIVoidDomainEventHandler(),
             new RegisterIChangeMultiHandler(),
-            ..base.GetWriteSidePolicies(configuration)
+            new RegisterDynamicCreateHandlers(),
+            new RegisterDynamicChangeHandlers()
         ];
     }
 }

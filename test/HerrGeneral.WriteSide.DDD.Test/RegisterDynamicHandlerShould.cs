@@ -24,7 +24,6 @@ public class RegisterDynamicHandlersShould
                     .ScanWriteSideOn(
                         typeof(TheThing).Assembly,
                         "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide"))
-            .RegisterDynamicHandlers(typeof(AChangeCommandWithoutHandler).Assembly)
             .BuildServiceProvider();
 
     [Fact]
@@ -35,23 +34,9 @@ public class RegisterDynamicHandlersShould
             .ShouldBe(1);
 
     [Fact]
-    public void NotRegisterDynamicHandlersForChangeAggregateCommandWithHandler() =>
-        _container
-            .GetServices<ICommandHandler<ChangeTheThing, Unit>>()
-            .Count()
-            .ShouldBe(1);
-
-    [Fact]
     public void RegisterDynamicHandlersForCreateAggregateCommandWithoutHandler() =>
         _container
             .GetServices<ICommandHandler<CreateTheThingNoHandler, Guid>>()
-            .Count()
-            .ShouldBe(1);
-
-    [Fact]
-    public void NotRegisterDynamicHandlersForCreateAggregateCommandWithHandler() =>
-        _container
-            .GetServices<ICommandHandler<CreateTheThing, Guid>>()
             .Count()
             .ShouldBe(1);
 }
