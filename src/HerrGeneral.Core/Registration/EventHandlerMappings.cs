@@ -6,7 +6,7 @@ namespace HerrGeneral.Core.Registration;
 /// <summary>
 /// Responsible for registering mappings between event types and their handlers
 /// </summary>
-internal class EventHandlerMappingRegistration
+internal class EventHandlerMappings
 {
     private readonly Dictionary<Type, EventHandlerMapping> _handlerMappers = new();
 
@@ -36,7 +36,7 @@ internal class EventHandlerMappingRegistration
     /// <summary>
     /// Adds a mapping for an event type to a handler with a return value conversion
     /// </summary>
-    public EventHandlerMappingRegistration AddWriteSideMapping<TEvent, THandler, THandlerReturn>(
+    public EventHandlerMappings AddWriteSideMapping<TEvent, THandler, THandlerReturn>(
         Func<THandlerReturn, IEnumerable<object>> mapEvents)
     {
         var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
@@ -51,7 +51,7 @@ internal class EventHandlerMappingRegistration
     /// <summary>
     /// Adds a mapping for an event type to a handler without return value conversion
     /// </summary>
-    public EventHandlerMappingRegistration AddWriteSideMapping<TEvent, THandler>()
+    public EventHandlerMappings AddWriteSideMapping<TEvent, THandler>()
     {
         var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
 
@@ -65,7 +65,7 @@ internal class EventHandlerMappingRegistration
     /// <summary>
     /// Adds a mapping for an event type to a handler for read-side operations
     /// </summary>
-    public EventHandlerMappingRegistration AddReadSideMapping<TEvent, THandler>()
+    public EventHandlerMappings AddReadSideMapping<TEvent, THandler>()
     {
         var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
 

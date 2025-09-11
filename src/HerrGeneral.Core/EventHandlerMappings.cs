@@ -13,7 +13,7 @@ namespace HerrGeneral.Core;
 /// is used multiple times.
 /// </para>
 /// </summary>
-internal class EventHandlerMappings(EventHandlerMappingRegistration mappingRegistration) : IReadSideEventHandlerMappings, IWriteSideEventHandlerMappings
+internal class EventHandlerMappings(Registration.EventHandlerMappings mappings) : IReadSideEventHandlerMappings, IWriteSideEventHandlerMappings
 {
     // Cache for handler methods to avoid expensive reflection lookups
     private readonly ConcurrentDictionary<(Type EventType, Type HandlerType), MethodInfo> _handleMethodCache = new();
@@ -67,7 +67,7 @@ internal class EventHandlerMappings(EventHandlerMappingRegistration mappingRegis
     private (MethodInfo Method, EventHandlerMapping Mapping) GetCachedOrResolveMethod(Type evtType, Type handlerType)
     {
         // Get the mapping for this event type
-        var mapping = mappingRegistration.GetFromEventType(evtType);
+        var mapping = mappings.GetFromEventType(evtType);
 
         // Check cache first to avoid expensive reflection
         var cacheKey = (EventType: evtType, HandlerType: handlerType);

@@ -39,8 +39,8 @@ public static class ServiceExtension
         serviceCollection.AddSingleton<Mediator>();
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
         serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);
-        serviceCollection.AddSingleton<IWriteSideEventHandlerMappings>(_ => new EventHandlerMappings(configuration.WriteSideEventHandlerMappings));
-        serviceCollection.AddSingleton<IReadSideEventHandlerMappings>(_ => new EventHandlerMappings(configuration.ReadSideEventHandlerMappings));
+        serviceCollection.AddSingleton<IWriteSideEventHandlerMappings>(_ => new Core.EventHandlerMappings(configuration.WriteSideEventHandlerMappings));
+        serviceCollection.AddSingleton<IReadSideEventHandlerMappings>(_ => new Core.EventHandlerMappings(configuration.ReadSideEventHandlerMappings));
 
         return serviceCollection;
     }

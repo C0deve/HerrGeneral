@@ -10,7 +10,7 @@ namespace HerrGeneral.Core.Registration.Policy;
 /// Registers all external write side event handlers present in the mappings
 /// </summary>
 /// <param name="eventHandlerMappings"></param>
-internal class RegisterMappedReadSideEventHandlers(EventHandlerMappingRegistration eventHandlerMappings) : IRegistrationPolicy
+internal class RegisterMappedReadSideEventHandlers(EventHandlerMappings eventHandlerMappings) : IRegistrationPolicy
 {
     public HashSet<Type> GetOpenTypes() =>
         eventHandlerMappings

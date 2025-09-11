@@ -41,13 +41,13 @@ public class Configuration
     /// Collection of mappings for external write side event handlers.
     /// Allows registration of event handlers that modify the system state.
     /// </summary>
-    internal EventHandlerMappingRegistration WriteSideEventHandlerMappings { get; } = new();
+    internal EventHandlerMappings WriteSideEventHandlerMappings { get; } = new();
 
     /// <summary>
     /// Collection of mappings for external read side event handlers.
     /// Allows registration of event handlers that update views and projections.
     /// </summary>
-    internal EventHandlerMappingRegistration ReadSideEventHandlerMappings { get; } = new();
+    internal EventHandlerMappings ReadSideEventHandlerMappings { get; } = new();
     
     /// <summary>
     /// Gets or sets a value indicating whether execution tracing for command handlers is enabled.
