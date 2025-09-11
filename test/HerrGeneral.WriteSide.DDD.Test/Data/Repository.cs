@@ -1,13 +1,15 @@
-﻿namespace HerrGeneral.WriteSide.DDD.Test.Data;
+﻿using HerrGeneral.Core.DDD.Exception;
+
+namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
 public class Repository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : IAggregate
 {
     private readonly Dictionary<Guid, TAggregate> _aggregates = new();
 
-    public TAggregate? Get(Guid id)
+    public TAggregate Get(Guid id)
     {
         _aggregates.TryGetValue(id, out var value);
-        return value;
+        return value ?? throw new AggregateNotFound<TAggregate>(id);
     }
 
     public void Save(TAggregate aggregate) =>

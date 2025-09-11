@@ -1,4 +1,5 @@
-﻿using HerrGeneral.WriteSide.DDD;
+﻿using HerrGeneral.Core.DDD.Exception;
+using HerrGeneral.WriteSide.DDD;
 
 namespace HerrGeneral.SampleApplication.Bank.Infrastructure;
 
@@ -7,10 +8,10 @@ public class Repository<TAggregate> : HerrGeneral.SampleApplication.Bank.WriteSi
 {
     private readonly Dictionary<Guid, TAggregate> _aggregates = new();
 
-    public TAggregate? Get(Guid id)
+    public TAggregate Get(Guid id)
     {
         _aggregates.TryGetValue(id, out var value);
-        return value;
+        return value ?? throw new AggregateNotFound<TAggregate>(id);
     }
 
     public void Save(TAggregate aggregate) =>

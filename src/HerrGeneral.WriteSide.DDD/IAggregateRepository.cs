@@ -11,7 +11,7 @@ public interface IAggregateRepository<T> where T : IAggregate
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    T? Get(Guid id);
+    T Get(Guid id);
 
     /// <summary>
     /// Save an aggregate

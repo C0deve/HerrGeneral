@@ -20,6 +20,6 @@ public record DeleteAllTheThings
         public IEnumerable<TheThing> Handle(DeleteAllTheThings command) => 
             tracker.All()
                 .Select(repository.Get)
-                .Select(aggregate => aggregate!.Delete(command.Id));
+                .Select(aggregate => aggregate.Delete(command.Id));
     }
 }

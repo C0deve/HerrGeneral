@@ -50,7 +50,7 @@ public class CommandMultiAggregatesShould
         _container.GetRequiredService<TheThingTracker>()
             .All()
             .Select(repository.Get)
-            .Select(list => list.ShouldNotBeNull().IsDeleted)
+            .Select(theThing => theThing.IsDeleted)
             .ShouldBe([true, true]);
     }
 

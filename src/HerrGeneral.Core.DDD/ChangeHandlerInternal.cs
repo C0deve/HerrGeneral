@@ -49,7 +49,7 @@ internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandH
     }
 
     private TAggregate GetAggregate(TCommand command) =>
-        _repository.Get(command.AggregateId) ?? throw new AggregateNotFound<TAggregate>(command.AggregateId);
+        _repository.Get(command.AggregateId);
 
     public Type GetHandlerType() => typeof(THandler);
 }
