@@ -24,9 +24,9 @@ public class CreateAggregateShould
             .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
             .AddSingleton<IAggregateRepository<AnotherThing>, Repository<AnotherThing>>()
             .AddSingleton<ChangesCounter>()
+            .AddSingleton<TheThingTracker>()
             .AddSingleton<AProjection>()
             .AddSingleton<AnotherThingProjection>()
-            .AddSingleton<TheThingTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide")

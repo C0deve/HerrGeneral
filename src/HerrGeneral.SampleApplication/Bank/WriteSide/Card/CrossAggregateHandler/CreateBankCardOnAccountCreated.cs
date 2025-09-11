@@ -11,13 +11,10 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.CrossAggregateHandle
 /// - Creates a new <see cref="BankCard"/> instance based on the details of the event.
 /// - Saves the newly created bank card to the provided repository.
 /// </remarks>
-/// <param name="bankCardRepository">
-/// Repository for saving the created bank card aggregate.
-/// </param>
 /// <seealso cref="AccountCreated"/>
 /// <seealso cref="HerrGeneral.WriteSide.DDD.IAggregateRepository{T}"/>
 /// <seealso cref="BankCard"/>
-public class CreateBankCardOnAccountCreated(IAggregateRepository<BankCard> bankCardRepository) : IDomainEventHandler<AccountCreated, BankCard>
+public class CreateBankCardOnAccountCreated : IDomainEventHandler<AccountCreated, BankCard>
 {
     public IEnumerable<BankCard> Handle(AccountCreated @event)
     {
