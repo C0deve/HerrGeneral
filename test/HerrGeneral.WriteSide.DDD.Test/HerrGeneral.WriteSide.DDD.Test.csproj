@@ -18,10 +18,5 @@
         <ProjectReference Include="..\..\src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj"/>
         <ProjectReference Include="..\..\src\HerrGeneral.WriteSide.DDD\HerrGeneral.WriteSide.DDD.csproj"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Data\WriteSide\TheThing\CrossHandler\" />
-    </ItemGroup>
-
-
+    
 </Project>

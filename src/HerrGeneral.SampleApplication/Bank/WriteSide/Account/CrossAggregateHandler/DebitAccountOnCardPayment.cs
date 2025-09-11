@@ -10,7 +10,7 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.CrossAggregateHan
 public class DebitAccountOnCardPayment(
     IAggregateRepository<BankAccount> accountRepository,
     ILogger<DebitAccountOnCardPayment> logger)
-    : IEventHandler<CardPaymentProcessed, BankAccount>
+    : IDomainEventHandler<CardPaymentProcessed, BankAccount>
 {
     public IEnumerable<BankAccount> Handle(CardPaymentProcessed @event)
     {

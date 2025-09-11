@@ -9,7 +9,7 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.InternalHandler;
 public class CardPaymentProcessedHandler(
     ICardFraudDetectionService fraudDetection,
     INotificationService notification)
-    : IEventHandler<CardPaymentProcessed, BankCard>
+    : IDomainEventHandler<CardPaymentProcessed, BankCard>
 {
 
     public IEnumerable<BankCard> Handle(CardPaymentProcessed @event)

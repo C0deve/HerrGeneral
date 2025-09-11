@@ -17,7 +17,7 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.CrossAggregateHandle
 /// <seealso cref="AccountCreated"/>
 /// <seealso cref="HerrGeneral.WriteSide.DDD.IAggregateRepository{T}"/>
 /// <seealso cref="BankCard"/>
-public class CreateBankCardOnAccountCreated(IAggregateRepository<BankCard> bankCardRepository) : IEventHandler<AccountCreated, BankCard>
+public class CreateBankCardOnAccountCreated(IAggregateRepository<BankCard> bankCardRepository) : IDomainEventHandler<AccountCreated, BankCard>
 {
     public IEnumerable<BankCard> Handle(AccountCreated @event)
     {

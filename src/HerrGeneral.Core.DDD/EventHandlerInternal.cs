@@ -15,7 +15,7 @@ namespace HerrGeneral.Core.DDD;
 internal class EventHandlerInternal<TEvent, THandler, TAggregate>(
     THandler handler,
     IAggregateRepository<TAggregate> repository) : HerrGeneral.WriteSide.IEventHandler<TEvent>, IHandlerTypeProvider
-    where THandler : IEventHandler<TEvent, TAggregate>
+    where THandler : IDomainEventHandler<TEvent, TAggregate>
     where TAggregate : Aggregate<TAggregate>
 {
     /// <summary>

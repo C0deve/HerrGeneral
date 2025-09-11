@@ -6,7 +6,7 @@
 /// </summary>
 /// <typeparam name="TEvent"></typeparam>
 /// <typeparam name="TAggregate"></typeparam>
-public interface IEventHandler<in TEvent, out TAggregate> where TAggregate : IAggregate
+public interface IDomainEventHandler<in TEvent, out TAggregate> where TAggregate : IAggregate
 {
     /// <summary>
     /// Processes a domain event and returns aggregates that have been modified or created as a result.
@@ -18,7 +18,6 @@ public interface IEventHandler<in TEvent, out TAggregate> where TAggregate : IAg
     /// Each aggregate may contain new domain events that need to be dispatched.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when notification is null</exception>
-    /// <exception cref="DomainException">Thrown when the event cannot be processed due to business rule violations</exception>
-
+    /// <exception>Thrown when the event cannot be processed due to business rule violations</exception>
     IEnumerable<TAggregate> Handle(TEvent notification);
 }

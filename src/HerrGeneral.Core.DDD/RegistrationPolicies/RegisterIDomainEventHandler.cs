@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.Core.DDD.RegistrationPolicies;
 
-internal class RegisterIEventHandler : IRegistrationPolicy
+internal class RegisterIDomainEventHandler : IRegistrationPolicy
 {
-    private readonly Type _handlerInterface = typeof(HerrGeneral.WriteSide.DDD.IEventHandler<,>);
+    private readonly Type _handlerInterface = typeof(HerrGeneral.WriteSide.DDD.IDomainEventHandler<,>);
 
     public HashSet<Type> GetOpenTypes() => [_handlerInterface];
 
