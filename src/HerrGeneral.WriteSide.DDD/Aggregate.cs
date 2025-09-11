@@ -28,13 +28,13 @@ public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
     /// <summary>
     /// All new IDomainEvent to dispatch
     /// </summary>
-    internal IEnumerable<IDomainEvent<T>> NewEvents
+    public IEnumerable<IDomainEvent<T>> NewEvents
     {
         get
         {
             lock (_newEvents)
             {
-                return _newEvents.ToList();
+                return [.._newEvents];
             }
         }
     }
