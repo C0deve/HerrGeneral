@@ -1,5 +1,5 @@
-using HerrGeneral.Core.Error;
 using HerrGeneral.Core.ReadSide;
+using HerrGeneral.Exception;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -16,7 +16,7 @@ internal static class EventHandlerPipeline
             {
                 return next(@event);
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 throw mapper.Map(e,
                     exception => new EventHandlerDomainException(exception),

@@ -1,6 +1,5 @@
 ﻿using HerrGeneral.Core.Configuration;
-using HerrGeneral.Core.Error;
-using HerrGeneral.Test;
+using HerrGeneral.Exception;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using HerrGeneral.WriteSide;
 using Shouldly;

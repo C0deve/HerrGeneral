@@ -1,4 +1,4 @@
-using HerrGeneral.Core.Error;
+using HerrGeneral.Exception;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -29,7 +29,7 @@ internal class CommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TComm
                 {
                     return Result.PanicFail(e);
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
                     return Result.PanicFail(e);
                 }
@@ -63,7 +63,7 @@ internal class CommandHandlerWrapper<TCommand, TResult> : CommandHandlerWrapperB
                 {
                     return Result<TResult>.PanicFail(e);
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
                     return Result<TResult>.PanicFail(e);
                 }

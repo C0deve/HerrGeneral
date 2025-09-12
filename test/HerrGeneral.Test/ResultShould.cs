@@ -42,7 +42,7 @@ public class ResultShould
         var message = "";
 
         Result
-            .PanicFail(new Exception())
+            .PanicFail(new System.Exception())
             .Match(
                 () => message = "success",
                 _ => message = "domainError",
@@ -74,7 +74,7 @@ public class ResultShould
     [Fact]
     public void MatchFunctionOnPanicException() =>
         Result
-            .PanicFail(new Exception())
+            .PanicFail(new System.Exception())
             .Match(
                 () => "success",
                 _ => "domainError",
@@ -109,7 +109,7 @@ public class ResultShould
         var message = "";
 
         Result
-            .PanicFail(new Exception())
+            .PanicFail(new System.Exception())
             .MatchPanicException(_ => message = "panicException");
 
         message.ShouldBe("panicException");

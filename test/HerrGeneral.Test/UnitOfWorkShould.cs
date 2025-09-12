@@ -1,6 +1,5 @@
 using FakeItEasy;
 using HerrGeneral.Registration;
-using HerrGeneral.Test;
 using HerrGeneral.Test.Data.WithHerrGeneralDependency.ReadSide;
 using HerrGeneral.Test.Data.WithMapping.ReadSide;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;

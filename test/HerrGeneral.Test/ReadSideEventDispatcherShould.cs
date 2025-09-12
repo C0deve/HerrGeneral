@@ -1,5 +1,4 @@
 using HerrGeneral.Registration;
-using HerrGeneral.Test;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;

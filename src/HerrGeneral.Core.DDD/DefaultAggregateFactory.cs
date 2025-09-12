@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.Core.DDD;
+namespace HerrGeneral.DDD;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 

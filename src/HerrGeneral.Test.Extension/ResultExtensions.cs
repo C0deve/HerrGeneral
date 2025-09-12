@@ -97,7 +97,7 @@ public static class ResultExtensions
     /// <param name="task"></param>
     /// <typeparam name="TError"></typeparam>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ShouldFailWithPanicExceptionOfType<TError>(this Task<Result> task) where TError : Exception
+    public static async Task ShouldFailWithPanicExceptionOfType<TError>(this Task<Result> task) where TError : System.Exception
     {
         ArgumentNullException.ThrowIfNull(task);
         (await task)
@@ -116,7 +116,7 @@ public static class ResultExtensions
     /// <returns>A task representing the asynchronous operation</returns>
     /// <exception cref="ArgumentNullException">Thrown when the task is null</exception>
     /// <exception cref="XunitException">Thrown when the result doesn't contain a panic exception of the expected type</exception>
-    public static async Task ShouldFailWithPanicExceptionOfType<TError, TResult>(this Task<Result<TResult>> task) where TError : Exception
+    public static async Task ShouldFailWithPanicExceptionOfType<TError, TResult>(this Task<Result<TResult>> task) where TError : System.Exception
     {
         ArgumentNullException.ThrowIfNull(task);
         (await task)

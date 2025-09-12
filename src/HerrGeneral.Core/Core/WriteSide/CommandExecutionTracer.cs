@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using HerrGeneral.Core.Error;
+using HerrGeneral.Exception;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -53,7 +53,7 @@ internal class CommandExecutionTracer
             .AppendLine($"{indent}-- Message : {e.InnerException?.Message}");
     }
 
-    public void OnException(Exception e, int indentCount = 0)
+    public void OnException(System.Exception e, int indentCount = 0)
     {
         var indent = BuildIndent(indentCount);
         _stringBuilder.AppendLine($"{indent}!! {e.InnerException?.GetType() ?? e.GetType()} (PanicException)")

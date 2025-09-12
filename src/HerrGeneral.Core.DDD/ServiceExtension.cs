@@ -1,9 +1,9 @@
-﻿using HerrGeneral.Core.DDD.RegistrationPolicies;
-using HerrGeneral.Core.Registration;
+﻿using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.Registration.Policy;
+using HerrGeneral.DDD.Core.RegistrationPolicies;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HerrGeneral.Core.DDD;
+namespace HerrGeneral.DDD;
 
 /// <summary>
 /// Extensions method for IServiceCollection
@@ -46,7 +46,7 @@ public static class ServiceExtension
     /// </summary>
     private class RegistrationPolicyProviderForDDD : RegistrationPolicyProvider
     {
-        public override IRegistrationPolicy[] GetWriteSidePolicies(Configuration.Configuration configuration) =>
+        public override IRegistrationPolicy[] GetWriteSidePolicies(HerrGeneral.Core.Configuration.Configuration configuration) =>
         [
             ..base.GetWriteSidePolicies(configuration),
             new RegisterICreateHandler(),

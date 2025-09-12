@@ -1,5 +1,5 @@
 ﻿using HerrGeneral;
-using HerrGeneral.Core.DDD;
+using HerrGeneral.DDD;
 using HerrGeneral.SampleApplication.Bank.Infrastructure;
 using HerrGeneral.SampleApplication.Bank.ReadModel;
 using HerrGeneral.SampleApplication.Bank.WriteSide;

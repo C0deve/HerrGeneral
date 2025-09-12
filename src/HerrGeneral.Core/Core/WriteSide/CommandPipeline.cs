@@ -1,9 +1,9 @@
 using System.Diagnostics;
-using HerrGeneral.Core.Error;
 using HerrGeneral.WriteSide;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using HerrGeneral.Core.ReadSide;
+using HerrGeneral.Exception;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -19,7 +19,7 @@ internal static class CommandPipeline
             {
                 return next(command, cancellationToken);
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 throw mapper.Map(e,
                     exception => new DomainException(exception),
@@ -64,7 +64,7 @@ internal static class CommandPipeline
                     // already logged
                     throw;
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
                     commandExecutionTracer.OnException(e, 2);
                     throw;
@@ -90,7 +90,7 @@ internal static class CommandPipeline
                 unitOfWork?.Commit();
                 return result;
             }
-            catch (Exception)
+            catch (System.Exception)
             {
                 unitOfWork?.RollBack();
                 throw;

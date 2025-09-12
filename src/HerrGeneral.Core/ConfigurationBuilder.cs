@@ -109,7 +109,7 @@ public class ConfigurationBuilder
     /// </summary>
     /// <typeparam name="TException">The domain exception type to register. Must inherit from Exception.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public ConfigurationBuilder UseDomainException<TException>() where TException : Exception
+    public ConfigurationBuilder UseDomainException<TException>() where TException : System.Exception
     {
         _domainExceptionInterfaces.Add(typeof(TException));
         return this;

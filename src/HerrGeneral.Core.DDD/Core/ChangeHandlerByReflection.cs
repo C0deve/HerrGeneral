@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.Core.DDD;
+namespace HerrGeneral.DDD.Core;
 
 /// <summary>
 /// Handle a change by calling the aggregate method that accepts that command
@@ -9,7 +9,7 @@ namespace HerrGeneral.Core.DDD;
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public sealed class ChangeHandlerByReflection<TAggregate, TCommand> : IChangeHandler<TAggregate, TCommand>
+internal sealed class ChangeHandlerByReflection<TAggregate, TCommand> : IChangeHandler<TAggregate, TCommand>
     where TAggregate : Aggregate<TAggregate> 
     where TCommand : Change<TAggregate>
 {

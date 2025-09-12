@@ -1,4 +1,4 @@
-﻿using HerrGeneral.Core.DDD;
+﻿using HerrGeneral.DDD;
 using HerrGeneral.Test;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
@@ -35,40 +35,35 @@ public class DynamicHandlerShould
 
 [Fact]
 public async Task HandleAChangeCommandWithoutHandler() =>
-    await new CreateTheThingNoHandler("John")
-        .SendFrom(_mediator)
+    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
         .Then(personId =>
-            new AChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator))
+            HerrGeneral.DDD.Extensions.SendFrom(new AChangeCommandWithoutHandler("Remy", personId), _mediator))
         .ShouldSuccess();
 
 [Fact]
 public async Task HandleASecondChangeCommandWithoutHandler() =>
-    await new CreateTheThingNoHandler("John")
-        .SendFrom(_mediator)
+    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
         .Then(personId =>
-            new ASecondChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator))
+            HerrGeneral.DDD.Extensions.SendFrom(new ASecondChangeCommandWithoutHandler("Remy", personId), _mediator))
     .ShouldSuccess();
 
 
 [Fact]
 public async Task HandleACreateCommandWithoutHandler() =>
-    await new CreateTheThingNoHandler("John")
-        .SendFrom(_mediator)
+    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
         .ShouldSuccess();
 
 [Fact]
 public async Task ThrowIfExecuteMethodNotFound() =>
-    await new CreateTheThingNoHandler("John")
-        .SendFrom(_mediator)
+    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
         .Then(personId =>
-            new AThirdChangeCommandWithoutHandler("Remy", personId).SendFrom(_mediator))
+            HerrGeneral.DDD.Extensions.SendFrom(new AThirdChangeCommandWithoutHandler("Remy", personId), _mediator))
         .ShouldFailWithPanicExceptionOfType<MissingMethodException>();
 
 
 [Fact]
 public async Task ThrowIfConstructorNotFound() =>
-    await new CreateTheThingNoHandlerWithFailure()
-        .SendFrom(_mediator)
+    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandlerWithFailure(), _mediator)
         .ShouldFailWithPanicExceptionOfType<MissingMethodException, Guid>();
 
 }

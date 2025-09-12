@@ -10,7 +10,7 @@ public record Result<TResult>
     /// <summary>
     /// A panic exception
     /// </summary>
-    internal readonly Exception? PanicException;
+    internal readonly System.Exception? PanicException;
 
     /// <summary>
     /// A domain exception
@@ -45,7 +45,7 @@ public record Result<TResult>
     /// Ctor for panic exception
     /// </summary>
     /// <param name="panicException"></param>
-    protected Result(Exception panicException) => PanicException = panicException;
+    protected Result(System.Exception panicException) => PanicException = panicException;
 
     /// <summary>
     /// Factory for success
@@ -64,7 +64,7 @@ public record Result<TResult>
     /// </summary>
     /// <param name="panicException"></param>
     /// <returns></returns>
-    public static Result<TResult> PanicFail(Exception panicException) => new(panicException);
+    public static Result<TResult> PanicFail(System.Exception panicException) => new(panicException);
 
     /// <summary>
     /// Evaluates a specified function, based on the .current state
@@ -73,7 +73,7 @@ public record Result<TResult>
     /// <param name="onDomainError">The function to evaluate on domain error.</param>
     /// <param name="onPanicError">The function to evaluate on panic error.</param>
     /// <returns>The result of the evaluated function.</returns>
-    public TResultOut Match<TResultOut>(Func<TResult, TResultOut> onSuccess, Func<object, TResultOut> onDomainError, Func<Exception, TResultOut> onPanicError)
+    public TResultOut Match<TResultOut>(Func<TResult, TResultOut> onSuccess, Func<object, TResultOut> onDomainError, Func<System.Exception, TResultOut> onPanicError)
     {
         ArgumentNullException.ThrowIfNull(onSuccess);
         ArgumentNullException.ThrowIfNull(onDomainError);
@@ -94,7 +94,7 @@ public record Result<TResult>
     /// <param name="onSuccess">The action to evaluate if the value is present.</param>
     /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
     /// <param name="onPanicError"></param>
-    public void Match(Action<TResult> onSuccess, Action<object> onDomainError, Action<Exception> onPanicError)
+    public void Match(Action<TResult> onSuccess, Action<object> onDomainError, Action<System.Exception> onPanicError)
     {
         ArgumentNullException.ThrowIfNull(onSuccess);
         ArgumentNullException.ThrowIfNull(onDomainError);
@@ -138,7 +138,7 @@ public record Result<TResult>
     /// <param name="onPanicException"></param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
-    public void MatchPanicException(Action<Exception> onPanicException)
+    public void MatchPanicException(Action<System.Exception> onPanicException)
     {
         ArgumentNullException.ThrowIfNull(onPanicException);
 

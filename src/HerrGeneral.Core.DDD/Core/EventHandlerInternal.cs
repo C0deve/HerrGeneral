@@ -1,7 +1,7 @@
 ﻿using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.Core.DDD;
+namespace HerrGeneral.DDD.Core;
 
 /// <summary>
 /// Internal adapter that bridges domain-specific DDD event handlers with the generic write-side interface.
@@ -14,7 +14,7 @@ namespace HerrGeneral.Core.DDD;
 /// <param name="repository">The repository responsible for aggregate persistence</param>
 internal class EventHandlerInternal<TEvent, THandler, TAggregate>(
     THandler handler,
-    IAggregateRepository<TAggregate> repository) : HerrGeneral.WriteSide.IEventHandler<TEvent>, IHandlerTypeProvider
+    IAggregateRepository<TAggregate> repository) : WriteSide.IEventHandler<TEvent>, IHandlerTypeProvider
     where THandler : IDomainEventHandler<TEvent, TAggregate>
     where TAggregate : Aggregate<TAggregate>
 {

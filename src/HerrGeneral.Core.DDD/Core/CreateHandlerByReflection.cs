@@ -1,6 +1,6 @@
 ﻿using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.Core.DDD;
+namespace HerrGeneral.DDD.Core;
 
 /// <summary>
 /// Handle an aggregate creation using <see cref="IAggregateFactory{TAggregate}"/>
@@ -9,7 +9,7 @@ namespace HerrGeneral.Core.DDD;
 /// <param name="aggregateFactory"></param>
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-public sealed class CreateHandlerByReflection<TAggregate, TCommand>(IAggregateFactory<TAggregate> aggregateFactory)
+internal sealed class CreateHandlerByReflection<TAggregate, TCommand>(IAggregateFactory<TAggregate> aggregateFactory)
     : ICreateHandler<TAggregate, TCommand>
     where TAggregate : Aggregate<TAggregate>
     where TCommand : Create<TAggregate>

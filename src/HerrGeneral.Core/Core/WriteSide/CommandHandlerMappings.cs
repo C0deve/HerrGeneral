@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Registration;
+using HerrGeneral.Exception;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;

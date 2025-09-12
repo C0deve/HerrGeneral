@@ -1,5 +1,4 @@
-﻿using HerrGeneral;
-using HerrGeneral.Core.DDD;
+﻿using HerrGeneral.DDD;
 using HerrGeneral.Test;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
@@ -40,19 +39,17 @@ public class ChangeAggregateShould
 
     [Fact]
     public async Task Change() =>
-        await new CreateTheThing("John")
-            .SendFrom(_mediator)
+        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThing("John"), _mediator)
             .Then(personId =>
-                new ChangeTheThing("Adams", personId).SendFrom(_mediator))
+                HerrGeneral.DDD.Extensions.SendFrom(new ChangeTheThing("Adams", personId), _mediator))
             .ShouldSuccess();
 
     [Fact]
     public async Task DispatchEventsOnWriteSide()
     {
-        await new CreateTheThing("John")
-            .SendFrom(_mediator)
+        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThing("John"), _mediator)
             .Then(personId =>
-                new ChangeTheThing("Adams", personId).SendFrom(_mediator))
+                HerrGeneral.DDD.Extensions.SendFrom(new ChangeTheThing("Adams", personId), _mediator))
             .ShouldSuccess();
 
         _container.GetRequiredService<ChangesCounter>()
@@ -63,10 +60,9 @@ public class ChangeAggregateShould
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreateTheThing("John")
-            .SendFrom(_mediator)
+        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThing("John"), _mediator)
             .Then(personId =>
-                new ChangeTheThing("Adams", personId).SendFrom(_mediator))
+                HerrGeneral.DDD.Extensions.SendFrom(new ChangeTheThing("Adams", personId), _mediator))
             .ShouldSuccess();
 
         _container.GetRequiredService<AProjection>()

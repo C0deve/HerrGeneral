@@ -1,6 +1,5 @@
-using HerrGeneral.Core.Error;
 using HerrGeneral.Core.ReadSide;
-using HerrGeneral.Test;
+using HerrGeneral.Exception;
 using HerrGeneral.Test.Data.WithMapping.ReadSide;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using HerrGeneral.WriteSide;

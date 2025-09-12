@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using HerrGeneral.Core.Error;
 using HerrGeneral.Core.ReadSide;
+using HerrGeneral.Exception;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -39,7 +39,7 @@ internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler h
 
                 return (events, value);
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 var mappingHandlerType = mapping.MethodInfo.DeclaringType!;
                 throw new ConversionException(result.GetType(), mappingHandlerType, e);

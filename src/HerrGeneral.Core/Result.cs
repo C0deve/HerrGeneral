@@ -13,7 +13,7 @@ public record Result : Result<Unit>
     {
     }
     
-    private Result(Exception error) : base(error)
+    private Result(System.Exception error) : base(error)
     {
     }
 
@@ -39,7 +39,7 @@ public record Result : Result<Unit>
     /// </summary>
     /// <param name="panicException"></param>
     /// <returns></returns>
-    public new static Result PanicFail(Exception panicException) => new(panicException);
+    public new static Result PanicFail(System.Exception panicException) => new(panicException);
     
     
     /// <summary>
@@ -48,7 +48,7 @@ public record Result : Result<Unit>
     /// <param name="onSuccess">The action to evaluate if the value is present.</param>
     /// <param name="onDomainError">The action to evaluate if the value is missing.</param>
     /// <param name="onPanicError"></param>
-    public void Match(Action onSuccess, Action<object> onDomainError, Action<Exception> onPanicError)
+    public void Match(Action onSuccess, Action<object> onDomainError, Action<System.Exception> onPanicError)
     {
         ArgumentNullException.ThrowIfNull(onSuccess);
         ArgumentNullException.ThrowIfNull(onDomainError);
@@ -71,7 +71,7 @@ public record Result : Result<Unit>
     /// <param name="onDomainError">The function to evaluate on domain error.</param>
     /// <param name="onPanicError">The function to evaluate on panic error.</param>
     /// <returns>The result of the evaluated function.</returns>
-    public TResultOut Match<TResultOut>(Func<TResultOut> onSuccess, Func<object, TResultOut> onDomainError, Func<Exception, TResultOut> onPanicError)
+    public TResultOut Match<TResultOut>(Func<TResultOut> onSuccess, Func<object, TResultOut> onDomainError, Func<System.Exception, TResultOut> onPanicError)
     {
         ArgumentNullException.ThrowIfNull(onSuccess);
         ArgumentNullException.ThrowIfNull(onDomainError);

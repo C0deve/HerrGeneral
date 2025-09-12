@@ -2,11 +2,11 @@
 using HerrGeneral.WriteSide.DDD;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HerrGeneral.Core.DDD.RegistrationPolicies;
+namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
-internal class RegisterDynamicCreateHandlers : IRegistrationPolicy
+internal class RegisterDynamicChangeHandlers : IRegistrationPolicy
 {
-    private readonly Type _commandInterface = typeof(INoHandlerCreate<>);
+    private readonly Type _commandInterface = typeof(INoHandlerChange<>);
 
     public HashSet<Type> GetOpenTypes() => [_commandInterface];
 
@@ -17,11 +17,11 @@ internal class RegisterDynamicCreateHandlers : IRegistrationPolicy
 
         foreach (var externalCommand in externalCommands)
         {
-            var @interface = externalCommand.MakeHandlerInterfaceForCreateCommand<Guid>();
+            var @interface = externalCommand.MakeHandlerInterfaceForChangeCommand();
             var aggregateType = externalCommand.GetAggregateTypeFromCommand();
 
-            var dynamicHandlerType = externalCommand.MakeDynamicCreateHandlerType(aggregateType);
-            var internalHandlerType = externalCommand.MakeCreateHandlerInternalType(aggregateType, dynamicHandlerType);
+            var dynamicHandlerType = externalCommand.MakeDynamicChangeHandlerType(aggregateType);
+            var internalHandlerType = externalCommand.MakeChangeHandlerType(aggregateType, dynamicHandlerType);
 
             serviceCollection.AddTransient(dynamicHandlerType);
             serviceCollection.AddTransient(@interface, internalHandlerType);

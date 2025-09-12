@@ -1,4 +1,4 @@
-﻿using HerrGeneral.Core.Error;
+﻿using HerrGeneral.Exception;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using Shouldly;
 
@@ -23,7 +23,7 @@ public class DomainExceptionMapperShould
                 e => new MappedException(e))
             .ShouldBeOfType<MappedException>();
 
-    private class MappedException(Exception exception) : Exception("a mapped exception", exception);
+    private class MappedException(System.Exception exception) : System.Exception("a mapped exception", exception);
 
-    private class AnotherException : Exception;
+    private class AnotherException : System.Exception;
 }

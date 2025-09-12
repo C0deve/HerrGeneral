@@ -1,6 +1,4 @@
-﻿using HerrGeneral.Core.Error;
-using HerrGeneral.Registration;
-using HerrGeneral.Test;
+﻿using HerrGeneral.Exception;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;

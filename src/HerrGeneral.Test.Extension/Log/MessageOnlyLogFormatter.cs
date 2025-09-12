@@ -25,7 +25,7 @@ public class MessageOnlyLogFormatter : ILogFormatter
         LogLevel logLevel,
         EventId eventId,
         string message,
-        Exception? exception)
+        System.Exception? exception)
     {
         var builder = new StringBuilder();
         

@@ -2,7 +2,7 @@ using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide;
 using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.Core.DDD;
+namespace HerrGeneral.DDD.Core;
 
 internal class ChangeMultiHandlerInternal<TAggregate, TCommand, THandler>(
     IAggregateRepository<TAggregate> repository,

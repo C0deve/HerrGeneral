@@ -1,4 +1,4 @@
-﻿using HerrGeneral.Core.Error;
+﻿using HerrGeneral.Exception;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using Shouldly;
 

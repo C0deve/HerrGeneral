@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
-using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Registration;
+using HerrGeneral.Exception;
 
 namespace HerrGeneral.Core.Configuration;
 

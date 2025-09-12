@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using HerrGeneral.Core.Configuration;
-using HerrGeneral.Core.Error;
 using HerrGeneral.Core.ReadSide;
+using HerrGeneral.Exception;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -50,7 +50,7 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWrit
                     {
                         return mapping.MapEvents(result);
                     }
-                    catch (Exception e)
+                    catch (System.Exception e)
                     {
                         var mappingHandlerType = mapping.MethodInfo.DeclaringType!;
                         throw new ConversionException(result.GetType(), mappingHandlerType, e);

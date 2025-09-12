@@ -1,10 +1,11 @@
+using HerrGeneral.Core;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.Registration.Policy;
 using HerrGeneral.WriteSide.DDD;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace HerrGeneral.Core.DDD.RegistrationPolicies;
+namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
 internal class RegisterIChangeMultiHandler : IRegistrationPolicy
 {

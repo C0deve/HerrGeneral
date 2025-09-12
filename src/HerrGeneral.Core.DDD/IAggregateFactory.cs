@@ -1,6 +1,6 @@
 ﻿using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.Core.DDD;
+namespace HerrGeneral.DDD;
 
 /// <summary>
 /// Aggregate factory used by CreateHandlerDynamic to create an aggregate

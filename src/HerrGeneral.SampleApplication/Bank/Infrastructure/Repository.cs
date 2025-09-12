@@ -1,4 +1,4 @@
-﻿using HerrGeneral.Core.DDD.Exception;
+﻿using HerrGeneral.DDD.Exception;
 using HerrGeneral.WriteSide.DDD;
 
 namespace HerrGeneral.SampleApplication.Bank.Infrastructure;

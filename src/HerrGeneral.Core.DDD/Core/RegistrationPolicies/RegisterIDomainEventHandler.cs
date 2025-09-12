@@ -1,13 +1,14 @@
-﻿using HerrGeneral.Core.Registration;
+﻿using HerrGeneral.Core;
+using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.Registration.Policy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace HerrGeneral.Core.DDD.RegistrationPolicies;
+namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
-internal class RegisterIVoidDomainEventHandler : IRegistrationPolicy
+internal class RegisterIDomainEventHandler : IRegistrationPolicy
 {
-    private readonly Type _handlerInterface = typeof(HerrGeneral.WriteSide.DDD.IVoidDomainEventHandler<>);
+    private readonly Type _handlerInterface = typeof(HerrGeneral.WriteSide.DDD.IDomainEventHandler<,>);
 
     public HashSet<Type> GetOpenTypes() => [_handlerInterface];
 
@@ -35,9 +36,10 @@ internal class RegisterIVoidDomainEventHandler : IRegistrationPolicy
     private static void RegisterEventHandlerServices(IServiceCollection serviceCollection, Type[] genericArguments, Type externalWriteSideEventHandler)
     {
         var eventType = genericArguments[0];
+        var aggregateType = genericArguments[1];
             
         var @interface = TypeDefinition.WriteSideEventHandlerInterface.MakeGenericType(eventType);
-        var internalHandler = typeof(VoidEventHandlerInternal<,>).MakeGenericType(eventType, externalWriteSideEventHandler);
+        var internalHandler = typeof(EventHandlerInternal<,,>).MakeGenericType(eventType, externalWriteSideEventHandler, aggregateType);
 
         serviceCollection.TryAddTransient(externalWriteSideEventHandler);
             
