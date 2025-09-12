@@ -1,9 +1,8 @@
-﻿using HerrGeneral.Core;
-using Shouldly;
+﻿using Shouldly;
 using Xunit;
 using Xunit.Sdk;
 
-namespace HerrGeneral.Test.Extension;
+namespace HerrGeneral.Test;
 
 /// <summary>
 /// Extensions methods for <see cref="Result"/>

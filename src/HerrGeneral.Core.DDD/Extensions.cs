@@ -1,6 +1,6 @@
 ﻿using HerrGeneral.WriteSide.DDD;
 
-namespace HerrGeneral.Core.DDD;
+namespace HerrGeneral;
 
 /// <summary>
 /// Extensions methods to send command

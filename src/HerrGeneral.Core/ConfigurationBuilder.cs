@@ -3,7 +3,7 @@ using HerrGeneral.Core.Configuration;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.WriteSide;
 
-namespace HerrGeneral.Core;
+namespace HerrGeneral;
 
 /// <summary>
 /// Configuration class for HerrGeneral framework.
@@ -57,7 +57,7 @@ public class ConfigurationBuilder
     {
     }
 
-    internal Configuration.Configuration Build() => new(
+    internal Configuration Build() => new(
         _writeSideSearchParams,
         _readSideSearchParams,
         _domainExceptionInterfaces,

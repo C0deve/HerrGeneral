@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral.Core;
+﻿namespace HerrGeneral;
 
 /// <summary>
 /// Extension for railway programming

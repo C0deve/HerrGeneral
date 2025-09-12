@@ -1,7 +1,6 @@
 ﻿using HerrGeneral.Core.Error;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;
 using Shouldly;
-using Unit = HerrGeneral.Core.Unit;
 
 // ReSharper disable once CheckNamespace
 namespace HerrGeneral.HandlerMappers.Test;

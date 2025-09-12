@@ -1,7 +1,8 @@
-using HerrGeneral.Core.Registration.Policy;
+using HerrGeneral.Core.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HerrGeneral.Core.Registration;
+// ReSharper disable once CheckNamespace
+namespace HerrGeneral.Registration;
 
 /// <summary>
 /// Extension methods for registering and configuring the HerrGeneral framework within an application.
@@ -23,17 +24,4 @@ public static class ServiceExtension
                 serviceCollection,
                 configurationDelegate(new ConfigurationBuilder()).Build()
             );
-
-    internal static void Register(IServiceCollection serviceCollection, IRegistrationPolicy[] policies, IEnumerable<ScanParam> scanParams)
-    {
-        var openTypesToScan = policies
-            .SelectMany(policy => policy.GetOpenTypes())
-            .ToHashSet();
-        var externalHandlers = Scanner.Scan(scanParams, openTypesToScan);
-
-        if (externalHandlers.Count == 0) return;
-
-        foreach (var policy in policies)
-            policy.Register(serviceCollection, externalHandlers);
-    }
 }

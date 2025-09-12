@@ -35,7 +35,7 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         RegistrationPolicyProvider policyProvider)
     {
         var policies = policyProvider.GetWriteSidePolicies(configuration);
-        ServiceExtension.Register(serviceCollection, policies, configuration.WriteSideSearchParams);
+        Register(serviceCollection, policies, configuration.WriteSideSearchParams);
     }
 
     private static void RegisterReadSide(

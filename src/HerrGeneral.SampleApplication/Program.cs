@@ -1,4 +1,4 @@
-﻿using HerrGeneral.Core;
+﻿using HerrGeneral;
 using HerrGeneral.Core.DDD;
 using HerrGeneral.SampleApplication.Bank.Infrastructure;
 using HerrGeneral.SampleApplication.Bank.ReadModel;

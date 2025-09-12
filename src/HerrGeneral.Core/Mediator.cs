@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using HerrGeneral.Core.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HerrGeneral.Core;
+namespace HerrGeneral;
 
 /// <summary>
 /// Mediator implementation

@@ -1,4 +1,4 @@
-using HerrGeneral.Core.Registration;
+using HerrGeneral.Registration;
 using HerrGeneral.Test;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

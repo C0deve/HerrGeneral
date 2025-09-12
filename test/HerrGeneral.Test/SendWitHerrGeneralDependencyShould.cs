@@ -1,5 +1,5 @@
-﻿using HerrGeneral.Core;
-using HerrGeneral.Core.Registration;
+﻿using HerrGeneral.Registration;
+using HerrGeneral.Test;
 using HerrGeneral.Test.Data.WithHerrGeneralDependency.ReadSide;
 using HerrGeneral.Test.Data.WithHerrGeneralDependency.WriteSide;
 using HerrGeneral.Test.Data.WithMapping.WriteSide;

@@ -2,7 +2,7 @@ using System.Text;
 using Divergic.Logging.Xunit;
 using Microsoft.Extensions.Logging;
 
-namespace HerrGeneral.Test.Extension.Log;
+namespace HerrGeneral.Test.Log;
 
 /// <summary>
 /// Display only the log message if provided

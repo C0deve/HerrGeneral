@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral.Core;
+﻿namespace HerrGeneral;
 
 /// <summary>
 /// Interface of the unit of work.

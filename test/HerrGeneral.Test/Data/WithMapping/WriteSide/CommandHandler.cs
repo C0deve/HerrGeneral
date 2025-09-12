@@ -1,5 +1,3 @@
-using HerrGeneral.Core;
-
 namespace HerrGeneral.Test.Data.WithMapping.WriteSide;
 
 /// <summary>

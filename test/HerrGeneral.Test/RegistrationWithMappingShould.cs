@@ -1,6 +1,6 @@
-﻿using HerrGeneral.Core;
-using HerrGeneral.Core.Error;
-using HerrGeneral.Core.Registration;
+﻿using HerrGeneral.Core.Error;
+using HerrGeneral.Registration;
+using HerrGeneral.Test;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit.Abstractions;
@@ -35,7 +35,7 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
     public async Task Resolve_main_command_handler_with_mapping()
     {
         var services = new ServiceCollection()
-            .AddSingleton<Dependency>(new Dependency())
+            .AddSingleton<Dependency>()
             .AddHerrGeneralTestLogger(output)
             .AddHerrGeneral(configuration =>
             {

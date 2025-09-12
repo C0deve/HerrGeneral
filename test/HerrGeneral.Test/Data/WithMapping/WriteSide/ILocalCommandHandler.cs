@@ -1,6 +1,4 @@
-﻿using HerrGeneral.Core;
-
-namespace HerrGeneral.Test.Data.WithMapping.WriteSide;
+﻿namespace HerrGeneral.Test.Data.WithMapping.WriteSide;
 
 public interface ILocalCommandHandler<in TCommand, TResult> where TCommand : CommandBase
 {

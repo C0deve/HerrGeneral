@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
         <LangVersion>$(LangVersion)</LangVersion>
+        <RootNamespace>HerrGeneral</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup>

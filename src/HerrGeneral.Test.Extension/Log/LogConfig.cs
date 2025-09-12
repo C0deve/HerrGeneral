@@ -1,6 +1,6 @@
 using Divergic.Logging.Xunit;
 
-namespace HerrGeneral.Test.Extension.Log;
+namespace HerrGeneral.Test.Log;
 
 /// <summary>
 /// Logger configuration

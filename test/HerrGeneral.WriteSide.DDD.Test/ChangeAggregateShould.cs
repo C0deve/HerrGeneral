@@ -1,6 +1,6 @@
-﻿using HerrGeneral.Core;
+﻿using HerrGeneral;
 using HerrGeneral.Core.DDD;
-using HerrGeneral.Test.Extension;
+using HerrGeneral.Test;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.AnotherThing;
