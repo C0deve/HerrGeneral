@@ -1,4 +1,4 @@
-namespace HerrGeneral.Core.WriteSide;
+namespace HerrGeneral.Core.WriteSide.Tracer;
 
 /// <summary>
 /// Decorator for IUnitOfWork that adds operation tracing via CommandExecutionTracer.
