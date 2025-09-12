@@ -1,4 +1,6 @@
-﻿namespace HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
+﻿using HerrGeneral.DDD;
+
+namespace HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 
 public record ChangeTheThing(string FriendName, Guid AggregateId) : Change<TheThing>(AggregateId)
 {

@@ -1,5 +1,5 @@
-﻿using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
-using HerrGeneral.WriteSide.DDD;
+﻿using HerrGeneral.DDD;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 using Microsoft.Extensions.Logging;
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.CrossAggregateHandler;
@@ -8,7 +8,7 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.CrossAggregateHan
 /// Cross-aggregate handler: Debit account balance when card payment is processed
 /// </summary>
 public class DebitAccountOnCardPayment(
-    IAggregateRepository<BankAccount> accountRepository,
+    IMyAggregateRepository<BankAccount> accountRepository,
     ILogger<DebitAccountOnCardPayment> logger)
     : IDomainEventHandler<CardPaymentProcessed, BankAccount>
 {

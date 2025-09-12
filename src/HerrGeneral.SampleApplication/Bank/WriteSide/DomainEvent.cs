@@ -1,4 +1,4 @@
-using HerrGeneral.WriteSide.DDD;
+using HerrGeneral.DDD;
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide;
 

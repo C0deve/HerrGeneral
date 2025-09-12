@@ -1,3 +1,5 @@
+using HerrGeneral.DDD;
+
 namespace HerrGeneral.WriteSide.DDD.Test.Data.WriteSide;
 
 public record DomainEvent<TAggregate>(Guid SourceCommandId, Guid AggregateId) : 

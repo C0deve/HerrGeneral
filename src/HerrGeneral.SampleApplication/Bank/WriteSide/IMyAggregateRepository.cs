@@ -1,8 +1,8 @@
-﻿using HerrGeneral.WriteSide.DDD;
+﻿using HerrGeneral.DDD;
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide;
 
-public interface IAggregateRepository<T> : HerrGeneral.WriteSide.DDD.IAggregateRepository<T> 
+public interface IMyAggregateRepository<T> : IAggregateRepository<T> 
     where T : IAggregate
 {
     /// <summary>

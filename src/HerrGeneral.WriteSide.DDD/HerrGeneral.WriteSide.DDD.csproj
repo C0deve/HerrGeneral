@@ -2,6 +2,7 @@
     <PropertyGroup>
         <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
         <LangVersion>$(LangVersion)</LangVersion>
+        <RootNamespace>HerrGeneral.DDD</RootNamespace>
     </PropertyGroup>
     
     <PropertyGroup>

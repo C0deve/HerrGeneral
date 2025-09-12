@@ -8,7 +8,7 @@ namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
 internal class RegisterIVoidDomainEventHandler : IRegistrationPolicy
 {
-    private readonly Type _handlerInterface = typeof(HerrGeneral.WriteSide.DDD.IVoidDomainEventHandler<>);
+    private readonly Type _handlerInterface = typeof(IVoidDomainEventHandler<>);
 
     public HashSet<Type> GetOpenTypes() => [_handlerInterface];
 

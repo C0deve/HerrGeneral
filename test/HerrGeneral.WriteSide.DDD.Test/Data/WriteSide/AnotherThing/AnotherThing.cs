@@ -1,3 +1,4 @@
+using HerrGeneral.DDD;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.AnotherThing.Event;
 
 namespace HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.AnotherThing;

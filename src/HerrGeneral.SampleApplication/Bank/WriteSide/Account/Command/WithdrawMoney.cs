@@ -1,6 +1,6 @@
 // Agrégat Account (parfait pour démontrer les règles métier)
 
-using HerrGeneral.WriteSide.DDD;
+using HerrGeneral.DDD;
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.Command;
 

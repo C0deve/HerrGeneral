@@ -1,5 +1,4 @@
 ﻿using HerrGeneral.Core.ReadSide;
-using HerrGeneral.WriteSide.DDD;
 
 namespace HerrGeneral.DDD.Core;
 

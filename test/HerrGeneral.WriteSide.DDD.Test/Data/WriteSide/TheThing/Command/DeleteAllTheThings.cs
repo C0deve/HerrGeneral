@@ -1,3 +1,5 @@
+using HerrGeneral.DDD;
+
 namespace HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 
 /// <summary>

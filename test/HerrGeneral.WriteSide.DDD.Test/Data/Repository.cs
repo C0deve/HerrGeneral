@@ -1,4 +1,5 @@
-﻿using HerrGeneral.DDD.Exception;
+﻿using HerrGeneral.DDD;
+using HerrGeneral.DDD.Exception;
 
 namespace HerrGeneral.WriteSide.DDD.Test.Data;
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using HerrGeneral.DDD;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Event;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Exception;
-using HerrGeneral.WriteSide.DDD;
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account;
 

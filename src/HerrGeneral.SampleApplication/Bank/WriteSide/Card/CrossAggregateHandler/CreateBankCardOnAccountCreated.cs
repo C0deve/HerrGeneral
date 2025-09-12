@@ -1,5 +1,5 @@
+using HerrGeneral.DDD;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Event;
-using HerrGeneral.WriteSide.DDD;
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.CrossAggregateHandler;
 
@@ -12,7 +12,7 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.CrossAggregateHandle
 /// - Saves the newly created bank card to the provided repository.
 /// </remarks>
 /// <seealso cref="AccountCreated"/>
-/// <seealso cref="HerrGeneral.WriteSide.DDD.IAggregateRepository{T}"/>
+/// <seealso cref="DDD.IAggregateRepository{T}"/>
 /// <seealso cref="BankCard"/>
 public class CreateBankCardOnAccountCreated : IDomainEventHandler<AccountCreated, BankCard>
 {

@@ -1,9 +1,9 @@
-﻿using HerrGeneral.DDD.Exception;
-using HerrGeneral.WriteSide.DDD;
+﻿using HerrGeneral.DDD;
+using HerrGeneral.DDD.Exception;
 
 namespace HerrGeneral.SampleApplication.Bank.Infrastructure;
 
-public class Repository<TAggregate> : HerrGeneral.SampleApplication.Bank.WriteSide.IAggregateRepository<TAggregate> 
+public class Repository<TAggregate> : WriteSide.IMyAggregateRepository<TAggregate> 
     where TAggregate : IAggregate
 {
     private readonly Dictionary<Guid, TAggregate> _aggregates = new();

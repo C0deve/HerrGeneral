@@ -1,6 +1,6 @@
-﻿using HerrGeneral.WriteSide.DDD.Exception;
+﻿using HerrGeneral.DDD.Exception;
 
-namespace HerrGeneral.WriteSide.DDD;
+namespace HerrGeneral.DDD;
 
 /// <summary>
 /// Aggregate implementation with IDomainEvent publication

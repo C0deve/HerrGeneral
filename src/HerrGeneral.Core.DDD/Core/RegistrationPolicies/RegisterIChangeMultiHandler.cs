@@ -1,7 +1,6 @@
 using HerrGeneral.Core;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.Registration.Policy;
-using HerrGeneral.WriteSide.DDD;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

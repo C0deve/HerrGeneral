@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using HerrGeneral.WriteSide.DDD;
 
 namespace HerrGeneral.DDD.Core;
 

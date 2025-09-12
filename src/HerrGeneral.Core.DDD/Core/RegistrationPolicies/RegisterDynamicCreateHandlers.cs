@@ -1,5 +1,4 @@
 ﻿using HerrGeneral.Core.Registration.Policy;
-using HerrGeneral.WriteSide.DDD;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.DDD.Core.RegistrationPolicies;

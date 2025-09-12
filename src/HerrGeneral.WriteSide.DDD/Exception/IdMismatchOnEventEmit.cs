@@ -1,4 +1,4 @@
-namespace HerrGeneral.WriteSide.DDD.Exception;
+namespace HerrGeneral.DDD.Exception;
 
 /// <summary>
 /// The aggregate id of the event is different from aggregate id of the emitter

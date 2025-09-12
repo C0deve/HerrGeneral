@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral.WriteSide.DDD;
+﻿namespace HerrGeneral.DDD;
 
 /// <summary>
 /// Marker interface for aggregate

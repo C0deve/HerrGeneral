@@ -1,4 +1,4 @@
-namespace HerrGeneral.WriteSide.DDD;
+namespace HerrGeneral.DDD;
 
 /// <summary>
 /// Command for editing an aggregate

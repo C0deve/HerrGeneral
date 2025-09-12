@@ -1,6 +1,4 @@
-﻿using HerrGeneral.WriteSide.DDD;
-
-namespace HerrGeneral.DDD.Core;
+﻿namespace HerrGeneral.DDD.Core;
 
 /// <summary>
 /// Handle an aggregate creation using <see cref="IAggregateFactory{TAggregate}"/>

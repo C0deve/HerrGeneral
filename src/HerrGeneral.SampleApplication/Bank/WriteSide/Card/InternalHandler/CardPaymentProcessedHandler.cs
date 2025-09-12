@@ -1,5 +1,5 @@
-﻿using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
-using HerrGeneral.WriteSide.DDD;
+﻿using HerrGeneral.DDD;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.InternalHandler;
 
