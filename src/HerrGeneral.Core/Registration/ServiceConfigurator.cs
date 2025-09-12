@@ -1,4 +1,5 @@
-﻿using HerrGeneral.Core.ReadSide;
+﻿using HerrGeneral.Core.Configuration;
+using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration.Policy;
 using HerrGeneral.Core.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,7 @@ namespace HerrGeneral.Core.Registration;
 /// </summary>
 internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
 {
-    public IServiceCollection ConfigureServiceCollection(IServiceCollection serviceCollection, Configuration configuration)
+    public IServiceCollection ConfigureServiceCollection(IServiceCollection serviceCollection, Configuration.Configuration configuration)
     {
         RegisterWriteSide(serviceCollection, configuration, policyProvider);
         RegisterReadSide(serviceCollection, configuration, policyProvider);
@@ -22,15 +23,15 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         serviceCollection.AddSingleton<Mediator>();
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
         serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);
-        serviceCollection.AddSingleton<IWriteSideEventHandlerMappings>(_ => new Core.EventHandlerMappings(configuration.WriteSideEventHandlerMappings));
-        serviceCollection.AddSingleton<IReadSideEventHandlerMappings>(_ => new Core.EventHandlerMappings(configuration.ReadSideEventHandlerMappings));
+        serviceCollection.AddSingleton<IWriteSideEventHandlerMappings>(_ => new EventHandlerMappingsProvider(configuration.WriteSideEventHandlerMappingsConfiguration));
+        serviceCollection.AddSingleton<IReadSideEventHandlerMappings>(_ => new EventHandlerMappingsProvider(configuration.ReadSideEventHandlerMappingsConfiguration));
 
         return serviceCollection;
     }
 
     private static void RegisterWriteSide(
         IServiceCollection serviceCollection, 
-        Configuration configuration, 
+        Configuration.Configuration configuration, 
         RegistrationPolicyProvider policyProvider)
     {
         var policies = policyProvider.GetWriteSidePolicies(configuration);
@@ -39,7 +40,7 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
 
     private static void RegisterReadSide(
         IServiceCollection serviceCollection, 
-        Configuration configuration, 
+        Configuration.Configuration configuration, 
         RegistrationPolicyProvider policyProvider)
     {
         var policies = policyProvider.GetReadSidePolicies(configuration);

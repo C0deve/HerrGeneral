@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace HerrGeneral.Core;
+namespace HerrGeneral.Core.Configuration;
 
 internal interface IWriteSideEventHandlerMappings
 {

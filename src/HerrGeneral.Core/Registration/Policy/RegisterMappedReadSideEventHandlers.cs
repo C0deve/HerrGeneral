@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using HerrGeneral.Core.Configuration;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.ReadSide;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,11 +10,11 @@ namespace HerrGeneral.Core.Registration.Policy;
 /// <summary>
 /// Registers all external write side event handlers present in the mappings
 /// </summary>
-/// <param name="eventHandlerMappings"></param>
-internal class RegisterMappedReadSideEventHandlers(EventHandlerMappings eventHandlerMappings) : IRegistrationPolicy
+/// <param name="eventHandlerMappingsConfiguration"></param>
+internal class RegisterMappedReadSideEventHandlers(EventHandlerMappingsConfiguration eventHandlerMappingsConfiguration) : IRegistrationPolicy
 {
     public HashSet<Type> GetOpenTypes() =>
-        eventHandlerMappings
+        eventHandlerMappingsConfiguration
             .All()
             .Select(mapping => mapping.HandlerGenericType)
             .ToHashSet();
@@ -21,7 +22,7 @@ internal class RegisterMappedReadSideEventHandlers(EventHandlerMappings eventHan
     public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
         var scanResults =
-            from mapping in eventHandlerMappings.All()
+            from mapping in eventHandlerMappingsConfiguration.All()
             from externalHandlerType in externalHandlersProvider[mapping.HandlerGenericType]
             from method in externalHandlerType.GetMethods(BindingFlags.Public|BindingFlags.Instance|BindingFlags.DeclaredOnly)
             where method.Name == mapping.MethodInfo.Name

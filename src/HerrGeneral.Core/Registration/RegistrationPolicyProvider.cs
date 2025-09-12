@@ -14,12 +14,12 @@ internal class RegistrationPolicyProvider
     /// </summary>
     /// <param name="configuration">The configuration containing mappings</param>
     /// <returns>Array of write-side policies</returns>
-    public virtual IRegistrationPolicy[] GetWriteSidePolicies(Configuration configuration) =>
+    public virtual IRegistrationPolicy[] GetWriteSidePolicies(Configuration.Configuration configuration) =>
     [
         new RegisterICommandHandler(),
         new RegisterWriteSideEventHandler(),
         new RegisterMappedCommandHandlers(configuration.CommandHandlerMappings),
-        new RegisterMappedWriteSideEventHandlers(configuration.WriteSideEventHandlerMappings)
+        new RegisterMappedWriteSideEventHandlers(configuration.WriteSideEventHandlerMappingsConfiguration)
     ];
 
     /// <summary>
@@ -27,9 +27,9 @@ internal class RegistrationPolicyProvider
     /// </summary>
     /// <param name="configuration">The configuration containing mappings</param>
     /// <returns>Array of read-side policies</returns>
-    public virtual IRegistrationPolicy[] GetReadSidePolicies(Configuration configuration) =>
+    public virtual IRegistrationPolicy[] GetReadSidePolicies(Configuration.Configuration configuration) =>
     [
         new RegisterReadSideEventHandler(),
-        new RegisterMappedReadSideEventHandlers(configuration.ReadSideEventHandlerMappings)
+        new RegisterMappedReadSideEventHandlers(configuration.ReadSideEventHandlerMappingsConfiguration)
     ];
 }

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using HerrGeneral.Core.Configuration;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Core.WriteSide;
 
@@ -38,13 +39,13 @@ public class ConfigurationBuilder
     /// Collection of mappings for external write side event handlers.
     /// Allows registration of event handlers that modify the system state.
     /// </summary>
-    private readonly  Registration.EventHandlerMappings _writeSideEventHandlerMappings  = new();
+    private readonly  EventHandlerMappingsConfiguration _writeSideEventHandlerMappingsConfiguration  = new();
 
     /// <summary>
     /// Collection of mappings for external read side event handlers.
     /// Allows registration of event handlers that update views and projections.
     /// </summary>
-    private readonly  Registration.EventHandlerMappings _readSideEventHandlerMappings  = new();
+    private readonly  EventHandlerMappingsConfiguration _readSideEventHandlerMappingsConfiguration  = new();
     
     /// <summary>
     /// Gets or sets a value indicating whether execution tracing for command handlers is enabled.
@@ -56,13 +57,13 @@ public class ConfigurationBuilder
     {
     }
 
-    internal Configuration Build() => new(
+    internal Configuration.Configuration Build() => new(
         _writeSideSearchParams,
         _readSideSearchParams,
         _domainExceptionInterfaces,
         _commandHandlerMappings,
-        _writeSideEventHandlerMappings,
-        _readSideEventHandlerMappings,
+        _writeSideEventHandlerMappingsConfiguration,
+        _readSideEventHandlerMappingsConfiguration,
         _isTracingEnabled);
     
     /// <summary>
@@ -199,7 +200,7 @@ public class ConfigurationBuilder
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public ConfigurationBuilder RegisterWriteSideEventHandler<TEvent, THandler>()
     {
-        _writeSideEventHandlerMappings.AddWriteSideMapping<TEvent, THandler>();
+        _writeSideEventHandlerMappingsConfiguration.AddWriteSideMapping<TEvent, THandler>();
         return this;
     }
     
@@ -228,7 +229,7 @@ public class ConfigurationBuilder
     public ConfigurationBuilder RegisterWriteSideEventHandlerWithMapping<TEvent, THandler, TReturn>(
         Func<TReturn, IEnumerable<object>> mapEvents)
     {
-        _writeSideEventHandlerMappings.AddWriteSideMapping<TEvent, THandler, TReturn>(mapEvents);
+        _writeSideEventHandlerMappingsConfiguration.AddWriteSideMapping<TEvent, THandler, TReturn>(mapEvents);
         return this;
     }
 
@@ -246,7 +247,7 @@ public class ConfigurationBuilder
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public ConfigurationBuilder RegisterReadSideEventHandler<TEvent, THandler>()
     {
-        _readSideEventHandlerMappings.AddReadSideMapping<TEvent, THandler>();
+        _readSideEventHandlerMappingsConfiguration.AddReadSideMapping<TEvent, THandler>();
         return this;
     }
 

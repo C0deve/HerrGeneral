@@ -1,6 +1,7 @@
-﻿using HerrGeneral.Core.WriteSide;
+﻿using HerrGeneral.Core.Registration;
+using HerrGeneral.Core.WriteSide;
 
-namespace HerrGeneral.Core.Registration;
+namespace HerrGeneral.Core.Configuration;
 
 /// <summary>
 /// Internal configuration for HerrGeneral.
@@ -9,15 +10,15 @@ namespace HerrGeneral.Core.Registration;
 /// <param name="ReadSideSearchParams">Set of search parameters for read side assemblies. Contains the assemblies and namespaces to scan for discovering read side event handlers.</param>
 /// <param name="DomainExceptionTypes">Set of registered domain exception types. These types are used to identify and handle exceptions specific to the business domain.</param>
 /// <param name="CommandHandlerMappings">Collection of mappings for external command handlers. These mappings allow integration of command handlers from external sources into the system.</param>
-/// <param name="WriteSideEventHandlerMappings">Collection of mappings for external write side event handlers. Allows registration of event handlers that modify the system state.</param>
-/// <param name="ReadSideEventHandlerMappings">Collection of mappings for external read side event handlers. Allows registration of event handlers that update views and projections.</param>
+/// <param name="WriteSideEventHandlerMappingsConfiguration">Collection of mappings for external write side event handlers. Allows registration of event handlers that modify the system state.</param>
+/// <param name="ReadSideEventHandlerMappingsConfiguration">Collection of mappings for external read side event handlers. Allows registration of event handlers that update views and projections.</param>
 /// <param name="IsTracingEnabled">Value indicating whether execution tracing for command handlers is enabled. Enables detailed logging of command processing for debugging and performance monitoring.</param>
 internal record Configuration(
     IReadOnlyCollection<ScanParam> WriteSideSearchParams,
     IReadOnlyCollection<ScanParam> ReadSideSearchParams,
     IReadOnlySet<Type> DomainExceptionTypes,
     CommandHandlerMappings CommandHandlerMappings,
-    EventHandlerMappings WriteSideEventHandlerMappings,
-    EventHandlerMappings ReadSideEventHandlerMappings,
+    EventHandlerMappingsConfiguration WriteSideEventHandlerMappingsConfiguration,
+    EventHandlerMappingsConfiguration ReadSideEventHandlerMappingsConfiguration,
     bool IsTracingEnabled
 );

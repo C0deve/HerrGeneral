@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
+using HerrGeneral.Core.Configuration;
 using HerrGeneral.Core.Error;
 using HerrGeneral.Core.ReadSide;
-using HerrGeneral.Core.Registration;
 using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -44,7 +44,7 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWrit
                         $"Handler type '{typeof(THandler).Name}' is registered without a conversion function " +
                         $"and its return value of type '{result.GetType().Name}' cannot be converted to a collection of events. " +
                         $"Either make the handler return IEnumerable<object> or register it with a mapping function using " +
-                        $"{nameof(Configuration)}.{nameof(ConfigurationBuilder.RegisterWriteSideEventHandlerWithMapping)} method.");
+                        $"{nameof(Configuration.Configuration)}.{nameof(ConfigurationBuilder.RegisterWriteSideEventHandlerWithMapping)} method.");
                 default:
                     try
                     {

@@ -46,7 +46,7 @@ public static class ServiceExtension
     /// </summary>
     private class RegistrationPolicyProviderForDDD : RegistrationPolicyProvider
     {
-        public override IRegistrationPolicy[] GetWriteSidePolicies(Configuration configuration) =>
+        public override IRegistrationPolicy[] GetWriteSidePolicies(Configuration.Configuration configuration) =>
         [
             ..base.GetWriteSidePolicies(configuration),
             new RegisterICreateHandler(),

@@ -1,4 +1,3 @@
-using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Test;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using HerrGeneral.Core.Configuration;
 using HerrGeneral.ReadSide;
 
 namespace HerrGeneral.Core.ReadSide;

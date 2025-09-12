@@ -1,12 +1,13 @@
-﻿using HerrGeneral.Core.Error;
-using System.Reflection;
+﻿using System.Reflection;
+using HerrGeneral.Core.Error;
+using HerrGeneral.Core.Registration;
 
-namespace HerrGeneral.Core.Registration;
+namespace HerrGeneral.Core.Configuration;
 
 /// <summary>
-/// Responsible for registering mappings between event types and their handlers
+/// Provides a mechanism to register, manage, and retrieve mappings between event types and their corresponding handlers.
 /// </summary>
-internal class EventHandlerMappings
+internal class EventHandlerMappingsConfiguration
 {
     private readonly Dictionary<Type, EventHandlerMapping> _handlerMappers = new();
 
@@ -36,7 +37,7 @@ internal class EventHandlerMappings
     /// <summary>
     /// Adds a mapping for an event type to a handler with a return value conversion
     /// </summary>
-    public EventHandlerMappings AddWriteSideMapping<TEvent, THandler, THandlerReturn>(
+    public EventHandlerMappingsConfiguration AddWriteSideMapping<TEvent, THandler, THandlerReturn>(
         Func<THandlerReturn, IEnumerable<object>> mapEvents)
     {
         var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
@@ -51,7 +52,7 @@ internal class EventHandlerMappings
     /// <summary>
     /// Adds a mapping for an event type to a handler without return value conversion
     /// </summary>
-    public EventHandlerMappings AddWriteSideMapping<TEvent, THandler>()
+    public EventHandlerMappingsConfiguration AddWriteSideMapping<TEvent, THandler>()
     {
         var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
 
@@ -65,7 +66,7 @@ internal class EventHandlerMappings
     /// <summary>
     /// Adds a mapping for an event type to a handler for read-side operations
     /// </summary>
-    public EventHandlerMappings AddReadSideMapping<TEvent, THandler>()
+    public EventHandlerMappingsConfiguration AddReadSideMapping<TEvent, THandler>()
     {
         var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
 

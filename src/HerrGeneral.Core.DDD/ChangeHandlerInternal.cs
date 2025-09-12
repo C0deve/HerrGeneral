@@ -1,4 +1,3 @@
-using HerrGeneral.Core.DDD.Exception;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.WriteSide;
 using HerrGeneral.WriteSide.DDD;

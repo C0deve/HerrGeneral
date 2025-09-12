@@ -3,7 +3,7 @@ using System.Reflection;
 using HerrGeneral.Core.Error;
 using HerrGeneral.Core.Registration;
 
-namespace HerrGeneral.Core;
+namespace HerrGeneral.Core.Configuration;
 
 /// <summary>
 /// Provides a mechanism to map client event handlers to internal event handlers.
@@ -13,7 +13,7 @@ namespace HerrGeneral.Core;
 /// is used multiple times.
 /// </para>
 /// </summary>
-internal class EventHandlerMappings(Registration.EventHandlerMappings mappings) : IReadSideEventHandlerMappings, IWriteSideEventHandlerMappings
+internal class EventHandlerMappingsProvider(EventHandlerMappingsConfiguration mappingsConfiguration) : IReadSideEventHandlerMappings, IWriteSideEventHandlerMappings
 {
     // Cache for handler methods to avoid expensive reflection lookups
     private readonly ConcurrentDictionary<(Type EventType, Type HandlerType), MethodInfo> _handleMethodCache = new();
@@ -67,7 +67,7 @@ internal class EventHandlerMappings(Registration.EventHandlerMappings mappings) 
     private (MethodInfo Method, EventHandlerMapping Mapping) GetCachedOrResolveMethod(Type evtType, Type handlerType)
     {
         // Get the mapping for this event type
-        var mapping = mappings.GetFromEventType(evtType);
+        var mapping = mappingsConfiguration.GetFromEventType(evtType);
 
         // Check cache first to avoid expensive reflection
         var cacheKey = (EventType: evtType, HandlerType: handlerType);
