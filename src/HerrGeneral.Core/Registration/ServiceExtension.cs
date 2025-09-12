@@ -19,9 +19,12 @@ public static class ServiceExtension
     /// <returns>The updated service collection including the HerrGeneral services.</returns>
     public static IServiceCollection AddHerrGeneral(
         this IServiceCollection serviceCollection,
-        Func<Configuration, Configuration> configurationDelegate) =>
+        Func<ConfigurationBuilder, ConfigurationBuilder> configurationDelegate) =>
         new ServiceConfigurator(new RegistrationPolicyProvider())
-            .ConfigureServiceCollection(serviceCollection, configurationDelegate);
+            .ConfigureServiceCollection(
+                serviceCollection,
+                configurationDelegate(new ConfigurationBuilder()).Build()
+            );
 
     internal static void Register(IServiceCollection serviceCollection, IRegistrationPolicy[] policies, IEnumerable<ScanParam> scanParams)
     {

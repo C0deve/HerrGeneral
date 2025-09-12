@@ -103,7 +103,7 @@ internal class EventHandlerMappings
             throw new InvalidOperationException(
                 $"Method '{methodInfo.Name}' in handler type '{handlerType.Name}' must return a type " +
                 $"that implements IEnumerable<object>. Current return type is '{methodInfo.ReturnType.Name}'. " +
-                $"Either change the return type or use {nameof(Configuration.RegisterWriteSideEventHandlerWithMapping)} " +
+                $"Either change the return type or use {nameof(ConfigurationBuilder.RegisterWriteSideEventHandlerWithMapping)} " +
                 $"to provide a conversion function.");
         }
     }

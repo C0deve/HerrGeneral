@@ -10,10 +10,8 @@ namespace HerrGeneral.Core.Registration;
 /// </summary>
 internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
 {
-    public IServiceCollection ConfigureServiceCollection(IServiceCollection serviceCollection, Func<Configuration, Configuration> configurationDelegate)
+    public IServiceCollection ConfigureServiceCollection(IServiceCollection serviceCollection, Configuration configuration)
     {
-        var configuration = configurationDelegate(new Configuration());
-
         RegisterWriteSide(serviceCollection, configuration, policyProvider);
         RegisterReadSide(serviceCollection, configuration, policyProvider);
 

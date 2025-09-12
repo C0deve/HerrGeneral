@@ -34,9 +34,12 @@ public static class ServiceExtension
     /// <returns>The updated service collection including the HerrGeneral services.</returns>
     public static IServiceCollection AddHerrGeneral(
         this IServiceCollection serviceCollection,
-        Func<Configuration, Configuration> configurationDelegate) =>
+        Func<ConfigurationBuilder, ConfigurationBuilder> configurationDelegate) =>
         new ServiceConfigurator(new RegistrationPolicyProviderForDDD())
-            .ConfigureServiceCollection(serviceCollection, configurationDelegate);
+            .ConfigureServiceCollection(
+                serviceCollection,
+                configurationDelegate(new ConfigurationBuilder()).Build()
+            );
 
     /// <summary>
     /// Custom policy manager with additional registration policies
