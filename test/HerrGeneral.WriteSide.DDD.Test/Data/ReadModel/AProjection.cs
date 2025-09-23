@@ -6,13 +6,13 @@ public record AProjectionItem(Guid TheAggregateId, string Name, bool IsDeleted =
 
 public class AProjection : Projection<AProjectionItem>,
     HerrGeneral.ReadSide.IProjectionEventHandler<TheThingIsCreated>,
-    HerrGeneral.ReadSide.IProjectionEventHandler<TheThingHasChanged>,
+    HerrGeneral.ReadSide.IProjectionEventHandler<TheThingNameChanged>,
     HerrGeneral.ReadSide.IProjectionEventHandler<TheThingDeleted>
 {
     public void Handle(TheThingIsCreated notification) =>
         Add(new AProjectionItem(notification.AggregateId, notification.Name));
 
-    public void Handle(TheThingHasChanged notification) =>
+    public void Handle(TheThingNameChanged notification) =>
         Update(
             item => item.TheAggregateId == notification.AggregateId,
             item => item with { Name = notification.Name }

@@ -26,6 +26,7 @@ public class CreateAggregateShould
             .AddSingleton<TheThingTracker>()
             .AddSingleton<AProjection>()
             .AddSingleton<AnotherThingProjection>()
+            .AddSingleton<ToBeNotifiedOnNameChangedTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide")

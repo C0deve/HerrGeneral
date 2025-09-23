@@ -1,4 +1,4 @@
-using HerrGeneral.DDD;
+﻿using HerrGeneral.DDD;
 using HerrGeneral.Test;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
@@ -11,12 +11,12 @@ using Xunit.Abstractions;
 
 namespace HerrGeneral.WriteSide.DDD.Test;
 
-public class CommandMultiAggregatesShould
+public class CrossAggregateHandlerShould
 {
     private readonly Mediator _mediator;
     private readonly IServiceProvider _container;
 
-    public CommandMultiAggregatesShould(ITestOutputHelper output)
+    public CrossAggregateHandlerShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
@@ -30,7 +30,7 @@ public class CommandMultiAggregatesShould
             .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide")
-                    .ScanReadSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
+                    .ScanReadSideOn(typeof(AProjection).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
             );
 
         _container = services.BuildServiceProvider();
@@ -39,32 +39,38 @@ public class CommandMultiAggregatesShould
     }
 
     [Fact]
-    public async Task Success()
+    public async Task DispatchEventsOnWriteSide()
     {
-        await new CreateTheThing("John").AssertSendFrom<Guid>(_mediator);
-        await new CreateTheThing("Doe").AssertSendFrom<Guid>(_mediator);
+        await new CreateTheThing("John")
+            .SendFrom<Guid>(_mediator)
+            .Then(id =>
+                new ChangeTheThing("Adams", id)
+                    .SendFrom(_mediator))
+            .ShouldSuccess();
 
-        await new DeleteAllTheThings().SendFrom(_mediator).ShouldSuccess();
-        
-        var repository = _container.GetRequiredService<IAggregateRepository<TheThing>>();
-        _container.GetRequiredService<TheThingTracker>()
-            .All()
-            .Select(repository.Get)
-            .Select(theThing => theThing.IsDeleted)
-            .ShouldBe([true, true]);
+        _container
+            .GetRequiredService<ToBeNotifiedOnNameChangedTracker>()
+            .GetIds()
+            .Select(_container.GetRequiredService<IAggregateRepository<AnotherThing>>().Get)
+            .ShouldHaveSingleItem()
+            .IsParentNameLiked
+            .ShouldBeTrue();
     }
 
     [Fact]
     public async Task DispatchEventsOnReadSide()
     {
-        await new CreateTheThing("John").AssertSendFrom<Guid>(_mediator);
-        await new CreateTheThing("Doe").AssertSendFrom<Guid>(_mediator);
+        await
+            new CreateTheThing("John")
+                .SendFrom<Guid>(_mediator)
+                .Then(id =>
+                    new ChangeTheThing("Adams", id).SendFrom(_mediator))
+                .ShouldSuccess();
 
-        await new DeleteAllTheThings().AssertSendFrom(_mediator);
-        
-        _container.GetRequiredService<AProjection>()
+        _container.GetRequiredService<AnotherThingProjection>()
             .All()
-            .Select(item => item.IsDeleted)
-            .ShouldBe([true, true]);
+            .ShouldHaveSingleItem()
+            .IsParentNameLiked
+            .ShouldBeTrue();
     }
 }

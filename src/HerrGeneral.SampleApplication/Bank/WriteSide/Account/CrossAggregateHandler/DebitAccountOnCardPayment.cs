@@ -8,24 +8,22 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.CrossAggregateHan
 /// Cross-aggregate handler: Debit account balance when card payment is processed
 /// </summary>
 public class DebitAccountOnCardPayment(
-    IMyAggregateRepository<BankAccount> accountRepository,
+    IAccountIdFromCardNumberProvider accountIdProvider,
     ILogger<DebitAccountOnCardPayment> logger)
-    : IDomainEventHandler<CardPaymentProcessed, BankAccount>
+    : ChangesPlanner<BankAccount>, ICrossAggregateChangeHandler<CardPaymentProcessed, BankAccount>
 {
-    public IEnumerable<BankAccount> Handle(CardPaymentProcessed @event)
-    {
-        // Find the associated bank account (in a real system, you'd have this relationship stored)
-        var accounts = accountRepository.FindBySpecification(account => account.AccountNumber == @event.CardNumber[..4]); // Simplified lookup
+    public ChangeRequests<BankAccount> Handle(CardPaymentProcessed @event) =>
+        Changes
+            .Add(account =>
+                {
+                    // Debit the account balance
+                    account.Withdraw(@event.Amount, $"Card payment: {@event.MerchantName}", @event.SourceCommandId);
 
-        var account = accounts.FirstOrDefault();
-        if (account == null) yield break;
+                    logger.LogInformation("Debited {Amount} from account {AccountNumber} for card payment at {Merchant}",
+                        @event.Amount, account.AccountNumber, @event.MerchantName);
 
-        // Debit the account balance
-        account.Withdraw(@event.Amount, $"Card payment: {@event.MerchantName}", @event.SourceCommandId);
-
-        logger.LogInformation("Debited {Amount} from account {AccountNumber} for card payment at {Merchant}",
-            @event.Amount, account.AccountNumber, @event.MerchantName);
-        
-        yield return account;
-    }
+                    return account;
+                },
+                accountIdProvider.GetFromCardNumber(@event.CardNumber)
+            );
 }

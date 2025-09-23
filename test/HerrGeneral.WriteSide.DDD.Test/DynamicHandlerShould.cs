@@ -25,6 +25,7 @@ public class DynamicHandlerShould
             .AddSingleton<TheThingTracker>()
             .AddSingleton<AProjection>()
             .AddSingleton<AnotherThingProjection>()
+            .AddSingleton<ToBeNotifiedOnNameChangedTracker>()
             .AddHerrGeneral(configuration => configuration
                 .ScanWriteSideOn(typeof(AChangeCommandWithoutHandler).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide"));
 

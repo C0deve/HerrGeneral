@@ -22,10 +22,10 @@ public class TheThing : Aggregate<TheThing>
     public bool IsDeleted { get; private set; }
 
     public TheThing AddFriend(string friendName, Guid sourceCommandId) =>
-        Emit(new TheThingHasChanged(friendName, sourceCommandId, Id));
+        Emit(new TheThingNameChanged(friendName, sourceCommandId, Id));
 
     public TheThing AddFriendWithDifferentAggregateId(string friendName, Guid sourceCommandId) =>
-        Emit(new TheThingHasChanged(friendName, sourceCommandId, Guid.NewGuid()));
+        Emit(new TheThingNameChanged(friendName, sourceCommandId, Guid.NewGuid()));
 
     /// <summary>
     /// Deletes the TheThing aggregate
@@ -43,9 +43,9 @@ public class TheThing : Aggregate<TheThing>
 
     // ReSharper disable once UnusedMember.Global
     internal TheThing Execute(AChangeCommandWithoutHandler changeCommand) =>
-        Emit(new TheThingHasChanged(changeCommand.Name, changeCommand.Id, Id));
+        Emit(new TheThingNameChanged(changeCommand.Name, changeCommand.Id, Id));
 
     // ReSharper disable once UnusedMember.Global
     internal TheThing Execute(ASecondChangeCommandWithoutHandler changeCommand) =>
-        Emit(new TheThingHasChanged(changeCommand.Name, changeCommand.Id, Id));
+        Emit(new TheThingNameChanged(changeCommand.Name, changeCommand.Id, Id));
 }

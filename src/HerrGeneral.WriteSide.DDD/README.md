@@ -16,8 +16,10 @@ Key elements you'll find:
     - IChangeHandler<TAggregate, in TCommand>
     - IChangeMultiHandler<out TAggregate, in TCommand>
   - **Domain event handlers** for processing domain events
-    - IDomainEventHandler<in TEvent>
-    - IVoidDomainEventHandler<in TEvent>
+    - IDomainEventHandler<in TEvent> for processing events and returning changed aggregates.
+    - IVoidDomainEventHandler<in TEvent> for processing events without returning anything.
+    - ICrossAggregateChangeHandler<in TEvent, TAggregate> for processing events and returning the changes to make.
+  No need to inject repository
   - **Command with automatic handler** 
   for processing commands with no explicit handler (see Convention-Based Dynamic Command Handling)
     - INoHandlerCreate<TAggregate>
@@ -25,7 +27,7 @@ Key elements you'll find:
 
 ## NuGet Package
 
-- **[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)** (in the domain)
+- **[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)** (in the domain layer)
 
 ```
 dotnet add package HerrGeneral.WriteSide.DDD
@@ -115,7 +117,7 @@ See [sample application](https://github.com/C0deve/HerrGeneral/tree/main/src/Her
 
 ### Required Package
 
-- **[HerrGeneral.Core.DDD](https://www.nuget.org/packages/HerrGeneral.Core.DDD/)** (in the infrastructure):  
+- **[HerrGeneral.Core.DDD](https://www.nuget.org/packages/HerrGeneral.Core.DDD/)** (in the infrastructure layer):  
   The engine of HerrGeneral framework. Needed for adding HerrGeneral to the service container and send commands through the mediator.
 
 ```bash

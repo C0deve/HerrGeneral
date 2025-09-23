@@ -8,14 +8,17 @@ namespace HerrGeneral.WriteSide.DDD.Test.Data.ReadModel;
 public record AnotherThingProjectionItem(
     Guid Id,
     string Name,
-    Guid ParentAggregateId
+    Guid ParentAggregateId,
+    bool IsParentNameLiked = false
 );
 
 /// <summary>
 /// Projection that tracks all created AnotherThing aggregates
 /// </summary>
 public class AnotherThingProjection : Projection<AnotherThingProjectionItem>,
-    HerrGeneral.ReadSide.IProjectionEventHandler<AnotherThingCreated>
+    ReadSide.IProjectionEventHandler<AnotherThingCreated>,
+    ReadSide.IProjectionEventHandler<ParentNameLiked>,
+    ReadSide.IProjectionEventHandler<ParentNameNotLiked>
 {
     /// <summary>
     /// Handles AnotherThingCreated event by adding to projection
@@ -28,6 +31,18 @@ public class AnotherThingProjection : Projection<AnotherThingProjectionItem>,
             notification.ParentAggregateId
         ));
 
+    public void Handle(ParentNameLiked notification) =>
+        Update(
+            item => item.Id == notification.Id,
+            item => item with { IsParentNameLiked = true }
+        );
+
+    public void Handle(ParentNameNotLiked notification)=>
+        Update(
+            item => item.Id == notification.Id,
+            item => item with { IsParentNameLiked = false }
+        );
+    
     /// <summary>
     /// Gets all AnotherThing IDs for a given parent aggregate
     /// </summary>
@@ -35,5 +50,5 @@ public class AnotherThingProjection : Projection<AnotherThingProjectionItem>,
     /// <returns>Collection of AnotherThing IDs</returns>
     public IEnumerable<Guid> GetByParentId(Guid parentAggregateId) =>
         Find(item => item.ParentAggregateId == parentAggregateId)
-             .Select(item => item.Id);
+            .Select(item => item.Id);
 }
