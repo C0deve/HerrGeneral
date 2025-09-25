@@ -20,7 +20,7 @@ using HerrGeneral.DDD;
 services
     .AddHerrGeneral(configuration => configuration
         // Register command handlers and domain event handlers from your specified assembly
-        .ScanWriteSideOn(<Your write side assembly>, "A optional parent namespace filter"))
+        .ScanWriteSideOn(<Your write side assembly>, "Optional parent namespace filter"))
         // Optionally register an aggregate factory needed by INoHandlerCreate<Person> 
         .AddTransient<IAggregateFactory<Person>, DefaultAggregateFactory<Person>>();
 ```

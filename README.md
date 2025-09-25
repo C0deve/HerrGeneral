@@ -58,10 +58,6 @@ When you send a command through Herr General, it follows this sequential flow:
 - **Transactional Integrity**: Each command executes within its own transaction scope
   - **Benefit**: Ensures all related changes are committed together or rolled back completely
 
-- **Read Model Implementation**: Read models are registered as singletons in the DI container
-  - **Rationale**: Optimizes performance for read operations which typically dominate most applications
-  
-
 ## Installation
 
 Herr General is distributed as a set of focused NuGet packages to allow selective adoption of its features.
@@ -72,10 +68,14 @@ Herr General is distributed as a set of focused NuGet packages to allow selectiv
 - **[HerrGeneral.Core](https://www.nuget.org/packages/HerrGeneral.Core/)**: Essential components for application integration and configuration
 
 #### Optional: Write Side Components
-- **[HerrGeneral.WriteSide](https://www.nuget.org/packages/HerrGeneral.WriteSide/)**: Core write-side functionality for handling commands and domain events
+- **[HerrGeneral.WriteSide](https://www.nuget.org/packages/HerrGeneral.WriteSide/)**: Provides write-side interfaces for handling commands and domain events
 
 #### Optional: Read Side Components
-- **[HerrGeneral.ReadSide](https://www.nuget.org/packages/HerrGeneral.ReadSide/)**: Handlers and infrastructure for building and maintaining read models
+- **[HerrGeneral.ReadSide](https://www.nuget.org/packages/HerrGeneral.ReadSide/)**: Provides read-side `IProjectionEventHandler` for handling domain events
+
+#### Optional: DDD Components
+- **[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)**: Handlers and infrastructure for building and maintaining read models
+- **[HerrGeneral.WriteSide.Core.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.Core.DDD/)**: Handlers and infrastructure for building and maintaining read models
 
 
 ## Getting Started
@@ -297,13 +297,6 @@ public record PersonFriendRM(Guid PersonId, string Person, string Friend)
     }    
 }
 ```
-
-### Technical Choices
-
-- **Identifier Strategy**: All entity identifiers use `System.Guid` for uniqueness across distributed systems
-## Contributing
-
-Contributions to Herr General are welcome! Whether it's bug reports, feature requests, or code contributions, please feel free to contribute to the project.
 
 ## License
 
