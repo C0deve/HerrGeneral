@@ -16,11 +16,13 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         RegisterWriteSide(serviceCollection, configuration, policyProvider);
         RegisterReadSide(serviceCollection, configuration, policyProvider);
 
+        var maxConcurrentCommands = configuration.MaxConcurrentCommands;
+        
         if (configuration.IsTracingEnabled)
             serviceCollection.AddScoped<CommandExecutionTracer>();
         serviceCollection.AddScoped<ReadSideEventDispatcher>();
         serviceCollection.AddScoped<WriteSideEventDispatcher>();
-        serviceCollection.AddSingleton<Mediator>();
+        serviceCollection.AddSingleton<Mediator>(provider => new Mediator(provider, maxConcurrentCommands));
         serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
         serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);
         serviceCollection.AddSingleton<IWriteSideEventHandlerMappings>(_ => new EventHandlerMappingsProvider(configuration.WriteSideEventHandlerMappingsConfiguration));
