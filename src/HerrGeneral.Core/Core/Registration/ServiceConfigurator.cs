@@ -32,8 +32,8 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
     }
 
     private static void RegisterWriteSide(
-        IServiceCollection serviceCollection, 
-        Configuration.Configuration configuration, 
+        IServiceCollection serviceCollection,
+        Configuration.Configuration configuration,
         RegistrationPolicyProvider policyProvider)
     {
         var policies = policyProvider.GetWriteSidePolicies(configuration);
@@ -41,14 +41,14 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
     }
 
     private static void RegisterReadSide(
-        IServiceCollection serviceCollection, 
-        Configuration.Configuration configuration, 
+        IServiceCollection serviceCollection,
+        Configuration.Configuration configuration,
         RegistrationPolicyProvider policyProvider)
     {
         var policies = policyProvider.GetReadSidePolicies(configuration);
         Register(serviceCollection, policies, configuration.ReadSideSearchParams);
     }
-    
+
     private static void Register(IServiceCollection serviceCollection, IRegistrationPolicy[] policies, IEnumerable<ScanParam> scanParams)
     {
         var openTypesToScan = policies
@@ -57,7 +57,7 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         var externalHandlers = Scanner.Scan(scanParams, openTypesToScan);
 
         if (externalHandlers.Count == 0) return;
-        
+
         foreach (var policy in policies)
             policy.Register(serviceCollection, externalHandlers);
     }
