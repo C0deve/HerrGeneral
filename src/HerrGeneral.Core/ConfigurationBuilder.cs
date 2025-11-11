@@ -52,7 +52,9 @@ public class ConfigurationBuilder
     /// Enables detailed logging of command processing for debugging and performance monitoring.
     /// </summary>
     private bool _isTracingEnabled  = true;
-    
+
+    private short _maximumConcurrentCommands = 1;
+
     internal ConfigurationBuilder()
     {
     }
@@ -64,7 +66,8 @@ public class ConfigurationBuilder
         _commandHandlerMappings,
         _writeSideEventHandlerMappingsConfiguration,
         _readSideEventHandlerMappingsConfiguration,
-        _isTracingEnabled);
+        _isTracingEnabled,
+        _maximumConcurrentCommands);
     
     /// <summary>
     /// Validates the configuration and throws an exception if it is not valid.
@@ -260,6 +263,19 @@ public class ConfigurationBuilder
     public ConfigurationBuilder EnableCommandExecutionTracing(bool enabled = true)
     {
         _isTracingEnabled = enabled;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the maximum number of commands that can be executed concurrently. Must be greater than 1.
+    /// </summary>
+    /// <param name="maxConcurrentCommands">The maximum number of concurrent commands. Must be greater than 1.</param>
+    /// <returns>The current instance of the <see cref="ConfigurationBuilder"/> for method chaining.</returns>
+    public ConfigurationBuilder LimitConcurrentCommandsTo(short maxConcurrentCommands)
+    {
+        if (maxConcurrentCommands < 1)
+            throw new ArgumentOutOfRangeException(nameof(maxConcurrentCommands), "maxConcurrentCommands must be greater than 1.");
+        _maximumConcurrentCommands = maxConcurrentCommands;
         return this;
     }
 }
