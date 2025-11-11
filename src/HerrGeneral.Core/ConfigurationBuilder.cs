@@ -6,22 +6,7 @@ using HerrGeneral.Core.WriteSide;
 namespace HerrGeneral;
 
 /// <summary>
-/// Configuration class for HerrGeneral framework.
-/// 
-/// <para><strong>Quick Start:</strong></para>
-/// <code>
-/// services.AddHerrGeneral(config => config
-///     .ScanWriteSideOn(typeof(BankAccount).Assembly)
-///     .ScanReadSideOn(typeof(AccountProjection).Assembly)
-///     .UseDomainException&lt;InsufficientFundsException&gt;());
-/// </code>
-/// 
-/// <para><strong>What this does:</strong></para>
-/// <list type="bullet">
-/// <item>Finds your command handlers (CreateAccount, DepositMoney, etc.)</item>
-/// <item>Finds your event handlers (for projections, notifications, etc.)</item>
-/// <item>Registers domain-specific exceptions</item>
-/// </list>
+/// Fluent configuration for HerrGeneral framework.
 /// </summary>
 public class ConfigurationBuilder
 {
