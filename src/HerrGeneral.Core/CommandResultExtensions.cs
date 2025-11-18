@@ -46,37 +46,39 @@ public static class CommandResultExtensions
                 exception => Task.FromResult(Result.PanicFail(exception)));
     }
 
-    /// <summary>
-    /// Evaluates a specified action, after a task returning a result.
-    /// </summary>
     /// <param name="task"></param>
-    /// <param name="onSuccess"></param>
-    /// <param name="onDomainError"></param>
-    /// <param name="onPanicError"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static async Task Match(this Task<Result> task, Action onSuccess, Action<object> onDomainError, Action<System.Exception> onPanicError)
+    extension(Task<Result> task)
     {
-        ArgumentNullException.ThrowIfNull(onSuccess);
-        ArgumentNullException.ThrowIfNull(onDomainError);
-        ArgumentNullException.ThrowIfNull(onPanicError);
+        /// <summary>
+        /// Evaluates a specified action, after a task returning a result.
+        /// </summary>
+        /// <param name="onSuccess"></param>
+        /// <param name="onDomainError"></param>
+        /// <param name="onPanicError"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task Match(Action onSuccess, Action<object> onDomainError, Action<System.Exception> onPanicError)
+        {
+            ArgumentNullException.ThrowIfNull(onSuccess);
+            ArgumentNullException.ThrowIfNull(onDomainError);
+            ArgumentNullException.ThrowIfNull(onPanicError);
 
-        (await task).Match(onSuccess, onDomainError, onPanicError);
-    }
+            (await task).Match(onSuccess, onDomainError, onPanicError);
+        }
 
-    /// <summary>
-    /// Evaluates a specified function, after a task returning a result.
-    /// </summary>
-    /// <param name="task"></param>
-    /// <param name="onSuccess">The function to evaluate on success.</param>
-    /// <param name="onDomainError">The function to evaluate on domain error.</param>
-    /// <param name="onPanicError">The function to evaluate on panic error.</param>
-    /// <returns>The result of the evaluated function.</returns>
-    public static async Task<TResult> Match<TResult>(this Task<Result> task, Func<TResult> onSuccess, Func<object, TResult> onDomainError, Func<System.Exception, TResult> onPanicError)
-    {
-        ArgumentNullException.ThrowIfNull(onSuccess);
-        ArgumentNullException.ThrowIfNull(onDomainError);
-        ArgumentNullException.ThrowIfNull(onPanicError);
+        /// <summary>
+        /// Evaluates a specified function, after a task returning a result.
+        /// </summary>
+        /// <param name="onSuccess">The function to evaluate on success.</param>
+        /// <param name="onDomainError">The function to evaluate on domain error.</param>
+        /// <param name="onPanicError">The function to evaluate on panic error.</param>
+        /// <returns>The result of the evaluated function.</returns>
+        public async Task<TResult> Match<TResult>(Func<TResult> onSuccess, Func<object, TResult> onDomainError, Func<System.Exception, TResult> onPanicError)
+        {
+            ArgumentNullException.ThrowIfNull(onSuccess);
+            ArgumentNullException.ThrowIfNull(onDomainError);
+            ArgumentNullException.ThrowIfNull(onPanicError);
 
-        return (await task).Match(onSuccess, onDomainError, onPanicError);
+            return (await task).Match(onSuccess, onDomainError, onPanicError);
+        }
     }
 }

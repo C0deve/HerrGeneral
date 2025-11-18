@@ -65,6 +65,6 @@ public async Task ThrowIfExecuteMethodNotFound() =>
 [Fact]
 public async Task ThrowIfConstructorNotFound() =>
     await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandlerWithFailure(), _mediator)
-        .ShouldFailWithPanicExceptionOfType<MissingMethodException, Guid>();
+        .ShouldFailWithPanicExceptionOfType<Guid, MissingMethodException>();
 
 }

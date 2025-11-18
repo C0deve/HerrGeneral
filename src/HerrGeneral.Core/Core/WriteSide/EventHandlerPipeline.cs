@@ -8,47 +8,49 @@ internal static class EventHandlerPipeline
 {
     public delegate IEnumerable<object> EventHandlerDelegate<in TEvent>(TEvent @event);
 
-    public static EventHandlerDelegate<TEvent> WithDomainExceptionMapping<TEvent>(
-        this EventHandlerDelegate<TEvent> next, DomainExceptionMapper mapper) =>
-        @event =>
-        {
-            try
+    extension<TEvent>(EventHandlerDelegate<TEvent> next)
+    {
+        public EventHandlerDelegate<TEvent> WithDomainExceptionMapping(DomainExceptionMapper mapper) =>
+            @event =>
             {
-                return next(@event);
-            }
-            catch (System.Exception e)
-            {
-                throw mapper.Map(e,
-                    exception => new EventHandlerDomainException(exception),
-                    exception => new EventHandlerException(exception));
-            }
-        };
+                try
+                {
+                    return next(@event);
+                }
+                catch (System.Exception e)
+                {
+                    throw mapper.Map(e,
+                        exception => new EventHandlerDomainException(exception),
+                        exception => new EventHandlerException(exception));
+                }
+            };
 
-    public static EventHandlerDelegate<TEvent> WithTracer<TEvent>(this EventHandlerDelegate<TEvent> next, IEventHandler<TEvent> handler, CommandExecutionTracer? tracer) =>
-        @event =>
-        {
-            if (tracer is null)
+        public EventHandlerDelegate<TEvent> WithTracer(IEventHandler<TEvent> handler, CommandExecutionTracer? tracer) =>
+            @event =>
             {
-                return next(@event);
-            }
+                if (tracer is null)
+                {
+                    return next(@event);
+                }
 
-            try
-            {
-                if (handler is IHandlerTypeProvider handlerTypeProvider)
-                    tracer.HandleEvent(handlerTypeProvider.GetHandlerType());
-                else
-                    tracer.HandleEvent(handler.GetType());
-                return next(@event);
-            }
-            catch (EventHandlerDomainException e)
-            {
-                tracer.OnException(e, 2);
-                throw;
-            }
-            catch (EventHandlerException e)
-            {
-                tracer.OnException(e.InnerException!, 2);
-                throw;
-            }
-        };
+                try
+                {
+                    if (handler is IHandlerTypeProvider handlerTypeProvider)
+                        tracer.HandleEvent(handlerTypeProvider.GetHandlerType());
+                    else
+                        tracer.HandleEvent(handler.GetType());
+                    return next(@event);
+                }
+                catch (EventHandlerDomainException e)
+                {
+                    tracer.OnException(e, 2);
+                    throw;
+                }
+                catch (EventHandlerException e)
+                {
+                    tracer.OnException(e.InnerException!, 2);
+                    throw;
+                }
+            };
+    }
 }
