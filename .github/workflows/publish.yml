@@ -63,6 +63,9 @@ jobs:
     # You can update this logic if you want to manage releases differently
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     needs: [ create_nuget, run_test ]
     steps:
       # Download the NuGet package created in the previous job
