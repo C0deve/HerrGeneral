@@ -1,10 +1,10 @@
-# Herr General v0.1.14-rc
+# Herr General
 
 ## Overview
 
 Herr General is a lightweight CQRS (Command Query Responsibility Segregation) implementation designed for building modular monolithic applications in .NET. It provides a structured approach to handling commands and events with built-in debug logging and unit of work.
 
-> Inspired by MediatR but optimized for CQRS workflows with explicit write and read side segregation.
+> Inspired by MediatR.
 
 ## Key Features
 
