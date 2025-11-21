@@ -1,8 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
-        <LangVersion>$(LangVersion)</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup>
