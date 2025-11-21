@@ -1,8 +1,9 @@
-﻿name: publish-on-release
+name: publish-on-release
 on:
   release:
     types: [ published ]
-
+  workflow_dispatch: {}
+  
 permissions:
   contents: 'read'
   id-token: 'write'
@@ -27,6 +28,7 @@ jobs:
         with:
           release-type: simple
   publish:
+    if: github.event.release.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
