@@ -72,3 +72,20 @@ apply: always
 - ✅ Commentaires en anglais : `// Validates if the account is active`
 - ✅ Exceptions spécialisées : `throw new InactiveAccountException(accountNumber, "deposit")`
 - ✅ Primary constructors : `public class MyException(string message) : DomainException(message)`
+
+
+## Messages de comit
+Utiliser Conventional Commits
+Structure des messages :
+ 
+  <type>[optional scope]: <description>
+  Types de commits :
+    - feat : nouvelle fonctionnalité
+    - fix : correction de bug
+    - docs : documentation
+    - style : changements esthétiques
+    - refactor : refactoring de code
+    - perf : amélioration de performance
+    - test : tests
+    - chore : tâches de maintenance
+    - revert : annulation de commit
