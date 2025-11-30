@@ -35,7 +35,6 @@ jobs:
                 });
             
                 // 2. Supprimer le tag (optionnel, décommentez si nécessaire)
-                /*
                 try {
                   await github.rest.git.deleteRef({
                     owner,
@@ -45,6 +44,5 @@ jobs:
                 } catch (e) {
                   console.log(`Tag ${release.tag_name} déjà supprimé ou introuvable.`);
                 }
-                */
               }
             }
