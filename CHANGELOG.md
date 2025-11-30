@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/C0deve/HerrGeneral/compare/v1.1.0...v1.2.0) (2025-11-30)
+
+
+### Features
+
+* **start:** first release ([b5ef054](https://github.com/C0deve/HerrGeneral/commit/b5ef054d870694c17d40cf58a4e62fd89d6fc408))
+
 ## [1.1.0](https://github.com/C0deve/HerrGeneral/compare/v1.0.0...v1.1.0) (2025-11-21)
 
 
