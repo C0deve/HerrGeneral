@@ -2,34 +2,22 @@ name: publish-on-release
 on:
   release:
     types: [ published ]
-  workflow_dispatch: { }
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to publish (e.g. v1.2.3). If empty, uses latest release.'
+        required: false
+        default: ''
 
 permissions:
   contents: 'read'
   id-token: 'write'
 
 jobs:
-  release-please:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Run tests
-        run: dotnet test --configuration Release
-
-      - name: Release Please
-        uses: google-github-actions/release-please-action@v4
-        with:
-          release-type: simple
-  
   publish:
-    if: github.event.release.draft == false
+    if: >-
+      (github.event_name == 'release' && github.event.release.draft == false)
+      || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,14 +30,49 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Extract version from release tag
-        shell: pwsh
+      - name: Run tests
+        run: dotnet test --configuration Release
+
+      - name: Setup GitHub CLI
+        uses: cli/gh-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve version (release tag, input or latest via gh)
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ github.event.inputs.release_tag }}
         run: |
-          $tag = "${{ github.event.release.tag_name }}"
-          if (-not $tag) { $tag = "${{ github.ref_name }}" }
-          if ($tag.StartsWith('v')) { $tag = $tag.Substring(1) }
-          echo "VERSION=$tag" >> $Env:GITHUB_ENV
-          Write-Host "Resolved version: $tag"
+          set -euo pipefail
+          echo "Event name: $EVENT_NAME"
+          
+          raw_tag=""
+          
+          case "$EVENT_NAME" in
+          "release")
+           raw_tag="$RELEASE_TAG"
+           ;;
+          "workflow_dispatch")
+           raw_tag="${INPUT_TAG:-}"
+           if [[ -z "$raw_tag" ]]; then
+             echo "No release_tag input provided — fetching latest release using gh"
+             # gh is provided by the previous action (cli/gh-action@v2) and already authenticated
+             raw_tag=$(gh release view --latest --json tagName -q .tagName)
+           fi
+           ;;
+          *)
+           echo "Unsupported event: $EVENT_NAME"
+           exit 1
+           ;;
+          esac
+          
+          # Strip leading 'v' if present
+          version="${raw_tag#v}"
+          
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "Resolved version: $version"
 
       - name: Restore
         run: dotnet restore
@@ -58,18 +81,12 @@ jobs:
         run: dotnet build HerrGeneral.sln -c Release --no-restore
 
       - name: Pack (force version)
-        run: >-
-          dotnet pack HerrGeneral.sln
-          -c Release --no-build
-          -p:ContinuousIntegrationBuild=true
-          -p:Version=${{ env.VERSION }}
-          -o dist
+        run: dotnet pack HerrGeneral.sln -c Release --no-build -p:ContinuousIntegrationBuild=true -p:Version=$VERSION -o dist
 
       - name: List packages
         shell: pwsh
         run: Get-ChildItem dist -Filter *.nupkg | ForEach-Object { $_.FullName }
 
-      # Get a short-lived NuGet API key
       - name: NuGet login (OIDC → temp API key)
         uses: NuGet/login@v1
         id: login
@@ -77,8 +94,4 @@ jobs:
           user: ${{ secrets.NUGET_USER }}
 
       - name: Push to NuGet
-        run: >-
-          dotnet nuget push "dist/*.nupkg"
-          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
-          --source https://api.nuget.org/v3/index.json
-          --skip-duplicate
+        run: dotnet nuget push "dist/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
