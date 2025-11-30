@@ -33,14 +33,10 @@ jobs:
       - name: Run tests
         run: dotnet test --configuration Release
 
-      - name: Setup GitHub CLI
-        uses: cli/gh-action@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Resolve version (release tag, input or latest via gh)
         shell: bash
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
           INPUT_TAG: ${{ github.event.inputs.release_tag }}
@@ -58,8 +54,8 @@ jobs:
            raw_tag="${INPUT_TAG:-}"
            if [[ -z "$raw_tag" ]]; then
              echo "No release_tag input provided — fetching latest release using gh"
-             # gh is provided by the previous action (cli/gh-action@v2) and already authenticated
-             raw_tag=$(gh release view --latest --json tagName -q .tagName)
+             # gh is provided by the runner environment and authenticated via GH_TOKEN env var
+             raw_tag=$(gh release list --limit 1 --json tagName -q '.[0].tagName')
            fi
            ;;
           *)
