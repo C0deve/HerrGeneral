@@ -74,8 +74,8 @@ Herr General is distributed as a set of focused NuGet packages to allow selectiv
 - **[HerrGeneral.ReadSide](https://www.nuget.org/packages/HerrGeneral.ReadSide/)**: Provides read-side `IProjectionEventHandler` for handling domain events
 
 #### Optional: DDD Components
-- **[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)**: Handlers and infrastructure for building and maintaining read models
-- **[HerrGeneral.WriteSide.Core.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.Core.DDD/)**: Handlers and infrastructure for building and maintaining read models
+- **[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)**: Domain-Driven Design building blocks (AggregateRoot, Entity)
+- **[HerrGeneral.Core.DDD](https://www.nuget.org/packages/HerrGeneral.Core.DDD/)**: DDD handlers and infrastructure for command handling
 
 
 ## Getting Started
@@ -272,6 +272,29 @@ public async Task<Guid> ProcessCreateCommand()
 
 ### Write Side Implementation
 
+```csharp
+// Domain Command
+public record SetFriend(Guid PersonId, string NewFriendName);
+
+// Command handler implementing ICommandHandler
+public class SetFriendHandler : ICommandHandler<SetFriend, Unit>
+{
+    private readonly IPersonRepository _repository;
+
+    public SetFriendHandler(IPersonRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public (IEnumerable<object> Events, Unit Result) Handle(SetFriend command)
+    {
+        var person = _repository.GetById(command.PersonId);
+        person.SetFriend(command.NewFriendName);
+
+        return (person.GetUncommittedEvents(), Unit.Default);
+    }
+}
+```
 
 ### Read Side Implementation
 
@@ -280,7 +303,7 @@ public async Task<Guid> ProcessCreateCommand()
 public record PersonFriendRM(Guid PersonId, string Person, string Friend)
 {
     // Event handler that updates the read model when FriendChanged event occurs
-    public class PersonFriendRMRepository : HerrGeneral.ReadSide.IEventHandler<FriendChanged>
+    public class PersonFriendRMRepository : HerrGeneral.ReadSide.IProjectionEventHandler<FriendChanged>
     {
         private readonly IDatabase _database;
 
@@ -289,10 +312,10 @@ public record PersonFriendRM(Guid PersonId, string Person, string Friend)
             _database = database;
         }
 
-        public Task Handle(FriendChanged @event, CancellationToken cancellationToken)
+        public void Handle(FriendChanged @event)
         {
             // Update the read model when a friend is changed
-            return _database.UpdatePersonFriend(@event.PersonId, @event.NewFriendName);
+            _database.UpdatePersonFriend(@event.PersonId, @event.NewFriendName);
         }
     }    
 }

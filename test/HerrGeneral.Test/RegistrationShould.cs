@@ -100,4 +100,69 @@ public class RegistrationShould(ITestOutputHelper output)
 
         container.GetRequiredService<AReadModel>().Id.ShouldBe(container.GetRequiredService<AReadModel>().Id);
     }
+
+    private record MultiCmd1;
+    private record MultiCmd2;
+
+    private class MultiCommandHandler : ICommandHandler<MultiCmd1, Unit>, ICommandHandler<MultiCmd2, string>
+    {
+        public (IEnumerable<object> Events, Unit Result) Handle(MultiCmd1 command) => ([], Unit.Default);
+        public (IEnumerable<object> Events, string Result) Handle(MultiCmd2 command) => ([], "Success");
+    }
+
+    [Fact]
+    public async Task Resolve_multiple_command_handlers_in_a_single_class()
+    {
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneral(scanner =>
+                scanner.ScanWriteSideOn(typeof(MultiCommandHandler).Assembly, typeof(MultiCommandHandler).Namespace!));
+
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = serviceProvider.GetRequiredService<Mediator>();
+
+        var res1 = await mediator.Send(new MultiCmd1());
+        var res2 = await mediator.Send<string>(new MultiCmd2());
+
+        res1.ShouldBe(Result.Success());
+        res2.Match(
+            onSuccess: val => val.ShouldBe("Success"),
+            onDomainError: _ => Assert.Fail("Expected success"),
+            onPanicError: ex => throw ex);
+    }
+
+    [Fact]
+    public void Throw_when_duplicate_command_handler_registered_for_same_command()
+    {
+        var services = new ServiceCollection();
+        var policy = new HerrGeneral.Core.Registration.Policy.RegisterICommandHandler();
+        var externalHandlers = new Dictionary<Type, HashSet<Type>>
+        {
+            [typeof(ICommandHandler<,>)] = [typeof(HerrGeneral.Test.Data.Duplicates.DuplicateHandlerA), typeof(HerrGeneral.Test.Data.Duplicates.DuplicateHandlerB)]
+        };
+
+        var ex = Should.Throw<InvalidOperationException>(() => policy.Register(services, externalHandlers));
+        ex.Message.ShouldContain("already has a registered handler");
+    }
+
+    [Fact]
+    public async Task LimitConcurrentCommands_allows_multiple_parallel_executions()
+    {
+        var services = new ServiceCollection()
+            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneral(scanner =>
+                scanner
+                    .ScanWriteSideOn(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!)
+                    .LimitConcurrentCommandsTo(3));
+
+        services.AddSingleton<Dependency>();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = serviceProvider.GetRequiredService<Mediator>();
+
+        var tasks = Enumerable.Range(0, 3).Select(_ => mediator.Send(new Ping())).ToArray();
+        var results = await Task.WhenAll(tasks);
+
+        results.ShouldAllBe(r => r == Result.Success());
+    }
 }

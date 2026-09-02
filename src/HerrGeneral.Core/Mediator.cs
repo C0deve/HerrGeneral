@@ -10,7 +10,7 @@ namespace HerrGeneral;
 public class Mediator(IServiceProvider serviceProvider, int maxConcurrentCommands)
 {
     private readonly ConcurrentDictionary<Type, object> _handlerWrappers = new();
-    private readonly SemaphoreSlim _semaphoreSlim = new(1, maxConcurrentCommands);
+    private readonly SemaphoreSlim _semaphoreSlim = new(maxConcurrentCommands, maxConcurrentCommands);
     
     /// <summary>
     /// Send a creation command

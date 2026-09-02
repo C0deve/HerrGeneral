@@ -22,6 +22,7 @@ internal class RegisterMappedWriteSideEventHandlers(EventHandlerMappingsConfigur
     {
         var scanResults =
             from mapping in eventHandlerMappingsConfiguration.All()
+            where externalHandlersProvider.TryGetValue(mapping.HandlerGenericType, out _)
             from externalHandlerType in externalHandlersProvider[mapping.HandlerGenericType]
             let eventType = externalHandlerType
                 .GetMethod(mapping.MethodInfo.Name)!

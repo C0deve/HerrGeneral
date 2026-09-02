@@ -22,13 +22,21 @@ internal class RegisterICommandHandler : IRegistrationPolicy
         {
             serviceCollection.TryAddTransient(externalCommandHandler);
             
-            var @interface = externalCommandHandler
-                .GetInterfacesHavingGenericOpenType(_handlerInterface)
-                .Single();
+            var interfaces = externalCommandHandler
+                .GetInterfacesHavingGenericOpenType(_handlerInterface);
             
-            serviceCollection.AddTransient(
-                @interface,
-                externalCommandHandler);
+            foreach (var @interface in interfaces)
+            {
+                if (serviceCollection.Any(sd => sd.ServiceType == @interface))
+                {
+                    throw new InvalidOperationException(
+                        $"Command '{@interface.GenericTypeArguments[0].Name}' already has a registered handler. A command can only have one handler.");
+                }
+
+                serviceCollection.AddTransient(
+                    @interface,
+                    externalCommandHandler);
+            }
         }
     }
 }
