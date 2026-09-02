@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/SolutionItems/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE.md" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="src/HerrGeneral.Core.DDD/HerrGeneral.Core.DDD.csproj" />
+  <Project Path="src/HerrGeneral.Core/HerrGeneral.Core.csproj" />
+  <Project Path="src/HerrGeneral.ReadSide/HerrGeneral.ReadSide.csproj" />
+  <Project Path="src/HerrGeneral.SampleApplication/HerrGeneral.SampleApplication.csproj" />
+  <Project Path="src/HerrGeneral.Test.Extension/HerrGeneral.Test.Extension.csproj" />
+  <Project Path="src/HerrGeneral.WriteSide.DDD/HerrGeneral.WriteSide.DDD.csproj" />
+  <Project Path="src/HerrGeneral.WriteSide/HerrGeneral.WriteSide.csproj" />
+  <Project Path="test/HerrGeneral.Test/HerrGeneral.Test.csproj" />
+  <Project Path="test/HerrGeneral.WriteSide.DDD.Test/HerrGeneral.WriteSide.DDD.Test.csproj" />
+</Solution>
