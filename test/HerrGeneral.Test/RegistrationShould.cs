@@ -16,7 +16,7 @@ public class RegistrationShould(ITestOutputHelper output)
 
     private class PingHandler(Dependency dependency) : ICommandHandler<Ping, Unit>
     {
-        public (IEnumerable<object> Events, Unit Result) Handle(Ping command)
+        public (IReadOnlyList<object> Events, Unit Result) Handle(Ping command)
         {
             dependency.Called = true;
             return ([], Unit.Default);
@@ -106,8 +106,8 @@ public class RegistrationShould(ITestOutputHelper output)
 
     private class MultiCommandHandler : ICommandHandler<MultiCmd1, Unit>, ICommandHandler<MultiCmd2, string>
     {
-        public (IEnumerable<object> Events, Unit Result) Handle(MultiCmd1 command) => ([], Unit.Default);
-        public (IEnumerable<object> Events, string Result) Handle(MultiCmd2 command) => ([], "Success");
+        public (IReadOnlyList<object> Events, Unit Result) Handle(MultiCmd1 command) => ([], Unit.Default);
+        public (IReadOnlyList<object> Events, string Result) Handle(MultiCmd2 command) => ([], "Success");
     }
 
     [Fact]

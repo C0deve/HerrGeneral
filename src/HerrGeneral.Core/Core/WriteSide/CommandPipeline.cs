@@ -9,7 +9,7 @@ namespace HerrGeneral.Core.WriteSide;
 
 internal static class CommandPipeline
 {
-    public delegate (IEnumerable<object> Events, TResult Result) HandlerDelegate<in TCommand, TResult>(TCommand command, CancellationToken cancellationToken);
+    public delegate (IReadOnlyList<object> Events, TResult Result) HandlerDelegate<in TCommand, TResult>(TCommand command, CancellationToken cancellationToken);
 
     extension<TCommand, TResult>(HandlerDelegate<TCommand, TResult> next)
     {

@@ -14,7 +14,7 @@ internal class CrossAggregateChangeHandlerInternal<TEvent, THandler, TAggregate>
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public IEnumerable<object> Handle(TEvent command) =>
+    public IReadOnlyList<object> Handle(TEvent command) =>
         handler
             .Handle(command)
             .Actions

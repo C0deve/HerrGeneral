@@ -28,7 +28,7 @@ public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
     /// <summary>
     /// All new IDomainEvent to dispatch
     /// </summary>
-    public IEnumerable<IDomainEvent<T>> NewEvents
+    public IReadOnlyList<IDomainEvent<T>> NewEvents
     {
         get
         {

@@ -37,12 +37,12 @@ internal class CreateHandlerInternal<TAggregate, TCommand, THandler> : ICommandH
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public (IEnumerable<object> Events, Guid Result) Handle(TCommand command)
+    public (IReadOnlyList<object> Events, Guid Result) Handle(TCommand command)
     {
         var id = Guid.NewGuid();
         var aggregate = _handler.Handle(command, id);
         _repository.Save(aggregate);
-        var result = (aggregate.NewEvents, aggregate.Id);
+        var result = ((IReadOnlyList<object>)aggregate.NewEvents, aggregate.Id);
         aggregate.ClearNewEvents();
         return result;
     }

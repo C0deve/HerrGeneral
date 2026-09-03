@@ -38,7 +38,7 @@ internal class EventHandlerMappingsConfiguration
     /// Adds a mapping for an event type to a handler with a return value conversion
     /// </summary>
     public EventHandlerMappingsConfiguration AddWriteSideMapping<TEvent, THandler, THandlerReturn>(
-        Func<THandlerReturn, IEnumerable<object>> mapEvents)
+        Func<THandlerReturn, IReadOnlyList<object>> mapEvents)
     {
         var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
 
@@ -56,7 +56,7 @@ internal class EventHandlerMappingsConfiguration
     {
         var (methodInfo, handlerType) = ValidateHandlerAndGetMethod<TEvent, THandler>();
 
-        ValidateReturnTypeImplementsIEnumerable(methodInfo, handlerType);
+        ValidateReturnTypeImplementsIReadOnlyList(methodInfo, handlerType);
 
         RegisterMapping<TEvent>(methodInfo, handlerType, null);
 
@@ -97,13 +97,13 @@ internal class EventHandlerMappingsConfiguration
             throw new TypeMismatchInMappingDefinitionException(typeof(THandlerReturn), methodInfo);
     }
 
-    private static void ValidateReturnTypeImplementsIEnumerable(MethodInfo methodInfo, Type handlerType)
+    private static void ValidateReturnTypeImplementsIReadOnlyList(MethodInfo methodInfo, Type handlerType)
     {
-        if (!typeof(IEnumerable<object>).IsAssignableFrom(methodInfo.ReturnType))
+        if (!typeof(IReadOnlyList<object>).IsAssignableFrom(methodInfo.ReturnType) && !typeof(IEnumerable<object>).IsAssignableFrom(methodInfo.ReturnType))
         {
             throw new InvalidOperationException(
                 $"Method '{methodInfo.Name}' in handler type '{handlerType.Name}' must return a type " +
-                $"that implements IEnumerable<object>. Current return type is '{methodInfo.ReturnType.Name}'. " +
+                $"that implements IReadOnlyList<object>. Current return type is '{methodInfo.ReturnType.Name}'. " +
                 $"Either change the return type or use {nameof(ConfigurationBuilder.RegisterWriteSideEventHandlerWithMapping)} " +
                 $"to provide a conversion function.");
         }
@@ -112,7 +112,7 @@ internal class EventHandlerMappingsConfiguration
     private void RegisterMapping<TEvent>(
         MethodInfo methodInfo, 
         Type handlerType, 
-        Func<object, IEnumerable<object>>? eventMapper)
+        Func<object, IReadOnlyList<object>>? eventMapper)
     {
         _handlerMappers.Add(
             typeof(TEvent),

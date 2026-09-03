@@ -14,7 +14,7 @@ internal class CommandHandlerMappings
     private readonly ConcurrentDictionary<(Type TCommand, Type TResult), CommandHandlerMapping> _handlerMappers = new();
 
     public CommandHandlerMappings AddMapping<TCommand, THandler, THandlerReturn, TValue>(
-        Func<THandlerReturn, IEnumerable<object>> mapEvents,
+        Func<THandlerReturn, IReadOnlyList<object>> mapEvents,
         Func<THandlerReturn, TValue>? mapValue) where TValue : notnull
     {
         var handlerType = typeof(THandler);
@@ -49,7 +49,7 @@ internal class CommandHandlerMappings
     }
 
     public CommandHandlerMappings AddMapping<TCommand, THandler, THandlerReturn>(
-        Func<THandlerReturn, IEnumerable<object>> mapEvents) =>
+        Func<THandlerReturn, IReadOnlyList<object>> mapEvents) =>
         AddMapping<TCommand, THandler, THandlerReturn, Unit>(mapEvents, _ => Unit.Default);
    
     /// <summary>

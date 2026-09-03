@@ -118,7 +118,8 @@ public class ConfigurationBuilder
     /// <typeparam name="THandler">The type of command handler.</typeparam>
     /// <typeparam name="TReturn">The return type of the command handler.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
-    public ConfigurationBuilder RegisterCommandHandlerWithMapping<TCommand, THandler, TReturn>(Func<TReturn, IEnumerable<object>> mapEvents)
+    public ConfigurationBuilder RegisterCommandHandlerWithMapping<TCommand, THandler, TReturn>(
+        Func<TReturn, IReadOnlyList<object>> mapEvents)
     {
         _commandHandlerMappings.AddMapping<TCommand, THandler, TReturn>(mapEvents);
         return this;
@@ -143,7 +144,7 @@ public class ConfigurationBuilder
     /// <typeparam name="TValue">The type of the extracted value to return to the client.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public ConfigurationBuilder RegisterCommandHandlerWithMapping<TCommand, THandler, TReturn, TValue>(
-        Func<TReturn, IEnumerable<object>> mapEvents,
+        Func<TReturn, IReadOnlyList<object>> mapEvents,
         Func<TReturn, TValue>? mapValue) where TValue : notnull
     {
         _commandHandlerMappings.AddMapping<TCommand, THandler, TReturn, TValue>(mapEvents, mapValue);
@@ -164,7 +165,7 @@ public class ConfigurationBuilder
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public ConfigurationBuilder RegisterCommandHandler<TCommand, THandler>()
     {
-        _commandHandlerMappings.AddMapping<TCommand, THandler, IEnumerable<object>>(x => x);
+        _commandHandlerMappings.AddMapping<TCommand, THandler, IReadOnlyList<object>>(x => x);
         return this;
     }
 
@@ -215,7 +216,7 @@ public class ConfigurationBuilder
     /// <typeparam name="TReturn">The raw return type of the event handlers implementing THandler.</typeparam>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public ConfigurationBuilder RegisterWriteSideEventHandlerWithMapping<TEvent, THandler, TReturn>(
-        Func<TReturn, IEnumerable<object>> mapEvents)
+        Func<TReturn, IReadOnlyList<object>> mapEvents)
     {
         _writeSideEventHandlerMappingsConfiguration.AddWriteSideMapping<TEvent, THandler, TReturn>(mapEvents);
         return this;

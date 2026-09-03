@@ -16,7 +16,7 @@ internal class VoidEventHandlerInternal<TEvent, THandler>(
     /// Handles the event by delegating to the domain handler
     /// </summary>
     /// <param name="notification">The event to handle</param>
-    public IEnumerable<object> Handle(TEvent notification)
+    public IReadOnlyList<object> Handle(TEvent notification)
     {
         handler.Handle(notification);
         return [];

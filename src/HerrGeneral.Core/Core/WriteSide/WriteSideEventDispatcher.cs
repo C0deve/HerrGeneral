@@ -16,20 +16,25 @@ internal class WriteSideEventDispatcher(
     /// </summary>
     /// <param name="events">The collection of events to be dispatched</param>
     /// <returns>A collection of all events that were processed</returns>
-    public IEnumerable<object> Dispatch(IEnumerable<object> events)
+    public IReadOnlyList<object> Dispatch(IReadOnlyList<object> events)
     {
+        if (events.Count == 0)
+        {
+            return [];
+        }
+
         // Enqueue all events
-        ConcurrentQueue<object> eventQueue = new(events);
+        Queue<object> eventQueue = new(events);
         commandExecutionTracer?.StartPublishEventOnWriteSide();
 
         // Process in FIFO
-        var processedEvents = new List<object>();
+        var processedEvents = new List<object>(events.Count);
         while (eventQueue.TryDequeue(out var evt))
         {
             commandExecutionTracer?.PublishEventOnWriteSide(evt);
             foreach (var newEventToDispatch in Dispatch(evt))
                 eventQueue.Enqueue(newEventToDispatch);
-            processedEvents.AddRange(evt);
+            processedEvents.Add(evt);
         }
 
         return processedEvents;
@@ -40,7 +45,7 @@ internal class WriteSideEventDispatcher(
     /// </summary>
     /// <param name="eventToDispatch"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    private IEnumerable<object> Dispatch(object eventToDispatch)
+    private IReadOnlyList<object> Dispatch(object eventToDispatch)
     {
         var wrapper = _eventHandlerWrappers.GetOrAdd(eventToDispatch.GetType(), eventTypeInput =>
         {

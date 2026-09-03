@@ -26,5 +26,5 @@ public abstract class CommandHandler<TCommand> : ILocalCommandHandler<TCommand> 
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    protected abstract IEnumerable<object> InnerHandle(TCommand command);
+    protected abstract IReadOnlyList<object> InnerHandle(TCommand command);
 }

@@ -11,23 +11,29 @@ internal sealed class ReadSideEventDispatcher(IServiceProvider serviceProvider, 
     private readonly ConcurrentDictionary<Type, IEventHandlerWrapper> _eventHandlerWrappers = new();
     
 
-    public void Dispatch(params IEnumerable<object> events)
+    public void Dispatch(IReadOnlyList<object> events)
     {
-        var eventToDispatches = events as object[] ?? events.ToArray();
-        commandExecutionTracer?.StartPublishEventsOnReadSide(eventToDispatches.Length);
-        foreach (var eventToDispatch in eventToDispatches)
+        if (events.Count == 0)
+        {
+            return;
+        }
+
+        commandExecutionTracer?.StartPublishEventsOnReadSide(events.Count);
+        foreach (var eventToDispatch in events)
         {
             commandExecutionTracer?.PublishEventOnReadSide(eventToDispatch);
-            Dispatch(eventToDispatch);
+            DispatchSingle(eventToDispatch);
         }
     }
+
+    public void Dispatch(params object[] events) => Dispatch((IReadOnlyList<object>)events);
 
     /// <summary>
     /// Dispatch the event using an instance of <see cref="WrapperOpenType"/>
     /// </summary>
     /// <param name="eventToDispatch"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    private void Dispatch(object eventToDispatch)
+    private void DispatchSingle(object eventToDispatch)
     {
         var wrapper = _eventHandlerWrappers.GetOrAdd(eventToDispatch.GetType(), eventTypeInput =>
         {

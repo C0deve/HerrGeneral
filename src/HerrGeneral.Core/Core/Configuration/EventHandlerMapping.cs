@@ -5,5 +5,5 @@ namespace HerrGeneral.Core.Configuration;
 internal record EventHandlerMapping(
     MethodInfo MethodInfo,
     Type HandlerGenericType,
-    Func<object, IEnumerable<object>>? MapEvents
+    Func<object, IReadOnlyList<object>>? MapEvents
 );

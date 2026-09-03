@@ -12,7 +12,7 @@ public class CancellationAndScopeShould(ITestOutputHelper output)
     private record CancelCmd;
     private class CancelHandler : ICommandHandler<CancelCmd, Unit>
     {
-        public (IEnumerable<object> Events, Unit Result) Handle(CancelCmd command) => ([], Unit.Default);
+        public (IReadOnlyList<object> Events, Unit Result) Handle(CancelCmd command) => ([], Unit.Default);
     }
 
     private record ScopedCmd;
@@ -23,7 +23,7 @@ public class CancellationAndScopeShould(ITestOutputHelper output)
 
     private class ScopedHandler(ScopedDependency dependency) : ICommandHandler<ScopedCmd, Guid>
     {
-        public (IEnumerable<object> Events, Guid Result) Handle(ScopedCmd command) => ([], dependency.Id);
+        public (IReadOnlyList<object> Events, Guid Result) Handle(ScopedCmd command) => ([], dependency.Id);
     }
 
     [Fact]

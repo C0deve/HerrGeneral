@@ -6,7 +6,7 @@ namespace HerrGeneral.Core.WriteSide;
 
 internal static class EventHandlerPipeline
 {
-    public delegate IEnumerable<object> EventHandlerDelegate<in TEvent>(TEvent @event);
+    public delegate IReadOnlyList<object> EventHandlerDelegate<in TEvent>(TEvent @event);
 
     extension<TEvent>(EventHandlerDelegate<TEvent> next)
     {

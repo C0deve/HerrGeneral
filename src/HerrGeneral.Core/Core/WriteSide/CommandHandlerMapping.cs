@@ -6,6 +6,6 @@ internal record CommandHandlerMapping(
     MethodInfo MethodInfo,
     Type HandlerGenericType,
     Type ReturnValueType,
-    Func<object, IEnumerable<object>> MapEvents,
+    Func<object, IReadOnlyList<object>> MapEvents,
     Func<object, object>? MapValue
 );

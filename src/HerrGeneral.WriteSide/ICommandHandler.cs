@@ -12,5 +12,5 @@ public interface ICommandHandler<in TCommand, TResult>
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    (IEnumerable<object> Events, TResult Result) Handle(TCommand command);
+    (IReadOnlyList<object> Events, TResult Result) Handle(TCommand command);
 }

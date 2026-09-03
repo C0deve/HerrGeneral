@@ -12,12 +12,12 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
 
     private interface ICommandHandler<in TCommand>
     {
-        public IEnumerable<object> Handle(TCommand command);
+        public IReadOnlyList<object> Handle(TCommand command);
     }
     
     private class PingHandler(Dependency dependency) : ICommandHandler<Ping>
     {
-        public IEnumerable<object> Handle(Ping command)
+        public IReadOnlyList<object> Handle(Ping command)
         {
             dependency.Called = true;
             return  [];

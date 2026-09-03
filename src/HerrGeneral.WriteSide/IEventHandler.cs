@@ -13,5 +13,5 @@ public interface IEventHandler<in TEvent>
     /// </summary>
     /// <param name="notification">The notification event to be processed</param>
     /// <returns>A collection of events generated as a result of handling the notification, or an empty collection if no events are produced</returns>
-    IEnumerable<object> Handle(TEvent notification);
+    IReadOnlyList<object> Handle(TEvent notification);
 }

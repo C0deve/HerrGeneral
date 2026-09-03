@@ -4,7 +4,7 @@ public record PingWithFailureInCommandHandler : CommandBase
 {
     public class Handler : CommandHandler<PingWithFailureInCommandHandler>
     {
-        protected override IEnumerable<object> InnerHandle(PingWithFailureInCommandHandler command) => 
+        protected override IReadOnlyList<object> InnerHandle(PingWithFailureInCommandHandler command) => 
             throw new PingError();
     }
 }

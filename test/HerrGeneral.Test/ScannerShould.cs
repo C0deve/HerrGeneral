@@ -50,14 +50,14 @@ namespace HerrGeneral.Scanner.Test
 
     internal interface ICommandHandler<in T> 
     {
-        IEnumerable<object> Handle(T command);
+        IReadOnlyList<object> Handle(T command);
     }
         
     internal record Command1
     {
         public class Command1Handler : ICommandHandler<Command1>
         {
-            public IEnumerable<object> Handle(Command1 command) => [];
+            public IReadOnlyList<object> Handle(Command1 command) => [];
         }
     }
 
@@ -65,7 +65,7 @@ namespace HerrGeneral.Scanner.Test
 
     internal abstract class Command2HandlerBase : ICommandHandler<Command2>
     {
-        public IEnumerable<object> Handle(Command2 command) => [];
+        public IReadOnlyList<object> Handle(Command2 command) => [];
     }
 
     internal class Command2Handler : Command2HandlerBase;
@@ -76,7 +76,7 @@ namespace HerrGeneral.Scanner.Test
         {
             public class Command3Handler : ICommandHandler<Command3>
             {
-                public IEnumerable<object> Handle(Command3 command) => [];
+                public IReadOnlyList<object> Handle(Command3 command) => [];
             }
         }
     }

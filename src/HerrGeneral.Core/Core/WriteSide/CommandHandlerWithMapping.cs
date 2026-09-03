@@ -18,7 +18,7 @@ internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler h
     where TCommand : notnull
     where THandler : notnull
 {
-    public (IEnumerable<object> Events, TResult Result) Handle(TCommand command)
+    public (IReadOnlyList<object> Events, TResult Result) Handle(TCommand command)
     {
         var mapping = mappingProvider.GetFromCommand(command, typeof(TResult));
 

@@ -14,7 +14,7 @@ internal class ChangeMultiHandlerInternal<TAggregate, TCommand, THandler>(
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public (IEnumerable<object> Events, Unit Result) Handle(TCommand command)
+    public (IReadOnlyList<object> Events, Unit Result) Handle(TCommand command)
     {
         var newEvents = handler
             .Handle(command)

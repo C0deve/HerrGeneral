@@ -35,12 +35,12 @@ internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandH
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public (IEnumerable<object> Events, Unit Result) Handle(TCommand command)
+    public (IReadOnlyList<object> Events, Unit Result) Handle(TCommand command)
     {
         var aggregate = GetAggregate(command);
         aggregate = _handler.Handle(aggregate, command);
         _repository.Save(aggregate);
-        var result = (aggregate.NewEvents, Unit.Default);
+        var result = ((IReadOnlyList<object>)aggregate.NewEvents, Unit.Default);
         aggregate.ClearNewEvents();
 
         return result;
