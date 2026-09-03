@@ -7,10 +7,19 @@ namespace HerrGeneral;
 /// <summary>
 /// Mediator implementation
 /// </summary>
-public class Mediator(IServiceProvider serviceProvider, int maxConcurrentCommands)
+public class Mediator(IServiceProvider serviceProvider, CommandConcurrencyLimiter limiter)
 {
     private readonly ConcurrentDictionary<Type, object> _handlerWrappers = new();
-    private readonly SemaphoreSlim _semaphoreSlim = new(maxConcurrentCommands, maxConcurrentCommands);
+
+    /// <summary>
+    /// Initializes a new instance of the Mediator with a specified maximum concurrent command limit.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider.</param>
+    /// <param name="maxConcurrentCommands">The maximum concurrent commands.</param>
+    public Mediator(IServiceProvider serviceProvider, int maxConcurrentCommands)
+        : this(serviceProvider, new CommandConcurrencyLimiter(maxConcurrentCommands))
+    {
+    }
     
     /// <summary>
     /// Send a creation command
@@ -27,9 +36,7 @@ public class Mediator(IServiceProvider serviceProvider, int maxConcurrentCommand
                     return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
                 });
 
-                using var scope = serviceProvider.CreateScope();
-                var scopedServiceProvider = scope.ServiceProvider;
-                return await wrapper.Handle(command, scopedServiceProvider, token).ConfigureAwait(false);
+                return await wrapper.Handle(command, serviceProvider, token).ConfigureAwait(false);
             },
             cancellationToken);
 
@@ -49,9 +56,7 @@ public class Mediator(IServiceProvider serviceProvider, int maxConcurrentCommand
                     return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
                 });
 
-                using var scope = serviceProvider.CreateScope();
-                var scopedServiceProvider = scope.ServiceProvider;
-                return await wrapper.Handle(command, scopedServiceProvider, token).ConfigureAwait(false);
+                return await wrapper.Handle(command, serviceProvider, token).ConfigureAwait(false);
             },
             cancellationToken);
 
@@ -63,14 +68,14 @@ public class Mediator(IServiceProvider serviceProvider, int maxConcurrentCommand
     /// <returns>A task that represents the result of the provided asynchronous function.</returns>
     private async Task<T> LimitConcurrentCommands<T>(Func<CancellationToken, Task<T>> funcAsync, CancellationToken cancellationToken)
     {
-        await _semaphoreSlim.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await limiter.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             return await funcAsync(cancellationToken).ConfigureAwait(false);
         }
         finally
         {
-            _semaphoreSlim.Release();
+            limiter.Release();
         }
     }
 }

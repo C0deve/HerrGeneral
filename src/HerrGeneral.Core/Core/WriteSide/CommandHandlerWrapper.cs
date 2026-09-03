@@ -10,30 +10,34 @@ internal class CommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TComm
     private static HandlerWrapperDelegate<TCommand, Result> WithExceptionToCommandResult(
         CommandPipeline.HandlerDelegate<TCommand, Unit> next) =>
         (command, cancellationToken) =>
-            Task.Run(() =>
+        {
+            try
             {
-                try
-                {
-                    _ = next(command, cancellationToken);
-                    return Result.Success();
-                }
-                catch (EventHandlerDomainException domainException)
-                {
-                    return Result.DomainFail(domainException.InnerException!);
-                }
-                catch (DomainException domainException)
-                {
-                    return Result.DomainFail(domainException.InnerException!);
-                }
-                catch (EventHandlerException e)
-                {
-                    return Result.PanicFail(e);
-                }
-                catch (System.Exception e)
-                {
-                    return Result.PanicFail(e);
-                }
-            }, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                _ = next(command, cancellationToken);
+                return Task.FromResult(Result.Success());
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (EventHandlerDomainException domainException)
+            {
+                return Task.FromResult(Result.DomainFail(domainException.InnerException!));
+            }
+            catch (DomainException domainException)
+            {
+                return Task.FromResult(Result.DomainFail(domainException.InnerException!));
+            }
+            catch (EventHandlerException e)
+            {
+                return Task.FromResult(Result.PanicFail(e));
+            }
+            catch (System.Exception e)
+            {
+                return Task.FromResult(Result.PanicFail(e));
+            }
+        };
 }
 
 internal class CommandHandlerWrapper<TCommand, TResult> : CommandHandlerWrapperBase<TCommand, Result<TResult>>
@@ -44,28 +48,32 @@ internal class CommandHandlerWrapper<TCommand, TResult> : CommandHandlerWrapperB
     private static HandlerWrapperDelegate<TCommand, Result<TResult>> WithExceptionToCommandResult(
         CommandPipeline.HandlerDelegate<TCommand, TResult> next) =>
         (command, cancellationToken) =>
-            Task.Run(() =>
+        {
+            try
             {
-                try
-                {
-                    var result = next(command, cancellationToken);
-                    return Result.Success(result.Result);
-                }
-                catch (EventHandlerDomainException domainException)
-                {
-                    return Result<TResult>.DomainFail(domainException.InnerException!);
-                }
-                catch (DomainException domainException)
-                {
-                    return Result<TResult>.DomainFail(domainException.InnerException!);
-                }
-                catch (EventHandlerException e)
-                {
-                    return Result<TResult>.PanicFail(e);
-                }
-                catch (System.Exception e)
-                {
-                    return Result<TResult>.PanicFail(e);
-                }
-            }, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                var result = next(command, cancellationToken);
+                return Task.FromResult(Result.Success(result.Result));
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (EventHandlerDomainException domainException)
+            {
+                return Task.FromResult(Result<TResult>.DomainFail(domainException.InnerException!));
+            }
+            catch (DomainException domainException)
+            {
+                return Task.FromResult(Result<TResult>.DomainFail(domainException.InnerException!));
+            }
+            catch (EventHandlerException e)
+            {
+                return Task.FromResult(Result<TResult>.PanicFail(e));
+            }
+            catch (System.Exception e)
+            {
+                return Task.FromResult(Result<TResult>.PanicFail(e));
+            }
+        };
 }

@@ -81,17 +81,25 @@ internal static class CommandPipeline
         public HandlerDelegate<TCommand, TResult> WithUnitOfWork(IUnitOfWork? unitOfWork) =>
             (command, cancellationToken) =>
             {
-                try
+                if (unitOfWork is null)
                 {
-                    unitOfWork?.Start();
-                    var result = next(command, cancellationToken);
-                    unitOfWork?.Commit();
-                    return result;
+                    return next(command, cancellationToken);
                 }
-                catch (System.Exception)
+
+                using (unitOfWork)
                 {
-                    unitOfWork?.RollBack();
-                    throw;
+                    try
+                    {
+                        unitOfWork.Start();
+                        var result = next(command, cancellationToken);
+                        unitOfWork.Commit();
+                        return result;
+                    }
+                    catch (System.Exception)
+                    {
+                        unitOfWork.RollBack();
+                        throw;
+                    }
                 }
             };
 
