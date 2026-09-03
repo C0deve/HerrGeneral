@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using HerrGeneral.Core.WriteSide;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +10,8 @@ namespace HerrGeneral;
 /// </summary>
 public class Mediator(IServiceProvider serviceProvider, CommandConcurrencyLimiter limiter)
 {
-    private readonly ConcurrentDictionary<Type, object> _handlerWrappers = new();
+    private static readonly ConcurrentDictionary<Type, ICommandHandlerWrapper<Result>> CommandWrappers = new();
+    private static readonly ConcurrentDictionary<(Type CommandType, Type ResultType), object> GenericCommandWrappers = new();
 
     /// <summary>
     /// Initializes a new instance of the Mediator with a specified maximum concurrent command limit.
@@ -30,11 +32,9 @@ public class Mediator(IServiceProvider serviceProvider, CommandConcurrencyLimite
     public Task<Result<T>> Send<T>(object command, CancellationToken cancellationToken = default) =>
         LimitConcurrentCommands<Result<T>>(async token =>
             {
-                var wrapper = (ICommandHandlerWrapper<Result<T>>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
-                {
-                    var wrapperType = typeof(CommandHandlerWrapper<,>).MakeGenericType(commandType, typeof(T));
-                    return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
-                });
+                var wrapper = (ICommandHandlerWrapper<Result<T>>)GenericCommandWrappers.GetOrAdd(
+                    (command.GetType(), typeof(T)),
+                    CreateGenericCommandWrapper);
 
                 return await wrapper.Handle(command, serviceProvider, token).ConfigureAwait(false);
             },
@@ -50,15 +50,29 @@ public class Mediator(IServiceProvider serviceProvider, CommandConcurrencyLimite
     public Task<Result> Send(object command, CancellationToken cancellationToken = default) =>
         LimitConcurrentCommands<Result>(async token =>
             {
-                var wrapper = (ICommandHandlerWrapper<Result>)_handlerWrappers.GetOrAdd(command.GetType(), commandType =>
-                {
-                    var wrapperType = typeof(CommandHandlerWrapper<>).MakeGenericType(commandType);
-                    return Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {commandType}");
-                });
+                var wrapper = CommandWrappers.GetOrAdd(
+                    command.GetType(),
+                    CreateCommandWrapper);
 
                 return await wrapper.Handle(command, serviceProvider, token).ConfigureAwait(false);
             },
             cancellationToken);
+
+    private static ICommandHandlerWrapper<Result> CreateCommandWrapper(Type commandType)
+    {
+        var wrapperType = typeof(CommandHandlerWrapper<>).MakeGenericType(commandType);
+        var newExpr = Expression.New(wrapperType);
+        var lambda = Expression.Lambda<Func<ICommandHandlerWrapper<Result>>>(newExpr);
+        return lambda.Compile()();
+    }
+
+    private static object CreateGenericCommandWrapper((Type CommandType, Type ResultType) key)
+    {
+        var wrapperType = typeof(CommandHandlerWrapper<,>).MakeGenericType(key.CommandType, key.ResultType);
+        var newExpr = Expression.New(wrapperType);
+        var lambda = Expression.Lambda<Func<object>>(newExpr);
+        return lambda.Compile()();
+    }
 
     /// <summary>
     /// Ensures the provided asynchronous function is executed with limited concurrency.

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Linq.Expressions;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -6,8 +7,7 @@ internal class WriteSideEventDispatcher(
     IServiceProvider serviceProvider,
     CommandExecutionTracer? commandExecutionTracer = null)
 {
-    private static Type WrapperOpenType => typeof(WriteSideEventHandlerWrapper<>);
-    private readonly ConcurrentDictionary<Type, IEventHandlerWrapper> _eventHandlerWrappers = new();
+    private static readonly ConcurrentDictionary<Type, IEventHandlerWrapper> EventHandlerWrappers = new();
 
     /// <summary>
     /// Dispatches the events to their respective handlers in FIFO order.
@@ -41,19 +41,20 @@ internal class WriteSideEventDispatcher(
     }
 
     /// <summary>
-    /// Dispatch the event using an instance of <see cref="WrapperOpenType"/>
+    /// Dispatch the event using an instance of WriteSideEventHandlerWrapper
     /// </summary>
     /// <param name="eventToDispatch"></param>
-    /// <exception cref="InvalidOperationException"></exception>
     private IReadOnlyList<object> Dispatch(object eventToDispatch)
     {
-        var wrapper = _eventHandlerWrappers.GetOrAdd(eventToDispatch.GetType(), eventTypeInput =>
-        {
-            var wrapperType = WrapperOpenType.MakeGenericType(eventTypeInput);
-            var wrapper = Activator.CreateInstance(wrapperType) ?? throw new InvalidOperationException($"Could not create wrapper type for {eventToDispatch.GetType()}");
-            return (IEventHandlerWrapper)wrapper;
-        });
-
+        var wrapper = EventHandlerWrappers.GetOrAdd(eventToDispatch.GetType(), CreateWrapper);
         return wrapper.Handle(eventToDispatch, serviceProvider);
+    }
+
+    private static IEventHandlerWrapper CreateWrapper(Type eventType)
+    {
+        var wrapperType = typeof(WriteSideEventHandlerWrapper<>).MakeGenericType(eventType);
+        var newExpr = Expression.New(wrapperType);
+        var lambda = Expression.Lambda<Func<IEventHandlerWrapper>>(newExpr);
+        return lambda.Compile()();
     }
 }

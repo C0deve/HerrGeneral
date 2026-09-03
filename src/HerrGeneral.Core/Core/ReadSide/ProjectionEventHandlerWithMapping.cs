@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+using System.Collections.Concurrent;
+using System.Linq.Expressions;
+using System.Reflection;
 using HerrGeneral.Core.Configuration;
 using HerrGeneral.ReadSide;
 
@@ -16,15 +18,20 @@ internal class ProjectionEventHandlerWithMapping<TEvent, THandler>(THandler hand
     where TEvent : notnull
     where THandler : notnull
 {
+    private static readonly ConcurrentDictionary<Type, Action<THandler, TEvent>> InvokerCache = new();
+
     public void Handle(TEvent evt)
     {
-        var handleMethod = eventHandlerMappingProvider.GetHandleMethod(typeof(TEvent), typeof(THandler));
+        var invoker = InvokerCache.GetOrAdd(evt.GetType(), _ =>
+        {
+            var handleMethod = eventHandlerMappingProvider.GetHandleMethod(typeof(TEvent), typeof(THandler));
+            return CompileInvoker(handleMethod);
+        });
         
         try
         {
-            handleMethod.Invoke(handler, [evt]);
+            invoker(handler, evt);
         }
-        // throw only the innerException of TargetInvocationException produce by handleMethod.Invoke. 
         catch (TargetInvocationException e)
         {
             throw e.InnerException ?? e;
@@ -32,4 +39,18 @@ internal class ProjectionEventHandlerWithMapping<TEvent, THandler>(THandler hand
     }
 
     public Type GetHandlerType() => typeof(THandler);
+
+    private static Action<THandler, TEvent> CompileInvoker(MethodInfo methodInfo)
+    {
+        var handlerParam = Expression.Parameter(typeof(THandler), "handler");
+        var evtParam = Expression.Parameter(typeof(TEvent), "evt");
+
+        var methodParamType = methodInfo.GetParameters()[0].ParameterType;
+        Expression typedEvt = methodParamType == typeof(TEvent)
+            ? evtParam
+            : Expression.Convert(evtParam, methodParamType);
+
+        var call = Expression.Call(handlerParam, methodInfo, typedEvt);
+        return Expression.Lambda<Action<THandler, TEvent>>(call, handlerParam, evtParam).Compile();
+    }
 }
