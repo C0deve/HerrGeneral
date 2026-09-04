@@ -1,5 +1,3 @@
-using HerrGeneral.Test.Data.WithMapping.WriteSide;
-
 namespace HerrGeneral.Test.Data.WithMapping.ReadSide;
 
 public class AReadModelWithMultipleHandlers :

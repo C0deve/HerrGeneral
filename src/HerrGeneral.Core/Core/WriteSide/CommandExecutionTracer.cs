@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using HerrGeneral.Exception;
 
 namespace HerrGeneral.Core.WriteSide;
 

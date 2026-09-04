@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace HerrGeneral.Core.Registration.Policy;
+﻿namespace HerrGeneral.Core.Registration.Policy;
 
 /// <summary>
 /// Manage registration of all handlers that implements open type provided by GetOpenTypes()

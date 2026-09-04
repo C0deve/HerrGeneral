@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace HerrGeneral.Core.Registration;
 
 internal static class TypeExtensions

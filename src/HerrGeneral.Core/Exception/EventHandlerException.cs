@@ -1,5 +1,3 @@
-using HerrGeneral.WriteSide;
-
 namespace HerrGeneral.Exception;
 
 /// <summary>

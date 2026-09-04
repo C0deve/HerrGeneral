@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace HerrGeneral.Core.Registration;
+﻿namespace HerrGeneral.Core.Registration;
 
 /// <summary>
 /// Specify an assembly and an optional list of namespace

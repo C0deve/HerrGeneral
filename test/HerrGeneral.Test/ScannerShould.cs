@@ -1,6 +1,5 @@
 using HerrGeneral.Core.Registration;
 using HerrGeneral.Scanner.Test.AnotherNamespace;
-using Shouldly;
 
 // ReSharper disable once CheckNamespace
 namespace HerrGeneral.Scanner.Test

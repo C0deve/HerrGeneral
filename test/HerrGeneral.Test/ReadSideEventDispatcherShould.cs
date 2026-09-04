@@ -1,7 +1,4 @@
-using HerrGeneral.Registration;
-using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using Xunit.Abstractions;
+
 
 // ReSharper disable once CheckNamespace
 namespace HerrGeneral.ReadSideEventDispatcher.Test

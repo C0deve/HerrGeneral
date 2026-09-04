@@ -1,5 +1,3 @@
-using HerrGeneral.Exception;
-
 namespace HerrGeneral.Core.WriteSide;
 
 internal class CommandHandlerWrapper<TCommand> : CommandHandlerWrapperBase<TCommand, Result>

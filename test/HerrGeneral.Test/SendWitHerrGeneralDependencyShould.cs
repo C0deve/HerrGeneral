@@ -1,10 +1,4 @@
-﻿using HerrGeneral.Registration;
-using HerrGeneral.Test.Data.WithHerrGeneralDependency.ReadSide;
-using HerrGeneral.Test.Data.WithHerrGeneralDependency.WriteSide;
-using HerrGeneral.Test.Data.WithMapping.WriteSide;
-using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using Xunit.Abstractions;
+﻿using HerrGeneral.Test.Data.WithHerrGeneralDependency.WriteSide;
 
 // ReSharper disable once CheckNamespace
 namespace HerrGeneral.Send;

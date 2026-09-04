@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace HerrGeneral.Core.WriteSide;
+﻿namespace HerrGeneral.Core.WriteSide;
 
 internal record CommandHandlerMapping(
     MethodInfo MethodInfo,

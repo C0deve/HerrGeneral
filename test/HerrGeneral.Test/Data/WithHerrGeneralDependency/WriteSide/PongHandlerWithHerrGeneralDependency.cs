@@ -1,5 +1,3 @@
-using HerrGeneral.Test.Data.WithMapping.WriteSide;
-
 namespace HerrGeneral.Test.Data.WithHerrGeneralDependency.WriteSide;
 
 public class PongHandlerWithHerrGeneralDependency(EventTracker eventTracker) : HerrGeneral.WriteSide.IEventHandler<Pong>

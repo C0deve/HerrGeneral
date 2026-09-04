@@ -1,6 +1,4 @@
-﻿using HerrGeneral.Exception;
-
-namespace HerrGeneral.Core.WriteSide;
+﻿namespace HerrGeneral.Core.WriteSide;
 
 /// <summary>
 /// Map external exception to internal <see cref="DomainException"/>

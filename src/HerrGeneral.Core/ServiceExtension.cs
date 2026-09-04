@@ -1,5 +1,4 @@
 using HerrGeneral.Core.Registration;
-using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
 namespace HerrGeneral.Registration;

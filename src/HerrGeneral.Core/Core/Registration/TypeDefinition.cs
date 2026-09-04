@@ -1,6 +1,4 @@
-﻿using HerrGeneral.WriteSide;
-
-namespace HerrGeneral.Core.Registration;
+﻿namespace HerrGeneral.Core.Registration;
 
 /// <summary>
 /// Define all inner type used by HerrGeneral
