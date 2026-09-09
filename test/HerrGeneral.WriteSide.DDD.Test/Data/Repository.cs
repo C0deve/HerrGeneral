@@ -1,11 +1,12 @@
 ﻿using HerrGeneral.DDD;
+using System.Collections.Concurrent;
 using HerrGeneral.DDD.Exception;
 
 namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
 public class Repository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : IAggregate
 {
-    private readonly Dictionary<Guid, TAggregate> _aggregates = new();
+    private readonly ConcurrentDictionary<Guid, TAggregate> _aggregates = new();
 
     public TAggregate Get(Guid id)
     {

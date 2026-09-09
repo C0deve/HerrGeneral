@@ -12,6 +12,7 @@ Herr General is a lightweight CQRS (Command Query Responsibility Segregation) im
 - **Built-in Diagnostics**: Comprehensive debug logging for easy troubleshooting
 - **Simple Integration**: Easy to integrate with Microsoft Dependency Injection
 - **No dependency on HerrGeneral in your code**: HerrGeneral can map your handlers, no need to inherit from a ICommandHandler or IEventHandler
+- **Command Concurrency Control**: Partition-based locking per aggregate to serialize commands on the same entity while processing independent commands concurrently
 - **Result Pattern**: Uses a functional-style result pattern
 
 ## Command Processing Flow
@@ -267,6 +268,54 @@ public async Task<Guid> ProcessCreateCommand()
 - **Explicit Error Handling**: Forces developers to consider all possible outcomes
 - **Clear Intent**: Makes the code more readable by showing all possible outcomes in one place
 - **Type Safety**: Leverages the type system to ensure all cases are handled
+
+## Command Concurrency & Partitioning
+
+Herr General includes a built-in partition-based concurrency limiter (`CommandConcurrencyLimiter`) to serialize command execution per aggregate while processing commands for distinct aggregates concurrently.
+
+### 1. Declarative Attribute Locking (Recommended)
+
+Decorate the identifier property of your command with `[LockKey<TAggregate>]` (from `HerrGeneral.WriteSide`) or `[AggregateLockKey<TAggregate>]` (from `HerrGeneral.WriteSide.DDD`):
+
+```csharp
+using HerrGeneral.WriteSide;
+
+// Simple positional record with typed lock key
+public record CancelOrder(
+    [property: LockKey<Order>] Guid OrderId, 
+    string Reason
+);
+```
+
+For DDD applications:
+```csharp
+using HerrGeneral.DDD;
+
+public record UpdateAddress(
+    [property: AggregateLockKey<Order>] Guid OrderId, 
+    Address NewAddress
+);
+```
+
+- **Compile-Time Safety**: Restricts the target aggregate type statically.
+- **Collision-Free**: Scopes the lock to `(typeof(Order), OrderId)`, preventing lock collisions between different aggregate types sharing the same ID.
+
+### 2. Interface-Based Locking (Extension Point)
+
+For dynamic, custom, or composite partition keys (e.g., multi-tenant systems), implement `IKeyedCommand`:
+
+```csharp
+using HerrGeneral.WriteSide;
+
+public record ProcessPayment(
+    Guid TenantId, 
+    Guid AccountId, 
+    decimal Amount
+) : IKeyedCommand
+{
+    public object Key => (TenantId, typeof(Account), AccountId);
+}
+```
 
 ## Code Examples
 

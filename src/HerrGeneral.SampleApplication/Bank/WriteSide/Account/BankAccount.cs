@@ -54,4 +54,13 @@ public sealed class BankAccount : Aggregate<BankAccount>
         
         return Emit(new MoneyWithdrawn(AccountNumber, amount, Balance, commandId, Id));
     }
+
+    public BankAccount Freeze(string reason, Guid commandId)
+    {
+        if (!IsActive)
+            throw new InactiveAccountException(AccountNumber, "freeze");
+
+        IsActive = false;
+        return Emit(new AccountFrozen(AccountNumber, reason, commandId, Id));
+    }
 }

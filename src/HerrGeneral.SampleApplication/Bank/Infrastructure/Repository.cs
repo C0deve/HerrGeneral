@@ -6,7 +6,7 @@ namespace HerrGeneral.SampleApplication.Bank.Infrastructure;
 public class Repository<TAggregate> : WriteSide.IMyAggregateRepository<TAggregate> 
     where TAggregate : IAggregate
 {
-    private readonly Dictionary<Guid, TAggregate> _aggregates = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, TAggregate> _aggregates = new();
 
     public TAggregate Get(Guid id)
     {

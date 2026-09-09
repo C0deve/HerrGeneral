@@ -59,18 +59,22 @@ public class ChangeAggregateShould
     }
 
     [Fact]
-    public async Task DispatchEventsOnReadSide()
+    public async Task ChangeDifferentAggregatesConcurrently()
     {
-        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThing("John"), _mediator)
-            .Then(personId =>
-                HerrGeneral.DDD.Extensions.SendFrom(new ChangeTheThing("Adams", personId), _mediator))
-            .ShouldSuccess();
+        var create1 = await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThing("Alice"), _mediator);
+        var create2 = await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThing("Bob"), _mediator);
 
-        _container.GetRequiredService<AProjection>()
-            .All()
-            .Select(x => x.Name)
-            .ShouldBe(["Adams"]);
+        var id1 = create1.Match(id => id, _ => Guid.Empty, _ => Guid.Empty);
+        var id2 = create2.Match(id => id, _ => Guid.Empty, _ => Guid.Empty);
+
+        var task1 = Task.Run(() => HerrGeneral.DDD.Extensions.SendFrom(new ChangeTheThing("Alice-Updated", id1), _mediator));
+        var task2 = Task.Run(() => HerrGeneral.DDD.Extensions.SendFrom(new ChangeTheThing("Bob-Updated", id2), _mediator));
+
+        var results = await Task.WhenAll(task1, task2);
+        results[0].IsSuccess.ShouldBeTrue();
+        results[1].IsSuccess.ShouldBeTrue();
+
+        var projection = _container.GetRequiredService<AProjection>();
+        projection.All().Select(x => x.Name).ShouldBe(["Alice-Updated", "Bob-Updated"], ignoreOrder: true);
     }
-    
-    
 }

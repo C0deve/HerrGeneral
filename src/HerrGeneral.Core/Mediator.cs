@@ -25,7 +25,7 @@ public class Mediator(IServiceProvider serviceProvider, CommandConcurrencyLimite
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public Task<Result<T>> Send<T>(object command, CancellationToken cancellationToken = default) =>
-        LimitConcurrentCommands<Result<T>>(async token =>
+        LimitConcurrentCommands<Result<T>>(command, async token =>
             {
                 var wrapper = (ICommandHandlerWrapper<Result<T>>)GenericCommandWrappers.GetOrAdd(
                     (command.GetType(), typeof(T)),
@@ -43,7 +43,7 @@ public class Mediator(IServiceProvider serviceProvider, CommandConcurrencyLimite
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public Task<Result> Send(object command, CancellationToken cancellationToken = default) =>
-        LimitConcurrentCommands<Result>(async token =>
+        LimitConcurrentCommands<Result>(command, async token =>
             {
                 var wrapper = CommandWrappers.GetOrAdd(
                     command.GetType(),
@@ -72,19 +72,13 @@ public class Mediator(IServiceProvider serviceProvider, CommandConcurrencyLimite
     /// <summary>
     /// Ensures the provided asynchronous function is executed with limited concurrency.
     /// </summary>
+    /// <param name="command">The command being executed.</param>
     /// <param name="funcAsync">The asynchronous function to execute.</param>
     /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
     /// <returns>A task that represents the result of the provided asynchronous function.</returns>
-    private async Task<T> LimitConcurrentCommands<T>(Func<CancellationToken, Task<T>> funcAsync, CancellationToken cancellationToken)
+    private async Task<TResult> LimitConcurrentCommands<TResult>(object command, Func<CancellationToken, Task<TResult>> funcAsync, CancellationToken cancellationToken)
     {
-        await limiter.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            return await funcAsync(cancellationToken).ConfigureAwait(false);
-        }
-        finally
-        {
-            limiter.Release();
-        }
+        using var releaser = await limiter.AcquireAsync(command, cancellationToken).ConfigureAwait(false);
+        return await funcAsync(cancellationToken).ConfigureAwait(false);
     }
 }

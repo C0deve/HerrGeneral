@@ -22,7 +22,8 @@ public class AccountProjection : Projection<AccountProjectionItem>,
     IProjectionEventHandler<AccountCreated>,
     IProjectionEventHandler<MoneyDeposited>,
     IProjectionEventHandler<MoneyWithdrawn>,
-    IProjectionEventHandler<BankCardCreated>
+    IProjectionEventHandler<BankCardCreated>,
+    IProjectionEventHandler<AccountFrozen>
 
 {
     public void Handle(AccountCreated @event)
@@ -68,5 +69,14 @@ public class AccountProjection : Projection<AccountProjectionItem>,
             {
                 item.AssociatedCards.Add(@event.CardNumber);
                 return item;
+            });
+
+    public void Handle(AccountFrozen @event) =>
+        Update(
+            item => item.Id == @event.AggregateId,
+            item => item with
+            {
+                IsActive = false,
+                LastTransactionDate = @event.DateTimeEventOccurred
             });
 }

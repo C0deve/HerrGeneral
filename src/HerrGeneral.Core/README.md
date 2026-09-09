@@ -1,6 +1,6 @@
 # HerrGeneral.Core
 
-Essential components for application integration and configuration
+Essential components for application integration, mediator dispatch, and command concurrency control.
 
 ### Registration with Dependency Injection
 
@@ -18,13 +18,44 @@ services.UseHerrGeneral(configuration =>
 
 This registration process scans the specified assemblies for command handlers and event handlers, registering them with the appropriate lifetime scopes in the dependency injection container.
 
-
 ### Mediator
 
 Send your commands with the mediator:
 ```csharp
-var mediator = serviceProvider.getRequiredService<Mediator>;
-var result = mediator.Send(new MyCommand());
+var mediator = serviceProvider.GetRequiredService<Mediator>();
+var result = await mediator.Send(new MyCommand());
+```
+
+## Command Concurrency & Partition-Based Locking
+
+HerrGeneral features a built-in `CommandConcurrencyLimiter` that ensures commands targeting the same aggregate or partition are serialized while allowing independent aggregates to execute concurrently.
+
+### Declarative Attribute Locking (Recommended)
+
+Decorate the identifier property of your command with `[LockKey<TAggregate>]` (or `[LockKey(typeof(TAggregate))]`):
+
+```csharp
+using HerrGeneral.WriteSide;
+
+public record CancelOrder(
+    [property: LockKey<Order>] Guid OrderId, 
+    string Reason
+);
+```
+
+Commands with the same `(typeof(Order), OrderId)` lock key are processed sequentially. Commands with different IDs or different aggregate types execute concurrently.
+
+### Interface-Based Locking (Extension Point)
+
+For complex, dynamic, or composite partition keys, implement `IKeyedCommand`:
+
+```csharp
+using HerrGeneral.WriteSide;
+
+public record ProcessPayment(Guid TenantId, Guid AccountId, decimal Amount) : IKeyedCommand
+{
+    public object Key => (TenantId, typeof(Account), AccountId);
+}
 ```
 
 ## External Handler Integration
