@@ -19,6 +19,8 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         if (configuration.IsTracingEnabled)
             serviceCollection.AddScoped<CommandExecutionTracer>();
         serviceCollection.AddScoped<ReadSideEventDispatcher>();
+        serviceCollection.AddScoped<TransactionalProjectionEventDispatcher>();
+        serviceCollection.AddScoped<PostTransactionEventDispatcher>();
         serviceCollection.AddScoped<WriteSideEventDispatcher>();
         serviceCollection.AddSingleton(new CommandConcurrencyLimiter(maxConcurrentCommands));
         serviceCollection.AddScoped<Mediator>();

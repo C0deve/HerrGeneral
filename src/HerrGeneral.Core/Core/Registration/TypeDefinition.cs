@@ -20,4 +20,19 @@ internal static class TypeDefinition
     /// </summary>
     public static readonly Type ReadSideEventHandlerInterface = typeof(HerrGeneral.ReadSide.IProjectionEventHandler<>);
 
+    /// <summary>
+    /// Post-transaction projection handler interface
+    /// </summary>
+    public static readonly Type PostProjectionHandlerInterface = typeof(IHandlePostProjection<>);
+
+    /// <summary>
+    /// In-transaction synchronous projection handler interface
+    /// </summary>
+    public static readonly Type SyncProjectionHandlerInterface = typeof(IHandleSyncProjection<>);
+
+    /// <summary>
+    /// Post-transaction side effect handler interface
+    /// </summary>
+    public static readonly Type SideEffectHandlerInterface = typeof(IHandleSideEffect<>);
+
 }

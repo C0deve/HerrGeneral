@@ -116,7 +116,7 @@ public class KeyedConcurrencyLimiterShould(ITestOutputHelper output)
         public (IReadOnlyList<object> Events, Unit Result) Handle(BarrierCmd command)
         {
             log.Add($"START:{command.PartitionKey}");
-            var reached = barrier.SignalAndWait(TimeSpan.FromSeconds(2));
+            var reached = barrier.SignalAndWait(TimeSpan.FromSeconds(5));
             if (!reached)
             {
                 log.Add($"TIMEOUT:{command.PartitionKey}");

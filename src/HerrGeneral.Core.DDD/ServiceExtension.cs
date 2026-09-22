@@ -56,7 +56,8 @@ public static class ServiceExtension
             new RegisterIChangeMultiHandler(),
             new RegisterDynamicCreateHandlers(),
             new RegisterDynamicChangeHandlers(),
-            new RegisterICrossAggregateChangeHandler()
+            new RegisterICrossAggregateChangeHandler(),
+            new RegisterIHandleCrossAggregate()
         ];
     }
 }

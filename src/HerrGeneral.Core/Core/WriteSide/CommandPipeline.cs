@@ -108,6 +108,22 @@ internal static class CommandPipeline
                 return (eventDispatcher.Dispatch(events), result);
             };
 
+        public HandlerDelegate<TCommand, TResult> WithTransactionalProjectionDispatching(TransactionalProjectionEventDispatcher transactionalProjectionEventDispatcher) =>
+            (command, cancellationToken) =>
+            {
+                var result = next(command, cancellationToken);
+                transactionalProjectionEventDispatcher.Dispatch(result.Events);
+                return result;
+            };
+
+        public HandlerDelegate<TCommand, TResult> WithPostTransactionDispatching(PostTransactionEventDispatcher postTransactionEventDispatcher) =>
+            (command, cancellationToken) =>
+            {
+                var result = next(command, cancellationToken);
+                postTransactionEventDispatcher.Dispatch(result.Events);
+                return result;
+            };
+
         public HandlerDelegate<TCommand, TResult> WithReadSideDispatching(ReadSideEventDispatcher readSideEventDispatcher) =>
             (command, cancellationToken) =>
             {

@@ -18,6 +18,7 @@ internal class RegistrationPolicyProvider
     [
         new RegisterICommandHandler(),
         new RegisterWriteSideEventHandler(),
+        new RegisterIHandleSyncProjection(),
         new RegisterMappedCommandHandlers(configuration.CommandHandlerMappings),
         new RegisterMappedWriteSideEventHandlers(configuration.WriteSideEventHandlerMappingsConfiguration)
     ];
@@ -30,6 +31,8 @@ internal class RegistrationPolicyProvider
     public virtual IRegistrationPolicy[] GetReadSidePolicies(Configuration.Configuration configuration) =>
     [
         new RegisterReadSideEventHandler(),
+        new RegisterIHandlePostProjection(),
+        new RegisterIHandleSideEffect(),
         new RegisterMappedReadSideEventHandlers(configuration.ReadSideEventHandlerMappingsConfiguration)
     ];
 }

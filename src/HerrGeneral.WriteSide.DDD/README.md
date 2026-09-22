@@ -19,9 +19,10 @@ Key elements:
     - `IChangeHandler<TAggregate, in TCommand>`
     - `IChangeMultiHandler<out TAggregate, in TCommand>`
   - **Domain event handlers** for processing domain events:
+    - `IHandleCrossAggregate<in TEvent, TAggregate>` for cross-aggregate mutations within the active transaction.
     - `IDomainEventHandler<in TEvent>` for processing events and returning changed aggregates.
     - `IVoidDomainEventHandler<in TEvent>` for processing events without returning anything.
-    - `ICrossAggregateChangeHandler<in TEvent, TAggregate>` for processing events and returning the changes to make.
+    - `ICrossAggregateChangeHandler<in TEvent, TAggregate>` (backward compatibility alias for `IHandleCrossAggregate`).
   - **Command with automatic handler** (Convention-Based Dynamic Command Handling):
     - `INoHandlerCreate<TAggregate>`
     - `INoHandlerChange<TAggregate>`

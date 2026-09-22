@@ -47,8 +47,8 @@ public class SendWithErrorShould
             .ShouldFailWithPanicExceptionOfType<SomePanicException>();
 
     [Fact]
-    public async Task Return_result_failure_on_panic_exception_from_read_side() =>
+    public async Task Return_result_success_and_isolate_panic_exception_from_read_side() =>
         await new PingWithFailureInReadSideEventHandler()
             .SendFrom(_mediator)
-            .ShouldFailWithPanicExceptionOfType<SomePanicException>();
+            .ShouldSuccess();
 }

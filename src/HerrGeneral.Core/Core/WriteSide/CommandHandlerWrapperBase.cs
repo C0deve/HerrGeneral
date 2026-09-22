@@ -15,7 +15,8 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
         var commandHandler = GetHandler<TReturn>(serviceProvider);
         var logger = GetLogger<TReturn>(serviceProvider);
         var writeSideEventDispatcher = serviceProvider.GetRequiredService<WriteSideEventDispatcher>();
-        var readSideEventDispatcher = serviceProvider.GetRequiredService<ReadSideEventDispatcher>();
+        var transactionalProjectionEventDispatcher = serviceProvider.GetRequiredService<TransactionalProjectionEventDispatcher>();
+        var postTransactionEventDispatcher = serviceProvider.GetRequiredService<PostTransactionEventDispatcher>();
         var tracer = serviceProvider.GetService<CommandExecutionTracer>();
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
         if (unitOfWork is not null && tracer is not null)
@@ -28,8 +29,9 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
             Start(commandHandler)
                 .WithDomainExceptionMapping(domainExceptionMapper)
                 .WithWriteSideDispatching(writeSideEventDispatcher)
-                .WithReadSideDispatching(readSideEventDispatcher)
+                .WithTransactionalProjectionDispatching(transactionalProjectionEventDispatcher)
                 .WithUnitOfWork(unitOfWork)
+                .WithPostTransactionDispatching(postTransactionEventDispatcher)
                 .WithTracer(handlerType, logger, tracer);
     }
 

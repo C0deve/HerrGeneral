@@ -33,10 +33,12 @@ internal class RegisterMappedReadSideEventHandlers(EventHandlerMappingsConfigura
         foreach (var scanResult in scanResults)
         {
             var @interface = typeof(IProjectionEventHandler<>).MakeGenericType(scanResult.eventType);
+            var postProjectionInterface = typeof(IHandlePostProjection<>).MakeGenericType(scanResult.eventType);
             var internalHandler = typeof(ProjectionEventHandlerWithMapping<,>).MakeGenericType(scanResult.eventType, scanResult.externalHandlerType);
 
             serviceCollection.TryAddSingleton(scanResult.externalHandlerType);
             serviceCollection.AddTransient(@interface, internalHandler);
+            serviceCollection.AddTransient(postProjectionInterface, internalHandler);
         }
     }
 }

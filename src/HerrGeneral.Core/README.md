@@ -8,15 +8,38 @@ Herr General integrates seamlessly with .NET's dependency injection system using
 
 ```csharp
 // Add Herr General to your service collection
-services.UseHerrGeneral(configuration =>
+services.AddHerrGeneral(configuration =>
     configuration
         // Register write side assembly and namespace for command and domain event handlers
-        .UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!)
-        // Register read side assembly and namespace for read model event handlers
-        .UseReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!));
+        .ScanWriteSideOn(typeof(Person).Assembly, typeof(Person).Namespace!)
+        // Register in-transaction synchronous projections
+        .ScanSyncProjectionsOn(typeof(OrderSummarySyncProjection).Assembly)
+        // Register read side assembly for eventual post-transaction projections
+        .ScanPostProjectionsOn(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
+        // Register post-transaction side effects (emails, notifications, external message bus)
+        .ScanSideEffectsOn(typeof(SendWelcomeEmailSideEffect).Assembly));
 ```
 
-This registration process scans the specified assemblies for command handlers and event handlers, registering them with the appropriate lifetime scopes in the dependency injection container.
+This registration process scans the specified assemblies for command handlers, event handlers, projections, and side-effects, registering them with the appropriate lifetime scopes in the dependency injection container.
+
+## Handler Taxonomy & Transaction Boundaries
+
+HerrGeneral organizes handler contracts around the `IHandle...` convention:
+
+1. **`IHandleSyncProjection<in TEvent>`**:
+   - Executes inside the active `IUnitOfWork` transaction before `Commit()`.
+   - Ideal for strict consistency projections (e.g. SQL read models in the same database) or transactional outbox tables.
+   - Throws and triggers `RollBack()` if an exception occurs.
+
+2. **`IHandlePostProjection<in TEvent>`**:
+   - Executes strictly after `IUnitOfWork.Commit()` succeeds.
+   - Ideal for eventual consistency projections and search indexes.
+   - Exceptions are captured by `CommandExecutionTracer` and logged without affecting the committed transaction.
+
+3. **`IHandleSideEffect<in TEvent>`**:
+   - Executes strictly after `IUnitOfWork.Commit()` succeeds.
+   - Ideal for fire-and-forget side effects, emails, external webhooks, and message publishing.
+   - Exceptions are captured and isolated by `CommandExecutionTracer`.
 
 ### Mediator
 

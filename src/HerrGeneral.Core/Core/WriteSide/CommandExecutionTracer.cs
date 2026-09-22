@@ -17,62 +17,223 @@ internal class CommandExecutionTracer
             .Select(_ => Indent)
             .Aggregate(string.Empty, (s, s1) => s + s1);
 
-    public void StartHandlingCommand(string type, Type handlerType) =>
-        _stringBuilder
-            .AppendLine($"<------------------- {type} thread<{Environment.CurrentManagedThreadId}> ------------------->")
-            .AppendLine($"-> Handled by {handlerType}");
+    public void StartHandlingCommand(string type, Type handlerType)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder
+                .AppendLine($"<------------------- {type} thread<{Environment.CurrentManagedThreadId}> ------------------->")
+                .AppendLine($"-> Handled by {handlerType}");
+        }
+    }
 
-    public void StopHandlingCommand(string type, TimeSpan elapsed) =>
-        _stringBuilder.AppendLine($"<------------------- {type} Finished {elapsed:c} -------------------/>");
+    public void StopHandlingCommand(string type, TimeSpan elapsed)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"<------------------- {type} Finished {elapsed:c} -------------------/>");
+        }
+    }
 
-    public void StartPublishEventOnWriteSide() =>
-        _stringBuilder
-            .AppendLine($"|| Publish Write Side on thread<{Environment.CurrentManagedThreadId}>");
+    public void StartPublishEventOnWriteSide()
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"|| Publish Write Side on thread<{Environment.CurrentManagedThreadId}>");
+        }
+    }
 
-    public void StartUnitOfWork() =>
-        _stringBuilder.AppendLine("Start Unit of Work");
-    public void CommitUnitOfWork() =>
-        _stringBuilder.AppendLine("Commit Unit of Work");
-    public void RollbackUnitOfWork() =>
-        _stringBuilder.AppendLine("Rollback Unit of Work");
-    public void DisposeUnitOfWork() =>
-        _stringBuilder.AppendLine("Dispose Unit of Work");
+    public void StartUnitOfWork()
+    {
+        lock (_stringBuilder) { _stringBuilder.AppendLine("Start Unit of Work"); }
+    }
+    public void CommitUnitOfWork()
+    {
+        lock (_stringBuilder) { _stringBuilder.AppendLine("Commit Unit of Work"); }
+    }
+    public void RollbackUnitOfWork()
+    {
+        lock (_stringBuilder) { _stringBuilder.AppendLine("Rollback Unit of Work"); }
+    }
+    public void DisposeUnitOfWork()
+    {
+        lock (_stringBuilder) { _stringBuilder.AppendLine("Dispose Unit of Work"); }
+    }
     
-    public void PublishEventOnWriteSide(object @event) =>
-        _stringBuilder
-            .AppendLine($"{Indent}{@event.GetType()}");
+    public void PublishEventOnWriteSide(object @event)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}{@event.GetType()}");
+        }
+    }
 
-    public void HandleEvent(Type tHandler) =>
-        _stringBuilder.AppendLine($"{Indent}-> Handle by {tHandler}");
+    public void HandleEvent(Type tHandler)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}-> Handle by {tHandler}");
+        }
+    }
 
     public void OnException(DomainException e, int indentCount = 0)
     {
         var indent = BuildIndent(indentCount);
-        _stringBuilder.AppendLine($"{indent}!! {e.InnerException?.GetType()} (DomainException)")
-            .AppendLine($"{indent}-- Message : {e.InnerException?.Message}");
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{indent}!! {e.InnerException?.GetType()} (DomainException)")
+                .AppendLine($"{indent}-- Message : {e.InnerException?.Message}");
+        }
     }
 
     public void OnException(System.Exception e, int indentCount = 0)
     {
         var indent = BuildIndent(indentCount);
-        _stringBuilder.AppendLine($"{indent}!! {e.InnerException?.GetType() ?? e.GetType()} (PanicException)")
-            .AppendLine($"{indent}-- Message : {e.Message}")
-            .AppendLine($"{indent}-- StackTrace :{e.StackTrace}");
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{indent}!! {e.InnerException?.GetType() ?? e.GetType()} (PanicException)")
+                .AppendLine($"{indent}-- Message : {e.Message}")
+                .AppendLine($"{indent}-- StackTrace :{e.StackTrace}");
+        }
     }
 
     public void StartPublishEventsOnReadSide(int eventsToPublishCount)
     {
         if (eventsToPublishCount <= 0) return;
 
-        _stringBuilder
-            .AppendLine()
-            .AppendLine($"|| Publish Read Side ({eventsToPublishCount} event{(eventsToPublishCount > 1 ? "s" : string.Empty)}) on thread<{Environment.CurrentManagedThreadId}>");
+        lock (_stringBuilder)
+        {
+            _stringBuilder
+                .AppendLine()
+                .AppendLine($"|| Publish Read Side ({eventsToPublishCount} event{(eventsToPublishCount > 1 ? "s" : string.Empty)}) on thread<{Environment.CurrentManagedThreadId}>");
+        }
     }
 
-    public void PublishEventOnReadSide(object @event) =>
-        _stringBuilder.AppendLine($"{Indent}{@event.GetType()}");
+    public void PublishEventOnReadSide(object @event)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}{@event.GetType()}");
+        }
+    }
 
-    public string BuildString() => _stringBuilder.ToString();
+    public void StartPublishEventsOnSyncProjections(int eventsToPublishCount)
+    {
+        if (eventsToPublishCount <= 0) return;
 
-    public void AddTrace(string trace)=> _stringBuilder.AppendLine(trace);
+        lock (_stringBuilder)
+        {
+            _stringBuilder
+                .AppendLine()
+                .AppendLine($"|| Publish Sync Projections ({eventsToPublishCount} event{(eventsToPublishCount > 1 ? "s" : string.Empty)}) on thread<{Environment.CurrentManagedThreadId}>");
+        }
+    }
+
+    public void PublishEventOnSyncProjections(object @event)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}{@event.GetType()}");
+        }
+    }
+
+    public void HandleSyncProjection(Type handlerType)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}-> Handle sync projection by {handlerType}");
+        }
+    }
+
+    public void StartPublishEventsOnPostTransaction(int eventsToPublishCount)
+    {
+        if (eventsToPublishCount <= 0) return;
+
+        lock (_stringBuilder)
+        {
+            _stringBuilder
+                .AppendLine()
+                .AppendLine($"|| Publish Post Transaction ({eventsToPublishCount} event{(eventsToPublishCount > 1 ? "s" : string.Empty)}) on thread<{Environment.CurrentManagedThreadId}>");
+        }
+    }
+
+    public void PublishEventOnPostTransaction(object @event)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}{@event.GetType()}");
+        }
+    }
+
+    public void StartPublishEventsOnSideEffects(int count)
+    {
+        if (count <= 0) return;
+
+        lock (_stringBuilder)
+        {
+            _stringBuilder
+                .AppendLine()
+                .AppendLine($"|| Publish Side Effects ({count} event{(count > 1 ? "s" : string.Empty)}) on thread<{Environment.CurrentManagedThreadId}>");
+        }
+    }
+
+    public void PublishEventOnSideEffects(object @event)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}{@event.GetType()}");
+        }
+    }
+
+    public void HandleSideEffectEvent(Type handlerType)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}-> Handle side-effect by {handlerType}");
+        }
+    }
+
+    public void HandlePostProjectionEvent(Type handlerType)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{Indent}-> Handle post-projection by {handlerType}");
+        }
+    }
+
+    public void OnSideEffectException(System.Exception e, int indentCount = 1)
+    {
+        var indent = BuildIndent(indentCount);
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{indent}!! Side-effect exception: {e.GetType().Name}")
+                .AppendLine($"{indent}-- Message : {e.Message}");
+        }
+    }
+
+    public void OnPostTransactionException(System.Exception e, Type handlerType, int indentCount = 1)
+    {
+        var indent = BuildIndent(indentCount);
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine($"{indent}!! Exception in post-transaction handler {handlerType}: {e.GetType().Name}")
+                .AppendLine($"{indent}-- Message : {e.Message}");
+        }
+    }
+
+    public string BuildString()
+    {
+        lock (_stringBuilder)
+        {
+            return _stringBuilder.ToString();
+        }
+    }
+
+    public void AddTrace(string trace)
+    {
+        lock (_stringBuilder)
+        {
+            _stringBuilder.AppendLine(trace);
+        }
+    }
 }

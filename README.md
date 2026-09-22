@@ -18,23 +18,52 @@ Herr General is a lightweight CQRS (Command Query Responsibility Segregation) im
 ## Command Processing Flow
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌───────────────────┐     ┌────────────────────────────┐
-│   Client    │────▶│   Mediator  │────▶│  Command Handler  │────▶│ Write Side Events Handlers │
-└─────────────┘     └─────────────┘     └───────────────────┘     └─────────────────┬──────────┘
-                                                                                    │
-┌─────────────┐     ┌─────────────────────┐     ┌───────────────┐                   │
-│   Result    │◀────│  Command Completed  │◀────│ Read Side     │◀──────────────────┘
-└─────────────┘     └─────────────────────┘     │ Event Handlers│
-                                                └───────────────┘
+                                      ┌─────────────────────────────────────────────────────────────┐
+                                      │              Transaction Scope (WithUnitOfWork)             │
+┌─────────────┐     ┌─────────────┐   │ ┌───────────────────┐     ┌───────────────────────────────┐ │
+│   Client    │────▶│   Mediator  │───┼▶│  Command Handler  │────▶│  IHandleCrossAggregate (In-Tx)│ │
+└─────────────┘     └─────────────┘   │ └───────────────────┘     └───────────────┬───────────────┘ │
+                                      │                                           │                 │
+                                      │ ┌───────────────────────────┐             ▼                 │
+                                      │ │      UoW.Commit()         │◀────┌───────────────────────┐ │
+                                      │ └─────────────┬─────────────┘     │IHandleSyncProjection  │ │
+                                      └───────────────┼───────────────────└───────────────────────┘─┘
+                                                      │ Post-Commit
+                                      ┌───────────────┴───────────────┐
+                                      ▼                               ▼
+                       ┌─────────────────────────────┐ ┌─────────────────────────────┐
+                       │ IHandlePostProjection       │ │ IHandleSideEffect           │
+                       │ (Eventual Read Models)      │ │ (Emails, Webhooks, Bus)     │
+                       └──────────────┬──────────────┘ └──────────────┬──────────────┘
+                                      │                               │
+                                      └───────────────┬───────────────┘
+┌─────────────┐     ┌─────────────────────┐           │
+│   Result    │◀────│  Command Completed  │◀──────────┘
+└─────────────┘     └─────────────────────┘
 ```
 
-When you send a command through Herr General, it follows this sequential flow:
+When you send a command through Herr General, it follows this transactional execution flow:
 
-1. The command is received by the mediator and routed to its appropriate handler
-2. The command handler processes the command and generates events
-3. Events are dispatched to write side handlers (domain logic) which may generate additional events
-4. Events are dispatched to read side handlers (projections/views)
-5. A strongly-typed `Result` or `Result<T>` is returned to the caller with the outcome
+1. **Command Processing**: The command is received by the mediator and executed by its command handler, yielding domain events.
+2. **Cross-Aggregate Orchestration (In-Transaction)**: Events are dispatched to `IHandleCrossAggregate<TEvent, TAggregate>` (or `IDomainEventHandler`) handlers which mutate other aggregates within the active transaction and may produce new cascading events.
+3. **Synchronous Projections (In-Transaction)**: Events are dispatched to `IHandleSyncProjection<TEvent>` handlers. If any synchronous projection fails, the database transaction is rolled back.
+4. **Transaction Commit**: The unit of work commits all aggregate mutations and synchronous projections atomically.
+5. **Post-Transaction Eventual Consistency & Side-Effects (Post-Transaction)**:
+   - `IHandlePostProjection<TEvent>`: Updates eventual consistency read models and projections.
+   - `IHandleSideEffect<TEvent>`: Triggers external actions (sending emails, publishing to Kafka/RabbitMQ, external webhooks).
+   - If an error occurs during post-transaction handling, it is captured in `CommandExecutionTracer` and logged without rolling back or altering the committed domain state.
+6. **Result**: A strongly-typed `Result` or `Result<T>` is returned to the caller.
+
+## Handler Selection Matrix
+
+Herr General provides four dedicated, unified handler abstractions sharing the common `IHandle...` prefix to express intent and transactional guarantees at compile-time:
+
+| Handler Interface | Execution Phase | Transactional Boundary | Return Type | Typical Use Case | Failure Behavior |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **`IHandleCrossAggregate<TEvent, TAggregate>`** | In-Transaction | Before Commit | `ChangeRequests<TAggregate>` | Mutate another aggregate & generate cascading events | Rolls back transaction |
+| **`IHandleSyncProjection<TEvent>`** | In-Transaction | Before Commit | `void` | Synchronous SQL projection, Outbox table insert | Rolls back transaction |
+| **`IHandlePostProjection<TEvent>`** | Post-Transaction | After Commit | `void` | Eventual consistency read models, search index update | Traced & isolated (command succeeds) |
+| **`IHandleSideEffect<TEvent>`** | Post-Transaction | After Commit | `void` | Send emails, push notifications, publish to external bus | Traced & isolated (command succeeds) |
 
 ## Debug logger output sample
 
@@ -87,12 +116,16 @@ Herr General integrates seamlessly with .NET's dependency injection system using
 
 ```csharp
 // Add Herr General to your service collection
-services.UseHerrGeneral(configuration =>
+services.AddHerrGeneral(configuration =>
     configuration
-        // Register write side assembly and namespace for command and domain event handlers
-        .UseWriteSideAssembly(typeof(Person).Assembly, typeof(Person).Namespace!)
-        // Register read side assembly and namespace for read model event handlers
-        .UseReadSideAssembly(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!));
+        // Scan for commands, write-side event handlers, and in-transaction cross-aggregate handlers
+        .ScanWriteSideOn(typeof(Person).Assembly, typeof(Person).Namespace!)
+        // Scan for in-transaction synchronous projections
+        .ScanSyncProjectionsOn(typeof(OrderSummarySyncProjection).Assembly)
+        // Scan for post-transaction eventual consistency projections
+        .ScanPostProjectionsOn(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
+        // Scan for post-transaction side-effects (emails, notifications, message bus)
+        .ScanSideEffectsOn(typeof(SendWelcomeEmailSideEffect).Assembly));
 ```
 
 This registration process scans the specified assemblies for command handlers and event handlers, registering them with the appropriate lifetime scopes in the dependency injection container.

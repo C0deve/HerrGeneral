@@ -77,8 +77,26 @@ public class ConfigurationBuilder
     }
 
     /// <summary>
+    /// Adds an assembly to scan for post-transaction side effects (<see cref="IHandleSideEffect{TEvent}"/>).
+    /// </summary>
+    /// <param name="assembly">The assembly to scan for side effect handlers.</param>
+    /// <param name="namespaces">Optional list of namespaces to limit the search. If not specified, the entire assembly will be scanned.</param>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public ConfigurationBuilder ScanSideEffectsOn(Assembly assembly, params string[] namespaces) =>
+        ScanReadSideOn(assembly, namespaces);
+
+    /// <summary>
+    /// Adds an assembly to scan for post-transaction projections (<see cref="IHandlePostProjection{TEvent}"/>).
+    /// </summary>
+    /// <param name="assembly">The assembly to scan for post-projection handlers.</param>
+    /// <param name="namespaces">Optional list of namespaces to limit the search. If not specified, the entire assembly will be scanned.</param>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public ConfigurationBuilder ScanPostProjectionsOn(Assembly assembly, params string[] namespaces) =>
+        ScanReadSideOn(assembly, namespaces);
+
+    /// <summary>
     /// Adds an assembly to scan for the write side.
-    /// Command and event handlers discovered in this assembly will be used to modify the system state.
+    /// Command, event handlers, and synchronous projection handlers discovered in this assembly will be used.
     /// </summary>
     /// <param name="assembly">The assembly to scan for write side command and event handlers.</param>
     /// <param name="namespaces">Optional list of namespaces to limit the search. If not specified, the entire assembly will be scanned.</param>
@@ -88,6 +106,15 @@ public class ConfigurationBuilder
         _writeSideSearchParams.Add(new ScanParam(assembly, namespaces));
         return this;
     }
+
+    /// <summary>
+    /// Adds an assembly to scan for in-transaction synchronous projections (<see cref="IHandleSyncProjection{TEvent}"/>).
+    /// </summary>
+    /// <param name="assembly">The assembly to scan for sync projection handlers.</param>
+    /// <param name="namespaces">Optional list of namespaces to limit the search. If not specified, the entire assembly will be scanned.</param>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public ConfigurationBuilder ScanSyncProjectionsOn(Assembly assembly, params string[] namespaces) =>
+        ScanWriteSideOn(assembly, namespaces);
 
     /// <summary>
     /// Registers a domain exception type that will be specifically recognized and handled by the system.
@@ -237,6 +264,33 @@ public class ConfigurationBuilder
         _readSideEventHandlerMappingsConfiguration.AddReadSideMapping<TEvent, THandler>();
         return this;
     }
+
+    /// <summary>
+    /// Registers an external post-transaction side effect handler.
+    /// </summary>
+    /// <typeparam name="TEvent">The type of event to process.</typeparam>
+    /// <typeparam name="THandler">The type of side effect handler to register.</typeparam>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public ConfigurationBuilder RegisterSideEffectHandler<TEvent, THandler>() =>
+        RegisterReadSideEventHandler<TEvent, THandler>();
+
+    /// <summary>
+    /// Registers an external post-transaction projection handler.
+    /// </summary>
+    /// <typeparam name="TEvent">The type of event to process.</typeparam>
+    /// <typeparam name="THandler">The type of projection handler to register.</typeparam>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public ConfigurationBuilder RegisterPostProjectionHandler<TEvent, THandler>() =>
+        RegisterReadSideEventHandler<TEvent, THandler>();
+
+    /// <summary>
+    /// Registers an external in-transaction synchronous projection handler.
+    /// </summary>
+    /// <typeparam name="TEvent">The type of event to process.</typeparam>
+    /// <typeparam name="THandler">The type of sync projection handler to register.</typeparam>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public ConfigurationBuilder RegisterSyncProjectionHandler<TEvent, THandler>() =>
+        RegisterWriteSideEventHandler<TEvent, THandler>();
 
     /// <summary>
     /// Enables or disables execution tracing for command handling.

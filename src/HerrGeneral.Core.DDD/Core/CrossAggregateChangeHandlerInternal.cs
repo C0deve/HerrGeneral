@@ -7,7 +7,7 @@ internal class CrossAggregateChangeHandlerInternal<TEvent, THandler, TAggregate>
     IAggregateRepository<TAggregate> repository,
     THandler handler) : IEventHandler<TEvent>, IHandlerTypeProvider
     where TAggregate : Aggregate<TAggregate>
-    where THandler : ICrossAggregateChangeHandler<TEvent, TAggregate>
+    where THandler : IHandleCrossAggregate<TEvent, TAggregate>
 {
     /// <summary>
     /// Handle incoming event and produces events

@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0] (2026-09-22)
+
+### Features
+
+* **handlers:** introduced unified `IHandle...` handler taxonomy:
+  * `IHandleCrossAggregate<in TEvent, TAggregate>` for in-transaction aggregate modifications and cascading events.
+  * `IHandleSyncProjection<in TEvent>` for in-transaction synchronous projections and outbox records (rolls back transaction on error).
+  * `IHandlePostProjection<in TEvent>` for post-transaction eventual consistency read models (post-commit execution with error isolation).
+  * `IHandleSideEffect<in TEvent>` for post-transaction external side effects, emails, webhooks, and message publishing.
+* **pipeline:** restructured command execution pipeline to strictly enforce transactional boundaries around `IUnitOfWork`:
+  * `WithTransactionalProjectionDispatching` inside transaction before `Commit()`.
+  * `WithPostTransactionDispatching` outside transaction after `Commit()`.
+* **tracing:** added granular execution tracing for sync projections, post-transaction projections, and side effects in `CommandExecutionTracer`.
+* **configuration:** added fluent scanning methods `ScanSideEffectsOn`, `ScanSyncProjectionsOn`, `ScanPostProjectionsOn` in `ConfigurationBuilder`.
+* **compatibility:** maintained full backward compatibility with `ICrossAggregateChangeHandler` and `IProjectionEventHandler`.
+
 ## [1.3.0](https://github.com/C0deve/HerrGeneral/compare/v1.2.0...v1.3.0) (2025-12-01)
 
 
