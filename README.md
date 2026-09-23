@@ -65,6 +65,34 @@ Herr General provides four dedicated, unified handler abstractions sharing the c
 | **`IHandlePostProjection<TEvent>`** | Post-Transaction | After Commit | `void` | Eventual consistency read models, search index update | Traced & isolated (command succeeds) |
 | **`IHandleSideEffect<TEvent>`** | Post-Transaction | After Commit | `void` | Send emails, push notifications, publish to external bus | Traced & isolated (command succeeds) |
 
+## OpenTelemetry & Observability
+
+HerrGeneral natively supports distributed tracing and metrics through standard .NET BCL APIs (`System.Diagnostics.ActivitySource` and `System.Diagnostics.Metrics.Meter`) with **zero third-party dependencies** in `HerrGeneral.Core`.
+
+### ActivitySource & Meter Names
+- **ActivitySource**: `"HerrGeneral"` (`HerrGeneralDiagnostics.SourceName`)
+- **Meter**: `"HerrGeneral"` (`HerrGeneralDiagnostics.MeterName`)
+
+### Integrating with OpenTelemetry SDK
+In your ASP.NET Core / OpenTelemetry setup:
+
+```csharp
+services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing
+        .AddSource(HerrGeneralDiagnostics.SourceName)
+        .AddOtlpExporter())
+    .WithMetrics(metrics => metrics
+        .AddMeter(HerrGeneralDiagnostics.MeterName)
+        .AddPrometheusExporter());
+```
+
+### Metrics Published
+- `herrgeneral.commands.total` (Counter): Total commands executed (with tags `herrgeneral.command.name`, `herrgeneral.status`).
+- `herrgeneral.commands.duration` (Histogram, ms): Command execution latency.
+- `herrgeneral.commands.active` (UpDownCounter): Number of currently running commands.
+- `herrgeneral.events.total` (Counter): Total dispatched domain events.
+- `herrgeneral.events.duration` (Histogram, ms): Event handler execution duration.
+
 ## Debug logger output sample
 
 ```

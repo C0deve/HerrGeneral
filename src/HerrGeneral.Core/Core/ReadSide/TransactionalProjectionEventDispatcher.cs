@@ -1,12 +1,11 @@
-using System.Collections.Concurrent;
-using System.Linq.Expressions;
-using HerrGeneral.Core.WriteSide;
+using System.Diagnostics;
+using HerrGeneral.Core.Diagnostics;
 
 namespace HerrGeneral.Core.ReadSide;
 
 internal sealed class TransactionalProjectionEventDispatcher(
     IServiceProvider serviceProvider,
-    CommandExecutionTracer? commandExecutionTracer = null)
+    ActivityTreeCollector? activityCollector = null)
 {
     private static readonly ConcurrentDictionary<Type, ISyncProjectionEventHandlerWrapper> EventHandlerWrappers = new();
 
@@ -17,10 +16,19 @@ internal sealed class TransactionalProjectionEventDispatcher(
             return;
         }
 
-        commandExecutionTracer?.StartPublishEventsOnSyncProjections(events.Count);
+        using var activity = HerrGeneralDiagnostics.StartActivity(
+            HerrGeneralDiagnostics.Activities.SyncProjectionsDispatch);
+
+        activity?.SetTag(HerrGeneralDiagnostics.Tags.EventsCount, events.Count);
+        activity?.SetTag(HerrGeneralDiagnostics.Tags.ThreadId, Environment.CurrentManagedThreadId);
+
+        HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
+            new KeyValuePair<string, object?>("herrgeneral.stage", "SyncProjections"));
+
+        activityCollector?.StartPublishEventsOnSyncProjections(events.Count);
         foreach (var eventToDispatch in events)
         {
-            commandExecutionTracer?.PublishEventOnSyncProjections(eventToDispatch);
+            activityCollector?.PublishEventOnSyncProjections(eventToDispatch);
             DispatchSingle(eventToDispatch);
         }
     }

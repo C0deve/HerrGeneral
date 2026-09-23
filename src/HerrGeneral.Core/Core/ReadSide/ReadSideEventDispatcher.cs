@@ -2,9 +2,12 @@
 
 // Strongly inspired from https://github.com/jbogard/MediatR
 
+using System.Diagnostics;
+using HerrGeneral.Core.Diagnostics;
+
 namespace HerrGeneral.Core.ReadSide;
 
-internal sealed class ReadSideEventDispatcher(IServiceProvider serviceProvider, CommandExecutionTracer? commandExecutionTracer = null)
+internal sealed class ReadSideEventDispatcher(IServiceProvider serviceProvider, ActivityTreeCollector? activityCollector = null)
 {
     private static readonly ConcurrentDictionary<Type, IEventHandlerWrapper> EventHandlerWrappers = new();
 
@@ -15,10 +18,19 @@ internal sealed class ReadSideEventDispatcher(IServiceProvider serviceProvider, 
             return;
         }
 
-        commandExecutionTracer?.StartPublishEventsOnReadSide(events.Count);
+        using var activity = HerrGeneralDiagnostics.StartActivity(
+            HerrGeneralDiagnostics.Activities.ReadSideDispatch);
+
+        activity?.SetTag(HerrGeneralDiagnostics.Tags.EventsCount, events.Count);
+        activity?.SetTag(HerrGeneralDiagnostics.Tags.ThreadId, Environment.CurrentManagedThreadId);
+
+        HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
+            new KeyValuePair<string, object?>("herrgeneral.stage", "ReadSide"));
+
+        activityCollector?.StartPublishEventsOnReadSide(events.Count);
         foreach (var eventToDispatch in events)
         {
-            commandExecutionTracer?.PublishEventOnReadSide(eventToDispatch);
+            activityCollector?.PublishEventOnReadSide(eventToDispatch);
             DispatchSingle(eventToDispatch);
         }
     }

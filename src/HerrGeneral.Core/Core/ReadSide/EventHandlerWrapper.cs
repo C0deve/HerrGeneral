@@ -1,3 +1,4 @@
+using HerrGeneral.Core.Diagnostics;
 using HerrGeneral.ReadSide;
 
 namespace HerrGeneral.Core.ReadSide;
@@ -9,12 +10,12 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
 
     private static void Handle(TEvent @event, IServiceProvider serviceProvider)
     {
-        var tracer = serviceProvider.GetService<CommandExecutionTracer>();
+        var collector = serviceProvider.GetService<ActivityTreeCollector>();
 
         foreach (var handler in serviceProvider.GetServices<IProjectionEventHandler<TEvent>>())
         {
             Start(handler)
-                .WithReadSideHandlerLogging(handler, tracer)
+                .WithReadSideHandlerLogging(handler, collector)
                 (@event);
         }
     }

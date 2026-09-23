@@ -1,3 +1,4 @@
+using HerrGeneral.Core.Diagnostics;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.WriteSide.Tracer;
 using Microsoft.Extensions.Logging;
@@ -17,10 +18,10 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
         var writeSideEventDispatcher = serviceProvider.GetRequiredService<WriteSideEventDispatcher>();
         var transactionalProjectionEventDispatcher = serviceProvider.GetRequiredService<TransactionalProjectionEventDispatcher>();
         var postTransactionEventDispatcher = serviceProvider.GetRequiredService<PostTransactionEventDispatcher>();
-        var tracer = serviceProvider.GetService<CommandExecutionTracer>();
+        var collector = serviceProvider.GetService<ActivityTreeCollector>();
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
-        if (unitOfWork is not null && tracer is not null)
-            unitOfWork = new UnitOfWorkTraceDecorator(unitOfWork, tracer);
+        if (unitOfWork is not null)
+            unitOfWork = new UnitOfWorkTraceDecorator(unitOfWork, collector);
         var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
         var handlerType = commandHandler is IHandlerTypeProvider handlerTypeProvider
             ? handlerTypeProvider.GetHandlerType()
@@ -32,7 +33,7 @@ internal abstract class CommandHandlerWrapperBase<TCommand, TResult> : ICommandH
                 .WithTransactionalProjectionDispatching(transactionalProjectionEventDispatcher)
                 .WithUnitOfWork(unitOfWork)
                 .WithPostTransactionDispatching(postTransactionEventDispatcher)
-                .WithTracer(handlerType, logger, tracer);
+                .WithTracer(handlerType, logger, collector);
     }
 
     private static CommandPipeline.HandlerDelegate<TCommand, TReturn> Start<TReturn>(ICommandHandler<TCommand, TReturn> commandHandler) =>

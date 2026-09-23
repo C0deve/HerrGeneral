@@ -1,6 +1,5 @@
-using System.Linq.Expressions;
-using HerrGeneral.Core.WriteSide;
-using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
+using HerrGeneral.Core.Diagnostics;
 
 namespace HerrGeneral.Core.ReadSide;
 
@@ -16,7 +15,7 @@ internal class PostTransactionEventHandlerWrapper<TEvent> : IPostTransactionEven
 
     private static void Handle(TEvent @event, IServiceProvider serviceProvider)
     {
-        var tracer = serviceProvider.GetService<CommandExecutionTracer>();
+        var collector = serviceProvider.GetService<ActivityTreeCollector>();
 
         // 1. Post-transaction Projections (IHandlePostProjection and IProjectionEventHandler)
         foreach (var handler in serviceProvider.GetServices<IHandlePostProjection<TEvent>>())
@@ -25,14 +24,36 @@ internal class PostTransactionEventHandlerWrapper<TEvent> : IPostTransactionEven
                 ? handlerTypeProvider.GetHandlerType()
                 : handler.GetType();
 
+            using var activity = HerrGeneralDiagnostics.StartActivity(
+                HerrGeneralDiagnostics.Activities.PostTransactionHandleEvent);
+
+            activity?.SetTag(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString());
+            activity?.SetTag(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString());
+            activity?.SetTag(HerrGeneralDiagnostics.Tags.PostTransactionKind, "post-projection");
+
+            var watch = Stopwatch.StartNew();
+            var status = "Success";
+
             try
             {
-                tracer?.HandlePostProjectionEvent(handlerType);
+                collector?.HandlePostProjectionEvent(handlerType);
                 handler.Handle(@event);
+                activity?.SetStatus(ActivityStatusCode.Ok);
             }
             catch (System.Exception ex)
             {
-                tracer?.OnPostTransactionException(ex, handlerType);
+                status = "Error";
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+                activity?.RecordException(ex);
+                collector?.OnPostTransactionException(ex, handlerType);
+            }
+            finally
+            {
+                watch.Stop();
+                HerrGeneralDiagnostics.EventsDuration.Record(watch.Elapsed.TotalMilliseconds,
+                    new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString()),
+                    new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString()),
+                    new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.Status, status));
             }
         }
 
@@ -43,14 +64,36 @@ internal class PostTransactionEventHandlerWrapper<TEvent> : IPostTransactionEven
                 ? handlerTypeProvider.GetHandlerType()
                 : handler.GetType();
 
+            using var activity = HerrGeneralDiagnostics.StartActivity(
+                HerrGeneralDiagnostics.Activities.PostTransactionHandleEvent);
+
+            activity?.SetTag(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString());
+            activity?.SetTag(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString());
+            activity?.SetTag(HerrGeneralDiagnostics.Tags.PostTransactionKind, "side-effect");
+
+            var watch = Stopwatch.StartNew();
+            var status = "Success";
+
             try
             {
-                tracer?.HandleSideEffectEvent(handlerType);
+                collector?.HandleSideEffectEvent(handlerType);
                 handler.Handle(@event);
+                activity?.SetStatus(ActivityStatusCode.Ok);
             }
             catch (System.Exception ex)
             {
-                tracer?.OnPostTransactionException(ex, handlerType);
+                status = "Error";
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+                activity?.RecordException(ex);
+                collector?.OnPostTransactionException(ex, handlerType);
+            }
+            finally
+            {
+                watch.Stop();
+                HerrGeneralDiagnostics.EventsDuration.Record(watch.Elapsed.TotalMilliseconds,
+                    new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString()),
+                    new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString()),
+                    new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.Status, status));
             }
         }
     }

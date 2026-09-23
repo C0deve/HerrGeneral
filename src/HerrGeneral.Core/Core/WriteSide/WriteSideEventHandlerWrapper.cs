@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using HerrGeneral.Core.Diagnostics;
 
 namespace HerrGeneral.Core.WriteSide;
 
@@ -9,14 +10,14 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
 
     private static ImmutableArray<object> Handle(TEvent @event, IServiceProvider serviceProvider)
     {
-        var tracer = serviceProvider.GetService<CommandExecutionTracer>();
+        var collector = serviceProvider.GetService<ActivityTreeCollector>();
         var domainExceptionMapper = serviceProvider.GetRequiredService<DomainExceptionMapper>();
 
         return serviceProvider
             .GetServices<IEventHandler<TEvent>>()
             .Select(handler => Start(handler)
                 .WithDomainExceptionMapping(domainExceptionMapper)
-                .WithTracer(handler, tracer))
+                .WithTracer(handler, collector))
             .SelectMany(pipeline => pipeline(@event))
             // ReSharper disable once UseCollectionExpression
             .ToImmutableArray();

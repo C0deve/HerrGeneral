@@ -1,4 +1,5 @@
-﻿using HerrGeneral.Core.Configuration;
+using HerrGeneral.Core.Configuration;
+using HerrGeneral.Core.Diagnostics;
 using HerrGeneral.Core.ReadSide;
 using HerrGeneral.Core.Registration.Policy;
 
@@ -17,7 +18,12 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         var maxConcurrentCommands = configuration.MaxConcurrentCommands;
         
         if (configuration.IsTracingEnabled)
-            serviceCollection.AddScoped<CommandExecutionTracer>();
+        {
+            serviceCollection.AddScoped<ActivityTreeCollector>();
+#pragma warning disable CS0618
+            serviceCollection.AddScoped<CommandExecutionTracer>(sp => new CommandExecutionTracer());
+#pragma warning restore CS0618
+        }
         serviceCollection.AddScoped<ReadSideEventDispatcher>();
         serviceCollection.AddScoped<TransactionalProjectionEventDispatcher>();
         serviceCollection.AddScoped<PostTransactionEventDispatcher>();

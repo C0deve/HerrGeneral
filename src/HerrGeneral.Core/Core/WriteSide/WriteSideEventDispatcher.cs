@@ -1,8 +1,11 @@
+using System.Diagnostics;
+using HerrGeneral.Core.Diagnostics;
+
 namespace HerrGeneral.Core.WriteSide;
 
 internal class WriteSideEventDispatcher(
     IServiceProvider serviceProvider,
-    CommandExecutionTracer? commandExecutionTracer = null)
+    ActivityTreeCollector? activityCollector = null)
 {
     private static readonly ConcurrentDictionary<Type, IEventHandlerWrapper> EventHandlerWrappers = new();
 
@@ -20,15 +23,24 @@ internal class WriteSideEventDispatcher(
             return [];
         }
 
+        using var activity = HerrGeneralDiagnostics.StartActivity(
+            HerrGeneralDiagnostics.Activities.WriteSideDispatch);
+
+        activity?.SetTag(HerrGeneralDiagnostics.Tags.EventsCount, events.Count);
+        activity?.SetTag(HerrGeneralDiagnostics.Tags.ThreadId, Environment.CurrentManagedThreadId);
+
+        HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
+            new KeyValuePair<string, object?>("herrgeneral.stage", "WriteSide"));
+
         // Enqueue all events
         Queue<object> eventQueue = new(events);
-        commandExecutionTracer?.StartPublishEventOnWriteSide();
+        activityCollector?.StartPublishEventOnWriteSide();
 
         // Process in FIFO
         var processedEvents = new List<object>(events.Count);
         while (eventQueue.TryDequeue(out var evt))
         {
-            commandExecutionTracer?.PublishEventOnWriteSide(evt);
+            activityCollector?.PublishEventOnWriteSide(evt);
             foreach (var newEventToDispatch in Dispatch(evt))
                 eventQueue.Enqueue(newEventToDispatch);
             processedEvents.Add(evt);

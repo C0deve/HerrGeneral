@@ -1,12 +1,11 @@
-using System.Collections.Concurrent;
-using System.Linq.Expressions;
-using HerrGeneral.Core.WriteSide;
+using System.Diagnostics;
+using HerrGeneral.Core.Diagnostics;
 
 namespace HerrGeneral.Core.ReadSide;
 
 internal sealed class PostTransactionEventDispatcher(
     IServiceProvider serviceProvider,
-    CommandExecutionTracer? commandExecutionTracer = null)
+    ActivityTreeCollector? activityCollector = null)
 {
     private static readonly ConcurrentDictionary<Type, IPostTransactionEventHandlerWrapper> EventHandlerWrappers = new();
 
@@ -17,10 +16,19 @@ internal sealed class PostTransactionEventDispatcher(
             return;
         }
 
-        commandExecutionTracer?.StartPublishEventsOnPostTransaction(events.Count);
+        using var activity = HerrGeneralDiagnostics.StartActivity(
+            HerrGeneralDiagnostics.Activities.PostTransactionDispatch);
+
+        activity?.SetTag(HerrGeneralDiagnostics.Tags.EventsCount, events.Count);
+        activity?.SetTag(HerrGeneralDiagnostics.Tags.ThreadId, Environment.CurrentManagedThreadId);
+
+        HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
+            new KeyValuePair<string, object?>("herrgeneral.stage", "PostTransaction"));
+
+        activityCollector?.StartPublishEventsOnPostTransaction(events.Count);
         foreach (var eventToDispatch in events)
         {
-            commandExecutionTracer?.PublishEventOnPostTransaction(eventToDispatch);
+            activityCollector?.PublishEventOnPostTransaction(eventToDispatch);
             DispatchSingle(eventToDispatch);
         }
     }

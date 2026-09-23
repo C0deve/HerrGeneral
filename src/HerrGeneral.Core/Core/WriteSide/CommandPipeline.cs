@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using HerrGeneral.Core.Diagnostics;
 using HerrGeneral.Core.ReadSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -28,53 +29,88 @@ internal static class CommandPipeline
 
         public HandlerDelegate<TCommand, TResult> WithTracer(Type handlerType,
             ILogger<ICommandHandler<TCommand, TResult>>? logger,
-            CommandExecutionTracer? commandExecutionTracer) =>
-            commandExecutionTracer is null
-                ? next
-                : (command, cancellationToken) =>
+            ActivityTreeCollector? activityCollector) =>
+            (command, cancellationToken) =>
+            {
+                logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
+
+                var commandName = typeof(TCommand).GetFriendlyName();
+                var threadId = Environment.CurrentManagedThreadId;
+
+                using var activity = HerrGeneralDiagnostics.StartActivity(
+                    HerrGeneralDiagnostics.Activities.ExecuteCommand);
+
+                activity?.SetTag(HerrGeneralDiagnostics.Tags.CommandName, commandName);
+                activity?.SetTag(HerrGeneralDiagnostics.Tags.CommandType, typeof(TCommand).ToString());
+                activity?.SetTag(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString());
+                activity?.SetTag(HerrGeneralDiagnostics.Tags.ThreadId, threadId);
+
+                HerrGeneralDiagnostics.ActiveCommands.Add(1, new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.CommandName, commandName));
+
+                var watch = Stopwatch.StartNew();
+                var status = "Success";
+
+                activityCollector?.StartHandlingCommand(commandName, handlerType, threadId);
+
+                try
                 {
-                    logger ??= NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
+                    var result = next(command, cancellationToken);
+                    activity?.SetStatus(ActivityStatusCode.Ok);
+                    return result;
+                }
+                catch (EventHandlerDomainException e)
+                {
+                    status = "Error";
+                    activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+                    activity?.RecordException(e);
+                    // already logged
+                    throw;
+                }
+                catch (DomainException e)
+                {
+                    status = "Error";
+                    activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+                    activity?.RecordException(e);
+                    activityCollector?.OnException(e, 2);
+                    throw;
+                }
+                catch (EventHandlerException e)
+                {
+                    status = "Error";
+                    activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+                    activity?.RecordException(e);
+                    // already logged
+                    throw;
+                }
+                catch (System.Exception e)
+                {
+                    status = "Error";
+                    activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+                    activity?.RecordException(e);
+                    activityCollector?.OnException(e, 2);
+                    throw;
+                }
+                finally
+                {
+                    watch.Stop();
+                    HerrGeneralDiagnostics.ActiveCommands.Add(-1, new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.CommandName, commandName));
 
-                    var watch = new Stopwatch();
-                    var commandType = typeof(TCommand).GetFriendlyName();
+                    HerrGeneralDiagnostics.CommandsTotal.Add(1,
+                        new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.CommandName, commandName),
+                        new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.Status, status));
 
-                    commandExecutionTracer
-                        .StartHandlingCommand(commandType, handlerType);
+                    HerrGeneralDiagnostics.CommandsDuration.Record(watch.Elapsed.TotalMilliseconds,
+                        new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.CommandName, commandName),
+                        new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.Status, status));
 
-                    watch.Start();
-                    try
-                    {
-                        return next(command, cancellationToken);
-                    }
-                    catch (EventHandlerDomainException)
-                    {
-                        // already logged
-                        throw;
-                    }
-                    catch (DomainException e)
-                    {
-                        commandExecutionTracer.OnException(e, 2);
-                        throw;
-                    }
-                    catch (EventHandlerException)
-                    {
-                        // already logged
-                        throw;
-                    }
-                    catch (System.Exception e)
-                    {
-                        commandExecutionTracer.OnException(e, 2);
-                        throw;
-                    }
-                    finally
-                    {
-                        watch.Stop();
+                    activityCollector?.StopHandlingCommand(commandName, watch.Elapsed);
 
-                        commandExecutionTracer.StopHandlingCommand(commandType, watch.Elapsed);
-
-                        logger.LogInformation("{Message}", commandExecutionTracer.BuildString());
+                    if (activityCollector is not null)
+                    {
+                        logger.LogInformation("{Message}", ActivityTreeFormatter.Format(activityCollector));
                     }
-                };
+                }
+            };
 
         public HandlerDelegate<TCommand, TResult> WithUnitOfWork(IUnitOfWork? unitOfWork) =>
             (command, cancellationToken) =>

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using HerrGeneral.Core.Diagnostics;
 using HerrGeneral.Core.ReadSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -23,31 +25,61 @@ internal static class EventHandlerPipeline
                 }
             };
 
-        public EventHandlerDelegate<TEvent> WithTracer(IEventHandler<TEvent> handler, CommandExecutionTracer? tracer) =>
+        public EventHandlerDelegate<TEvent> WithTracer(IEventHandler<TEvent> handler, ActivityTreeCollector? collector) =>
             @event =>
             {
-                if (tracer is null)
-                {
-                    return next(@event);
-                }
+                var handlerType = handler is IHandlerTypeProvider handlerTypeProvider
+                    ? handlerTypeProvider.GetHandlerType()
+                    : handler.GetType();
+
+                using var activity = HerrGeneralDiagnostics.StartActivity(
+                    HerrGeneralDiagnostics.Activities.WriteSideHandleEvent);
+
+                activity?.SetTag(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString());
+                activity?.SetTag(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString());
+
+                var watch = Stopwatch.StartNew();
+                var status = "Success";
+
+                collector?.HandleEvent(handlerType);
 
                 try
                 {
-                    if (handler is IHandlerTypeProvider handlerTypeProvider)
-                        tracer.HandleEvent(handlerTypeProvider.GetHandlerType());
-                    else
-                        tracer.HandleEvent(handler.GetType());
-                    return next(@event);
+                    var result = next(@event);
+                    activity?.SetStatus(ActivityStatusCode.Ok);
+                    return result;
                 }
                 catch (EventHandlerDomainException e)
                 {
-                    tracer.OnException(e, 2);
+                    status = "Error";
+                    activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+                    activity?.RecordException(e);
+                    collector?.OnException(e, 2);
                     throw;
                 }
                 catch (EventHandlerException e)
                 {
-                    tracer.OnException(e.InnerException!, 2);
+                    status = "Error";
+                    activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+                    activity?.RecordException(e.InnerException ?? e);
+                    collector?.OnException(e.InnerException!, 2);
                     throw;
+                }
+                catch (System.Exception e)
+                {
+                    status = "Error";
+                    activity?.SetStatus(ActivityStatusCode.Error, e.Message);
+                    activity?.RecordException(e);
+                    collector?.OnException(e, 2);
+                    throw;
+                }
+                finally
+                {
+                    watch.Stop();
+                    HerrGeneralDiagnostics.EventsDuration.Record(watch.Elapsed.TotalMilliseconds,
+                        new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString()),
+                        new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString()),
+                        new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.Status, status));
                 }
             };
     }

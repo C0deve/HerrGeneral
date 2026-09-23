@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.0] (2026-09-23)
+
+### Features
+
+* **opentelemetry:** introduced native distributed tracing and metrics via standard .NET BCL `System.Diagnostics.ActivitySource` and `System.Diagnostics.Metrics.Meter` (`HerrGeneral`):
+  * Command root activities (`HerrGeneral.ExecuteCommand`) with semantic tags, error status, and exception events.
+  * Child activities for each pipeline phase: `HerrGeneral.WriteSide.Dispatch`, `HerrGeneral.WriteSide.HandleEvent`, `HerrGeneral.UnitOfWork`, `HerrGeneral.SyncProjections.Dispatch`, `HerrGeneral.SyncProjections.HandleEvent`, `HerrGeneral.PostTransaction.Dispatch`, `HerrGeneral.PostTransaction.HandleEvent`, `HerrGeneral.ReadSide.Dispatch`, `HerrGeneral.ReadSide.HandleEvent`.
+  * Standard metrics: `herrgeneral.commands.total`, `herrgeneral.commands.duration`, `herrgeneral.events.total`, `herrgeneral.events.duration`, `herrgeneral.commands.active`.
+* **tracing:** replaced `CommandExecutionTracer` with `ActivityTreeCollector` and `ActivityTreeFormatter` providing an identical hierarchical ASCII tree log representation.
+* **compatibility:** maintained 100% backward compatibility with existing configuration options (`EnableCommandExecutionTracing`).
+
 ## [1.4.0] (2026-09-22)
 
 ### Features
