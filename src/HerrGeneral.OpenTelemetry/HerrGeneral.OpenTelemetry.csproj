@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>HerrGeneral.OpenTelemetry</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <Title>Herr General OpenTelemetry</Title>
+        <Authors>Codeve Soft</Authors>
+        <MinVerTagPrefix>v</MinVerTagPrefix>
+        <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
+        <Product>Herr General</Product>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <EnablePackageValidation>true</EnablePackageValidation>
+
+        <Description>OpenTelemetry instrumentation extensions for HerrGeneral CQRS library</Description>
+        <PackageTags>.Net;HerrGeneral;OpenTelemetry;Tracing;Metrics</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="OpenTelemetry.Api.ProviderBuilderExtensions" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MinVer"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\HerrGeneral.Core\HerrGeneral.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+</Project>

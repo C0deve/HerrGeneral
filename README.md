@@ -74,7 +74,27 @@ HerrGeneral natively supports distributed tracing and metrics through standard .
 - **Meter**: `"HerrGeneral"` (`HerrGeneralDiagnostics.MeterName`)
 
 ### Integrating with OpenTelemetry SDK
-In your ASP.NET Core / OpenTelemetry setup:
+Using the dedicated package `HerrGeneral.OpenTelemetry`:
+
+```bash
+dotnet add package HerrGeneral.OpenTelemetry
+```
+
+```csharp
+using HerrGeneral.OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+
+services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing
+        .AddHerrGeneralInstrumentation()
+        .AddOtlpExporter())
+    .WithMetrics(metrics => metrics
+        .AddHerrGeneralInstrumentation()
+        .AddOtlpExporter());
+```
+
+Alternatively, without any extra package, reference `HerrGeneralDiagnostics.SourceName` and `HerrGeneralDiagnostics.MeterName` directly:
 
 ```csharp
 services.AddOpenTelemetry()
@@ -124,6 +144,9 @@ Herr General is distributed as a set of focused NuGet packages to allow selectiv
 
 #### Core Infrastructure
 - **[HerrGeneral.Core](https://www.nuget.org/packages/HerrGeneral.Core/)**: Essential components for application integration and configuration
+
+#### Optional: Observability Components
+- **[HerrGeneral.OpenTelemetry](https://www.nuget.org/packages/HerrGeneral.OpenTelemetry/)**: OpenTelemetry SDK registration extensions (`AddHerrGeneralInstrumentation`)
 
 #### Optional: Write Side Components
 - **[HerrGeneral.WriteSide](https://www.nuget.org/packages/HerrGeneral.WriteSide/)**: Provides write-side interfaces for handling commands and domain events

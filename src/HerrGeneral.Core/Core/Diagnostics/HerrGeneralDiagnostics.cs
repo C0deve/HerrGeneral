@@ -14,6 +14,11 @@ public static class HerrGeneralDiagnostics
     public const string SourceName = "HerrGeneral";
 
     /// <summary>
+    /// ActivitySource name for HerrGeneral distributed tracing (alias for <see cref="SourceName"/>).
+    /// </summary>
+    public const string ActivitySourceName = SourceName;
+
+    /// <summary>
     /// Meter name for HerrGeneral metrics.
     /// </summary>
     public const string MeterName = "HerrGeneral";

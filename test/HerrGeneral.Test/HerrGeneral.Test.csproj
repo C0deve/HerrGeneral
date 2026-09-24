@@ -4,6 +4,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="OpenTelemetry"/>
+        <PackageReference Include="OpenTelemetry.Exporter.InMemory"/>
         <PackageReference Include="FakeItEasy"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Console"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug"/>
@@ -15,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\HerrGeneral.OpenTelemetry\HerrGeneral.OpenTelemetry.csproj" />
       <ProjectReference Include="..\..\src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj" />
       <ProjectReference Include="..\..\src\HerrGeneral.Core\HerrGeneral.Core.csproj" />
       <ProjectReference Include="..\..\src\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj" />

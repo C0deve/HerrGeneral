@@ -5,6 +5,7 @@
 ### Features
 
 * **opentelemetry:** introduced native distributed tracing and metrics via standard .NET BCL `System.Diagnostics.ActivitySource` and `System.Diagnostics.Metrics.Meter` (`HerrGeneral`):
+  * Added package `HerrGeneral.OpenTelemetry` with `TracerProviderBuilder` and `MeterProviderBuilder` extension methods (`AddHerrGeneralInstrumentation`).
   * Command root activities (`HerrGeneral.ExecuteCommand`) with semantic tags, error status, and exception events.
   * Child activities for each pipeline phase: `HerrGeneral.WriteSide.Dispatch`, `HerrGeneral.WriteSide.HandleEvent`, `HerrGeneral.UnitOfWork`, `HerrGeneral.SyncProjections.Dispatch`, `HerrGeneral.SyncProjections.HandleEvent`, `HerrGeneral.PostTransaction.Dispatch`, `HerrGeneral.PostTransaction.HandleEvent`, `HerrGeneral.ReadSide.Dispatch`, `HerrGeneral.ReadSide.HandleEvent`.
   * Standard metrics: `herrgeneral.commands.total`, `herrgeneral.commands.duration`, `herrgeneral.events.total`, `herrgeneral.events.duration`, `herrgeneral.commands.active`.
