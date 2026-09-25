@@ -3,7 +3,7 @@
 public abstract class Projection<T>
 {
     private readonly List<T> _data = [];
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
 
     public IReadOnlyCollection<T> All()
     {

@@ -58,7 +58,9 @@ internal class ActivityTreeCollector
         {
             UnitOfWork ??= new UnitOfWorkTrace();
             UnitOfWork.Started = true;
-            if (duration.HasValue) UnitOfWork.StartDuration = duration.Value;
+            if (duration.HasValue)
+            {
+            }
         }
     }
 
@@ -67,7 +69,6 @@ internal class ActivityTreeCollector
         lock (_lock)
         {
             UnitOfWork ??= new UnitOfWorkTrace();
-            UnitOfWork.Committed = true;
             if (duration.HasValue) UnitOfWork.CommitDuration = duration.Value;
         }
     }
@@ -87,7 +88,9 @@ internal class ActivityTreeCollector
     {
         lock (_lock)
         {
-            if (UnitOfWork != null) UnitOfWork.Disposed = true;
+            if (UnitOfWork != null)
+            {
+            }
         }
     }
 
@@ -164,7 +167,7 @@ internal class ActivityTreeCollector
     {
         lock (_lock)
         {
-            PostTransactions.Add(new PostTransactionTraceNode(eventType, handlerType, kind, duration, exception != null ? ExceptionInfo.From(exception) : null));
+            PostTransactions.Add(new PostTransactionTraceNode(eventType, handlerType, duration, exception != null ? ExceptionInfo.From(exception) : null));
         }
     }
 
@@ -175,22 +178,14 @@ internal class ActivityTreeCollector
             ReadSideHandlers.Add(new ReadSideTraceNode(eventType, handlerType, duration, exception != null ? ExceptionInfo.From(exception) : null));
         }
     }
-
-    public string BuildString()
-    {
-        return ActivityTreeFormatter.Format(this);
-    }
 }
 
 internal class UnitOfWorkTrace
 {
     public bool Started { get; set; }
-    public TimeSpan StartDuration { get; set; }
-    public bool Committed { get; set; }
     public TimeSpan CommitDuration { get; set; }
     public bool RolledBack { get; set; }
     public TimeSpan RollbackDuration { get; set; }
-    public bool Disposed { get; set; }
 }
 
 internal class WriteSideEventNode(Type eventType)
@@ -217,7 +212,7 @@ internal interface IProjectionTraceNode
 
 internal record SyncProjectionTraceNode(Type EventType, Type HandlerType, TimeSpan Duration, ExceptionInfo? Exception) : IProjectionTraceNode;
 
-internal record PostTransactionTraceNode(Type EventType, Type HandlerType, string Kind, TimeSpan Duration, ExceptionInfo? Exception) : IProjectionTraceNode;
+internal record PostTransactionTraceNode(Type EventType, Type HandlerType, TimeSpan Duration, ExceptionInfo? Exception) : IProjectionTraceNode;
 
 internal record ReadSideTraceNode(Type EventType, Type HandlerType, TimeSpan Duration, ExceptionInfo? Exception) : IProjectionTraceNode;
 
