@@ -48,7 +48,7 @@ internal class EventHandlerWithMapping<TEvent, THandler>(THandler handler, IWrit
             case null when result is IReadOnlyList<object> events:
                 return events;
             case null when result is IEnumerable<object> enumerableEvents:
-                return enumerableEvents.ToList();
+                return [.. enumerableEvents];
             case null:
                 throw new InvalidOperationException(
                     $"Handler type '{typeof(THandler).Name}' is registered without a conversion function " +

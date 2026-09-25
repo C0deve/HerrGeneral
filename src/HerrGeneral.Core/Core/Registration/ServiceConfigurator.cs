@@ -30,7 +30,7 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         serviceCollection.AddScoped<WriteSideEventDispatcher>();
         serviceCollection.AddSingleton(new CommandConcurrencyLimiter(maxConcurrentCommands));
         serviceCollection.AddScoped<Mediator>();
-        serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper(configuration.DomainExceptionTypes.ToArray()));
+        serviceCollection.AddSingleton<DomainExceptionMapper>(_ => new DomainExceptionMapper([.. configuration.DomainExceptionTypes]));
         serviceCollection.AddSingleton<CommandHandlerMappings>(_ => configuration.CommandHandlerMappings);
         serviceCollection.AddSingleton<IWriteSideEventHandlerMappings>(_ => new EventHandlerMappingsProvider(configuration.WriteSideEventHandlerMappingsConfiguration));
         serviceCollection.AddSingleton<IReadSideEventHandlerMappings>(_ => new EventHandlerMappingsProvider(configuration.ReadSideEventHandlerMappingsConfiguration));

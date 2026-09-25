@@ -9,10 +9,11 @@ namespace HerrGeneral.Core.Registration.Policy;
 internal class RegisterMappedCommandHandlers(CommandHandlerMappings commandHandlerMappings) : IRegistrationPolicy
 {
     public HashSet<Type> GetOpenTypes() =>
-        commandHandlerMappings
+    [
+        .. commandHandlerMappings
             .All()
             .Select(mapping => mapping.HandlerGenericType)
-            .ToHashSet();
+    ];
 
     public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {

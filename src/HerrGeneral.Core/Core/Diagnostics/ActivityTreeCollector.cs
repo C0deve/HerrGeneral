@@ -16,13 +16,13 @@ internal class ActivityTreeCollector
 
     public UnitOfWorkTrace? UnitOfWork { get; private set; }
 
-    public List<WriteSideEventNode> RootWriteSideEvents { get; } = new();
+    public List<WriteSideEventNode> RootWriteSideEvents { get; } = [];
     private readonly Dictionary<object, WriteSideEventNode> _eventNodes = new(ReferenceEqualityComparer.Instance);
     private object? _currentWriteSideEvent;
 
-    public List<SyncProjectionTraceNode> SyncProjections { get; } = new();
-    public List<PostTransactionTraceNode> PostTransactions { get; } = new();
-    public List<ReadSideTraceNode> ReadSideHandlers { get; } = new();
+    public List<SyncProjectionTraceNode> SyncProjections { get; } = [];
+    public List<PostTransactionTraceNode> PostTransactions { get; } = [];
+    public List<ReadSideTraceNode> ReadSideHandlers { get; } = [];
 
     public void StartHandlingCommand(string commandName, Type handlerType, int? threadId = null)
     {
@@ -196,7 +196,7 @@ internal class UnitOfWorkTrace
 internal class WriteSideEventNode(Type eventType)
 {
     public Type EventType { get; } = eventType;
-    public List<WriteSideHandlerNode> Handlers { get; } = new();
+    public List<WriteSideHandlerNode> Handlers { get; } = [];
 }
 
 internal class WriteSideHandlerNode(Type handlerType, TimeSpan duration, ExceptionInfo? exception)
@@ -204,7 +204,7 @@ internal class WriteSideHandlerNode(Type handlerType, TimeSpan duration, Excepti
     public Type HandlerType { get; } = handlerType;
     public TimeSpan Duration { get; } = duration;
     public ExceptionInfo? Exception { get; } = exception;
-    public List<WriteSideEventNode> ChildEvents { get; } = new();
+    public List<WriteSideEventNode> ChildEvents { get; } = [];
 }
 
 internal interface IProjectionTraceNode

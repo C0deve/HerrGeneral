@@ -261,7 +261,7 @@ public class ActivityTreeFormattingShould
             public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingCommand command)
             {
                 E2EDomain.ThrowDomainError();
-                return (Array.Empty<object>(), Unit.Default);
+                return ([], Unit.Default);
             }
         }
     }
@@ -299,7 +299,7 @@ public class ActivityTreeFormattingShould
         public IReadOnlyList<object> Handle(E2EFailingEvent @event)
         {
             E2EDomain.ThrowEventHandlerDomainError();
-            return Array.Empty<object>();
+            return [];
         }
     }
 
@@ -310,7 +310,7 @@ public class ActivityTreeFormattingShould
 
     private class InMemoryLoggerProvider : ILoggerProvider
     {
-        public List<string> Messages { get; } = new();
+        public List<string> Messages { get; } = [];
 
         public ILogger CreateLogger(string categoryName) => new CustomLogger(this);
         public void Dispose() { }

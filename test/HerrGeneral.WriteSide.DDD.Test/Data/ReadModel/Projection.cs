@@ -37,7 +37,7 @@ public abstract class Projection<T>
     {
         lock (_lock)
         {
-            return _data.Where(predicate).ToList();
+            return [.. _data.Where(predicate)];
         }
     }
 }

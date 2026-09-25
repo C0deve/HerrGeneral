@@ -10,10 +10,11 @@ namespace HerrGeneral.Core.Registration.Policy;
 internal class RegisterMappedWriteSideEventHandlers(EventHandlerMappingsConfiguration eventHandlerMappingsConfiguration) : IRegistrationPolicy
 {
     public HashSet<Type> GetOpenTypes() =>
-        eventHandlerMappingsConfiguration
+    [
+        .. eventHandlerMappingsConfiguration
             .All()
             .Select(mapping => mapping.HandlerGenericType)
-            .ToHashSet();
+    ];
 
     public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
