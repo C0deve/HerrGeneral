@@ -27,22 +27,25 @@ internal static class ReadSidePipeline
             var watch = Stopwatch.StartNew();
             var status = "Success";
 
-            collector?.HandleEvent(handlerType);
             try
             {
                 next(@event);
+                watch.Stop();
                 activity?.SetStatus(ActivityStatusCode.Ok);
+                collector?.RecordReadSideHandler(typeof(TEvent), handlerType, watch.Elapsed, null);
             }
             catch (System.Exception ex)
             {
+                watch.Stop();
                 status = "Error";
                 activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 activity?.RecordException(ex);
+                collector?.RecordReadSideHandler(typeof(TEvent), handlerType, watch.Elapsed, ex);
                 throw;
             }
             finally
             {
-                watch.Stop();
+                if (watch.IsRunning) watch.Stop();
                 HerrGeneralDiagnostics.EventsDuration.Record(watch.Elapsed.TotalMilliseconds,
                     new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString()),
                     new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString()),

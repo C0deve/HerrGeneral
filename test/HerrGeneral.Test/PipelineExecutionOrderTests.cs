@@ -30,7 +30,7 @@ public class PipelineExecutionOrderTests(ITestOutputHelper output)
     }
 
     // In-transaction write-side handler (generates cascading event)
-    public class OrderPlacedWriteSideHandler(ExecutionLog log) : WriteSide.IEventHandler<OrderPlacedEvent>
+    public class OrderPlacedWriteSideHandler(ExecutionLog log) : IEventHandler<OrderPlacedEvent>
     {
         public IReadOnlyList<object> Handle(OrderPlacedEvent @event)
         {

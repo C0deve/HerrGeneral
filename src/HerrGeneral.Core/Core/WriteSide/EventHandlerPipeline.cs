@@ -41,41 +41,44 @@ internal static class EventHandlerPipeline
                 var watch = Stopwatch.StartNew();
                 var status = "Success";
 
-                collector?.HandleEvent(handlerType);
-
                 try
                 {
                     var result = next(@event);
+                    watch.Stop();
                     activity?.SetStatus(ActivityStatusCode.Ok);
+                    collector?.RecordWriteSideHandler(handlerType, typeof(TEvent), watch.Elapsed, result, null);
                     return result;
                 }
                 catch (EventHandlerDomainException e)
                 {
+                    watch.Stop();
                     status = "Error";
                     activity?.SetStatus(ActivityStatusCode.Error, e.Message);
                     activity?.RecordException(e);
-                    collector?.OnException(e, 2);
+                    collector?.RecordWriteSideHandler(handlerType, typeof(TEvent), watch.Elapsed, null, e);
                     throw;
                 }
                 catch (EventHandlerException e)
                 {
+                    watch.Stop();
                     status = "Error";
                     activity?.SetStatus(ActivityStatusCode.Error, e.Message);
                     activity?.RecordException(e.InnerException ?? e);
-                    collector?.OnException(e.InnerException!, 2);
+                    collector?.RecordWriteSideHandler(handlerType, typeof(TEvent), watch.Elapsed, null, e.InnerException ?? e);
                     throw;
                 }
                 catch (System.Exception e)
                 {
+                    watch.Stop();
                     status = "Error";
                     activity?.SetStatus(ActivityStatusCode.Error, e.Message);
                     activity?.RecordException(e);
-                    collector?.OnException(e, 2);
+                    collector?.RecordWriteSideHandler(handlerType, typeof(TEvent), watch.Elapsed, null, e);
                     throw;
                 }
                 finally
                 {
-                    watch.Stop();
+                    if (watch.IsRunning) watch.Stop();
                     HerrGeneralDiagnostics.EventsDuration.Record(watch.Elapsed.TotalMilliseconds,
                         new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString()),
                         new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString()),

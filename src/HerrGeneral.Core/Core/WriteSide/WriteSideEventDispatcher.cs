@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using HerrGeneral.Core.Diagnostics;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -34,7 +33,10 @@ internal class WriteSideEventDispatcher(
 
         // Enqueue all events
         Queue<object> eventQueue = new(events);
-        activityCollector?.StartPublishEventOnWriteSide();
+        foreach (var evt in events)
+        {
+            activityCollector?.RegisterRootWriteSideEvent(evt);
+        }
 
         // Process in FIFO
         var processedEvents = new List<object>(events.Count);

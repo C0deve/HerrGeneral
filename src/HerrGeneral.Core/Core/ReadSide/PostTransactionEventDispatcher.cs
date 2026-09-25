@@ -1,11 +1,8 @@
-using System.Diagnostics;
 using HerrGeneral.Core.Diagnostics;
 
 namespace HerrGeneral.Core.ReadSide;
 
-internal sealed class PostTransactionEventDispatcher(
-    IServiceProvider serviceProvider,
-    ActivityTreeCollector? activityCollector = null)
+internal sealed class PostTransactionEventDispatcher(IServiceProvider serviceProvider)
 {
     private static readonly ConcurrentDictionary<Type, IPostTransactionEventHandlerWrapper> EventHandlerWrappers = new();
 
@@ -25,10 +22,8 @@ internal sealed class PostTransactionEventDispatcher(
         HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
             new KeyValuePair<string, object?>("herrgeneral.stage", "PostTransaction"));
 
-        activityCollector?.StartPublishEventsOnPostTransaction(events.Count);
         foreach (var eventToDispatch in events)
         {
-            activityCollector?.PublishEventOnPostTransaction(eventToDispatch);
             DispatchSingle(eventToDispatch);
         }
     }

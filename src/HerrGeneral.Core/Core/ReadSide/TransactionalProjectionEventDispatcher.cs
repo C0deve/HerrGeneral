@@ -1,11 +1,8 @@
-using System.Diagnostics;
 using HerrGeneral.Core.Diagnostics;
 
 namespace HerrGeneral.Core.ReadSide;
 
-internal sealed class TransactionalProjectionEventDispatcher(
-    IServiceProvider serviceProvider,
-    ActivityTreeCollector? activityCollector = null)
+internal sealed class TransactionalProjectionEventDispatcher(IServiceProvider serviceProvider)
 {
     private static readonly ConcurrentDictionary<Type, ISyncProjectionEventHandlerWrapper> EventHandlerWrappers = new();
 
@@ -25,10 +22,8 @@ internal sealed class TransactionalProjectionEventDispatcher(
         HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
             new KeyValuePair<string, object?>("herrgeneral.stage", "SyncProjections"));
 
-        activityCollector?.StartPublishEventsOnSyncProjections(events.Count);
         foreach (var eventToDispatch in events)
         {
-            activityCollector?.PublishEventOnSyncProjections(eventToDispatch);
             DispatchSingle(eventToDispatch);
         }
     }

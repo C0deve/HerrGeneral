@@ -1,6 +1,6 @@
 namespace HerrGeneral.Test.Data.WithHerrGeneralDependency.WriteSide;
 
-public class PongHandlerWithHerrGeneralDependency(EventTracker eventTracker) : HerrGeneral.WriteSide.IEventHandler<Pong>
+public class PongHandlerWithHerrGeneralDependency(EventTracker eventTracker) : IEventHandler<Pong>
 {
     public IReadOnlyList<object> Handle(Pong notification)
     {

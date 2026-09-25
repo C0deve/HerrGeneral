@@ -36,20 +36,22 @@ internal class PostTransactionEventHandlerWrapper<TEvent> : IPostTransactionEven
 
             try
             {
-                collector?.HandlePostProjectionEvent(handlerType);
                 handler.Handle(@event);
+                watch.Stop();
                 activity?.SetStatus(ActivityStatusCode.Ok);
+                collector?.RecordPostTransaction(typeof(TEvent), handlerType, "post-projection", watch.Elapsed, null);
             }
             catch (System.Exception ex)
             {
+                watch.Stop();
                 status = "Error";
                 activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 activity?.RecordException(ex);
-                collector?.OnPostTransactionException(ex, handlerType);
+                collector?.RecordPostTransaction(typeof(TEvent), handlerType, "post-projection", watch.Elapsed, ex);
             }
             finally
             {
-                watch.Stop();
+                if (watch.IsRunning) watch.Stop();
                 HerrGeneralDiagnostics.EventsDuration.Record(watch.Elapsed.TotalMilliseconds,
                     new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString()),
                     new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString()),
@@ -76,20 +78,22 @@ internal class PostTransactionEventHandlerWrapper<TEvent> : IPostTransactionEven
 
             try
             {
-                collector?.HandleSideEffectEvent(handlerType);
                 handler.Handle(@event);
+                watch.Stop();
                 activity?.SetStatus(ActivityStatusCode.Ok);
+                collector?.RecordPostTransaction(typeof(TEvent), handlerType, "side-effect", watch.Elapsed, null);
             }
             catch (System.Exception ex)
             {
+                watch.Stop();
                 status = "Error";
                 activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 activity?.RecordException(ex);
-                collector?.OnPostTransactionException(ex, handlerType);
+                collector?.RecordPostTransaction(typeof(TEvent), handlerType, "side-effect", watch.Elapsed, ex);
             }
             finally
             {
-                watch.Stop();
+                if (watch.IsRunning) watch.Stop();
                 HerrGeneralDiagnostics.EventsDuration.Record(watch.Elapsed.TotalMilliseconds,
                     new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString()),
                     new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString()),

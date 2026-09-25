@@ -21,9 +21,16 @@ internal static class CommandPipeline
                 }
                 catch (System.Exception e)
                 {
-                    throw mapper.Map(e,
+                    var mapped = mapper.Map(e,
                         exception => new DomainException(exception),
                         exception => exception);
+
+                    if (ReferenceEquals(mapped, e))
+                    {
+                        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(e).Throw();
+                    }
+
+                    throw mapped;
                 }
             };
 
@@ -63,7 +70,7 @@ internal static class CommandPipeline
                     status = "Error";
                     activity?.SetStatus(ActivityStatusCode.Error, e.Message);
                     activity?.RecordException(e);
-                    // already logged
+                    activityCollector?.RecordCommandException(e);
                     throw;
                 }
                 catch (DomainException e)
@@ -71,7 +78,7 @@ internal static class CommandPipeline
                     status = "Error";
                     activity?.SetStatus(ActivityStatusCode.Error, e.Message);
                     activity?.RecordException(e);
-                    activityCollector?.OnException(e, 2);
+                    activityCollector?.RecordCommandException(e);
                     throw;
                 }
                 catch (EventHandlerException e)
@@ -79,7 +86,7 @@ internal static class CommandPipeline
                     status = "Error";
                     activity?.SetStatus(ActivityStatusCode.Error, e.Message);
                     activity?.RecordException(e);
-                    // already logged
+                    activityCollector?.RecordCommandException(e);
                     throw;
                 }
                 catch (System.Exception e)
@@ -87,7 +94,7 @@ internal static class CommandPipeline
                     status = "Error";
                     activity?.SetStatus(ActivityStatusCode.Error, e.Message);
                     activity?.RecordException(e);
-                    activityCollector?.OnException(e, 2);
+                    activityCollector?.RecordCommandException(e);
                     throw;
                 }
                 finally

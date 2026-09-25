@@ -2,7 +2,7 @@ namespace HerrGeneral.Test.Data.WithHerrGeneralDependency.WriteSide;
 
 public record PingWithDependenceOnHerrGeneral : CommandBase
 {
-    public class Handler(EventTracker eventTracker) : HerrGeneral.WriteSide.ICommandHandler<PingWithDependenceOnHerrGeneral, Unit>
+    public class Handler(EventTracker eventTracker) : ICommandHandler<PingWithDependenceOnHerrGeneral, Unit>
     {
         public (IReadOnlyList<object> Events, Unit Result) Handle(PingWithDependenceOnHerrGeneral command)
         {

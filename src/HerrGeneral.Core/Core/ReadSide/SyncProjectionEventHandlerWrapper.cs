@@ -32,23 +32,25 @@ internal class SyncProjectionEventHandlerWrapper<TEvent> : ISyncProjectionEventH
             var watch = Stopwatch.StartNew();
             var status = "Success";
 
-            collector?.HandleSyncProjection(handlerType);
-
             try
             {
                 handler.Handle(@event);
+                watch.Stop();
                 activity?.SetStatus(ActivityStatusCode.Ok);
+                collector?.RecordSyncProjection(typeof(TEvent), handlerType, watch.Elapsed, null);
             }
             catch (System.Exception ex)
             {
+                watch.Stop();
                 status = "Error";
                 activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 activity?.RecordException(ex);
+                collector?.RecordSyncProjection(typeof(TEvent), handlerType, watch.Elapsed, ex);
                 throw;
             }
             finally
             {
-                watch.Stop();
+                if (watch.IsRunning) watch.Stop();
                 HerrGeneralDiagnostics.EventsDuration.Record(watch.Elapsed.TotalMilliseconds,
                     new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.EventType, typeof(TEvent).ToString()),
                     new KeyValuePair<string, object?>(HerrGeneralDiagnostics.Tags.HandlerType, handlerType.ToString()),

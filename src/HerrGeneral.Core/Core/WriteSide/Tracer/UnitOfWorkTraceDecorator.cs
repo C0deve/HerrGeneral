@@ -18,23 +18,29 @@ internal class UnitOfWorkTraceDecorator(IUnitOfWork innerUnitOfWork, ActivityTre
             HerrGeneralDiagnostics.Activities.UnitOfWork);
         _activity?.AddEvent(new ActivityEvent("Start"));
 
-        collector?.StartUnitOfWork();
+        var watch = Stopwatch.StartNew();
         innerUnitOfWork.Start();
+        watch.Stop();
+        collector?.StartUnitOfWork(watch.Elapsed);
     }
 
     public void Commit()
     {
         _activity?.AddEvent(new ActivityEvent("Commit"));
+        var watch = Stopwatch.StartNew();
         innerUnitOfWork.Commit();
-        collector?.CommitUnitOfWork();
+        watch.Stop();
+        collector?.CommitUnitOfWork(watch.Elapsed);
     }
 
     public void RollBack()
     {
         _activity?.AddEvent(new ActivityEvent("RollBack"));
         _activity?.SetStatus(ActivityStatusCode.Error, "Unit of Work Rolled Back");
+        var watch = Stopwatch.StartNew();
         innerUnitOfWork.RollBack();
-        collector?.RollbackUnitOfWork();
+        watch.Stop();
+        collector?.RollbackUnitOfWork(watch.Elapsed);
     }
 
     public void Dispose()
