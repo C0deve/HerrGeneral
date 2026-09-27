@@ -9,7 +9,7 @@
         <Title>Herr General</Title>
         <Authors>Codeve Soft</Authors>
         <MinVerTagPrefix>v</MinVerTagPrefix>
-        <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
+        <Copyright>Copyright (c) CODEVE SOFT 2026</Copyright>
         <Product>Herr General</Product>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -18,8 +18,9 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <EnablePackageValidation>true</EnablePackageValidation>
         
-        <Description>Helper methods for HerrGeneral testing</Description>
+        <Description>Testing utilities and fluent assertion extensions for HerrGeneral CQRS applications</Description>
         <PackageTags>HerrGeneral;Test</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -41,5 +42,9 @@
     
     <ItemGroup>
       <ProjectReference Include="..\HerrGeneral.Core\HerrGeneral.Core.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 </Project>

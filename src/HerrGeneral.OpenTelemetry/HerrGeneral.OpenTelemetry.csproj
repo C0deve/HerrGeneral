@@ -9,7 +9,7 @@
         <Title>Herr General OpenTelemetry</Title>
         <Authors>Codeve Soft</Authors>
         <MinVerTagPrefix>v</MinVerTagPrefix>
-        <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
+        <Copyright>Copyright (c) CODEVE SOFT 2026</Copyright>
         <Product>Herr General</Product>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>

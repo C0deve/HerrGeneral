@@ -5,7 +5,7 @@
         <Title>Herr General</Title>
         <Authors>Codeve Soft</Authors>
         <MinVerTagPrefix>v</MinVerTagPrefix>
-        <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
+        <Copyright>Copyright (c) CODEVE SOFT 2026</Copyright>
         <Product>Herr General</Product>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -14,8 +14,8 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <EnablePackageValidation>true</EnablePackageValidation>
 
-        <Description>Read side interface for HerrGeneral</Description>
-        <PackageTags>.Net;HerrGeneral</PackageTags>
+        <Description>Read-side projections and query model abstractions for HerrGeneral</Description>
+        <PackageTags>.Net;HerrGeneral;ReadSide;CQRS;Projections</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 

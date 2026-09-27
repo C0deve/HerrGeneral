@@ -9,7 +9,7 @@
         <Title>Herr General</Title>
         <Authors>Codeve Soft</Authors>
         <MinVerTagPrefix>v</MinVerTagPrefix>
-        <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
+        <Copyright>Copyright (c) CODEVE SOFT 2026</Copyright>
         <Product>Herr General</Product>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -17,8 +17,8 @@
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <EnablePackageValidation>true</EnablePackageValidation>
-        <Description>Registration of dynamic handler for aggregate creation and update</Description>
-        <PackageTags>.Net;HerrGeneral</PackageTags>
+        <Description>Domain-Driven Design (DDD) aggregate lifecycle and dynamic handler integration for HerrGeneral</Description>
+        <PackageTags>.Net;HerrGeneral;DDD;CQRS</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 

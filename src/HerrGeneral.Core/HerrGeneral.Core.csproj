@@ -9,17 +9,16 @@
         <Title>Herr General</Title>
         <Authors>Codeve Soft</Authors>
         <MinVerTagPrefix>v</MinVerTagPrefix>
-        <Copyright>Copyright (c) CODEVE SOFT 2023</Copyright>
+        <Copyright>Copyright (c) CODEVE SOFT 2026</Copyright>
         <Product>Herr General</Product>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <SignAssembly>true</SignAssembly>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <EnablePackageValidation>true</EnablePackageValidation>
 
-        <Description>Cqrs library used in my personal work</Description>
-        <PackageTags>.Net;Cqrs</PackageTags>
+        <Description>Core mediator, pipeline, and concurrency framework for HerrGeneral CQRS library</Description>
+        <PackageTags>.Net;HerrGeneral;Cqrs;Mediator</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
