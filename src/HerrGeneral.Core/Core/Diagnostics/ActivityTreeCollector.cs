@@ -5,7 +5,11 @@ namespace HerrGeneral.Core.Diagnostics;
 /// </summary>
 internal class ActivityTreeCollector
 {
+#if NET9_0_OR_GREATER
     private readonly Lock _lock = new();
+#else
+    private readonly object _lock = new();
+#endif
 
     public string? CommandName { get; private set; }
     public Type? HandlerType { get; private set; }

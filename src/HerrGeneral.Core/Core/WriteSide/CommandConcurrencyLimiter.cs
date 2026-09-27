@@ -8,7 +8,11 @@ public sealed class CommandConcurrencyLimiter : IDisposable
     private static readonly ConcurrentDictionary<Type, Func<object, object?>?> KeyExtractors = new();
 
     private readonly SemaphoreSlim _globalSemaphore;
+#if NET9_0_OR_GREATER
     private readonly Lock _syncRoot = new();
+#else
+    private readonly object _syncRoot = new();
+#endif
     private readonly Dictionary<object, KeyedLockEntry> _keyedLocks = new();
     private bool _disposed;
 
