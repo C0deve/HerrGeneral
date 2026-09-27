@@ -74,10 +74,10 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build HerrGeneral.sln -c Release --no-restore
+        run: dotnet build HerrGeneral.slnx -c Release --no-restore
 
       - name: Pack (force version)
-        run: dotnet pack HerrGeneral.sln -c Release --no-build -p:ContinuousIntegrationBuild=true -p:Version=$VERSION -o dist
+        run: dotnet pack HerrGeneral.slnx -c Release --no-build -p:ContinuousIntegrationBuild=true -p:Version=$VERSION -o dist
 
       - name: List packages
         shell: pwsh
