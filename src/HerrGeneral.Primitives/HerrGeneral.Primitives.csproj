@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>HerrGeneral</RootNamespace>
+        <AssemblyName>HerrGeneral.Primitives</AssemblyName>
+        <Description>Lightweight functional primitives and transaction boundaries for HerrGeneral.</Description>
+    </PropertyGroup>
+</Project>

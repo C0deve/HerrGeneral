@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
-internal class RegisterICrossAggregateChangeHandler : IRegistrationPolicy
+internal sealed class RegisterICrossAggregateChangeHandler : IRegistrationPolicy
 {
     private readonly Type _handlerInterface = typeof(ICrossAggregateChangeHandler<,>);
 

@@ -151,7 +151,7 @@ public sealed class CommandConcurrencyLimiter : IDisposable
             if (entry.RefCount == 0)
             {
                 _keyedLocks.Remove(key);
-                entry.Semaphore.Dispose();
+                entry.Dispose();
             }
         }
     }
@@ -166,17 +166,22 @@ public sealed class CommandConcurrencyLimiter : IDisposable
         {
             foreach (var entry in _keyedLocks.Values)
             {
-                entry.Semaphore.Dispose();
+                entry.Dispose();
             }
             _keyedLocks.Clear();
         }
         _globalSemaphore.Dispose();
     }
 
-    private sealed class KeyedLockEntry
+    private sealed class KeyedLockEntry : IDisposable
     {
         public readonly SemaphoreSlim Semaphore = new(1, 1);
         public int RefCount = 1;
+
+        public void Dispose()
+        {
+            Semaphore.Dispose();
+        }
     }
 
     private sealed class KeyedReleaser(CommandConcurrencyLimiter owner, object key, KeyedLockEntry entry) : IDisposable

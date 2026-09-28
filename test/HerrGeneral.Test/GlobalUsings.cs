@@ -7,6 +7,7 @@ global using System.Threading.Tasks;
 global using HerrGeneral.Exception;
 global using HerrGeneral.Registration;
 global using HerrGeneral.Test;
+global using HerrGeneral.Testing;
 global using HerrGeneral.Test.Data.WithHerrGeneralDependency.ReadSide;
 global using HerrGeneral.Test.Data.WithMapping.ReadSide;
 global using HerrGeneral.Test.Data.WithMapping.WriteSide;

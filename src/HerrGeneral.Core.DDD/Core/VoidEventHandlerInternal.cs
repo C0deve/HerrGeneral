@@ -8,7 +8,7 @@ namespace HerrGeneral.DDD.Core;
 /// <typeparam name="TEvent">The type of event to handle</typeparam>
 /// <typeparam name="THandler">The type of domain-specific event handler</typeparam>
 /// <param name="handler">The domain-specific event handler that processes the event</param>
-internal class VoidEventHandlerInternal<TEvent, THandler>(
+internal sealed class VoidEventHandlerInternal<TEvent, THandler>(
     THandler handler) : WriteSide.IEventHandler<TEvent>, IHandlerTypeProvider
     where THandler : IVoidDomainEventHandler<TEvent>
 {

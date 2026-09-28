@@ -12,7 +12,7 @@ namespace HerrGeneral.DDD.Core;
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
-internal class CreateHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Guid>, IHandlerTypeProvider
+internal sealed class CreateHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Guid>, IHandlerTypeProvider
     where TAggregate : Aggregate<TAggregate>
     where TCommand : Create<TAggregate>
     where THandler : ICreateHandler<TAggregate, TCommand>

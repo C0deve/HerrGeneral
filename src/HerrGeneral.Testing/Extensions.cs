@@ -1,9 +1,9 @@
-using HerrGeneral.Test.Log;
+using HerrGeneral.Testing.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace HerrGeneral.Test;
+namespace HerrGeneral.Testing;
 
 /// <summary>
 /// Extension methods for testing code using HerrGeneral.Core

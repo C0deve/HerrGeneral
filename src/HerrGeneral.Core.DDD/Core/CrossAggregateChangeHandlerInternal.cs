@@ -3,7 +3,7 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.DDD.Core;
 
-internal class CrossAggregateChangeHandlerInternal<TEvent, THandler, TAggregate>(
+internal sealed class CrossAggregateChangeHandlerInternal<TEvent, THandler, TAggregate>(
     IAggregateRepository<TAggregate> repository,
     THandler handler) : IEventHandler<TEvent>, IHandlerTypeProvider
     where TAggregate : Aggregate<TAggregate>

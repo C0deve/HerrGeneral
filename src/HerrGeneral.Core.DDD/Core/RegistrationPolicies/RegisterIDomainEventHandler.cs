@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
-internal class RegisterIDomainEventHandler : IRegistrationPolicy
+internal sealed class RegisterIDomainEventHandler : IRegistrationPolicy
 {
     private readonly Type _handlerInterface = typeof(IDomainEventHandler<,>);
 

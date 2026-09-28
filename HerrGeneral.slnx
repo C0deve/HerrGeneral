@@ -8,9 +8,10 @@
   <Project Path="src/HerrGeneral.Core.DDD/HerrGeneral.Core.DDD.csproj" />
   <Project Path="src/HerrGeneral.Core/HerrGeneral.Core.csproj" />
   <Project Path="src/HerrGeneral.OpenTelemetry/HerrGeneral.OpenTelemetry.csproj" />
+  <Project Path="src/HerrGeneral.Primitives/HerrGeneral.Primitives.csproj" />
   <Project Path="src/HerrGeneral.ReadSide/HerrGeneral.ReadSide.csproj" />
   <Project Path="src/HerrGeneral.SampleApplication/HerrGeneral.SampleApplication.csproj" />
-  <Project Path="src/HerrGeneral.Test.Extension/HerrGeneral.Test.Extension.csproj" />
+  <Project Path="src/HerrGeneral.Testing/HerrGeneral.Testing.csproj" />
   <Project Path="src/HerrGeneral.WriteSide.DDD/HerrGeneral.WriteSide.DDD.csproj" />
   <Project Path="src/HerrGeneral.WriteSide/HerrGeneral.WriteSide.csproj" />
   <Project Path="test/HerrGeneral.Test/HerrGeneral.Test.csproj" />

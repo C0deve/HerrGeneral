@@ -10,7 +10,7 @@ public interface IHandleCrossAggregate<in TEvent, TAggregate> where TAggregate :
     /// <summary>
     /// Handles the event and returns change requests to be applied to the target aggregate.
     /// </summary>
-    /// <param name="event">The domain event being handled.</param>
+    /// <param name="domainEvent">The domain event being handled.</param>
     /// <returns>A collection of change requests for the target aggregate.</returns>
-    ChangeRequests<TAggregate> Handle(TEvent @event);
+    ChangeRequests<TAggregate> Handle(TEvent domainEvent);
 }

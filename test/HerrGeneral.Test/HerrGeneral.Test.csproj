@@ -24,9 +24,14 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\HerrGeneral.OpenTelemetry\HerrGeneral.OpenTelemetry.csproj" />
-      <ProjectReference Include="..\..\src\HerrGeneral.Test.Extension\HerrGeneral.Test.Extension.csproj" />
+      <ProjectReference Include="..\..\src\HerrGeneral.Testing\HerrGeneral.Testing.csproj" />
+      <ProjectReference Include="..\..\src\HerrGeneral.Primitives\HerrGeneral.Primitives.csproj" />
       <ProjectReference Include="..\..\src\HerrGeneral.Core\HerrGeneral.Core.csproj" />
       <ProjectReference Include="..\..\src\HerrGeneral.WriteSide\HerrGeneral.WriteSide.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Using Include="HerrGeneral.Testing" />
     </ItemGroup>
 
 </Project>

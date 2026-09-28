@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral;
+namespace HerrGeneral;
 
 /// <summary>
 /// Represent no value
@@ -8,5 +8,5 @@ public struct Unit
     /// <summary>
     /// A unit 
     /// </summary>
-    public static readonly Unit Default = new();
+    public static readonly Unit Default;
 }

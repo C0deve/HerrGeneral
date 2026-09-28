@@ -3,7 +3,7 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.DDD.Core;
 
-internal class ChangeMultiHandlerInternal<TAggregate, TCommand, THandler>(
+internal sealed class ChangeMultiHandlerInternal<TAggregate, TCommand, THandler>(
     IAggregateRepository<TAggregate> repository,
     THandler handler) : ICommandHandler<TCommand, Unit>, IHandlerTypeProvider
     where TAggregate : Aggregate<TAggregate>

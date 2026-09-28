@@ -11,7 +11,7 @@ namespace HerrGeneral.DDD.Core;
 /// <typeparam name="TAggregate">The type of aggregate involved in the event</typeparam>
 /// <param name="handler">The domain-specific event handler that processes the event</param>
 /// <param name="repository">The repository responsible for aggregate persistence</param>
-internal class EventHandlerInternal<TEvent, THandler, TAggregate>(
+internal sealed class EventHandlerInternal<TEvent, THandler, TAggregate>(
     THandler handler,
     IAggregateRepository<TAggregate> repository) : WriteSide.IEventHandler<TEvent>, IHandlerTypeProvider
     where THandler : IDomainEventHandler<TEvent, TAggregate>

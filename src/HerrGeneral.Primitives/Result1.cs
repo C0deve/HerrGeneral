@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral;
+namespace HerrGeneral;
 
 /// <summary>
 /// Result of running a command
@@ -17,7 +17,10 @@ public record Result<TResult>
     /// </summary>
     internal readonly object? DomainError;
    
-    internal bool IsPanicError => PanicException != null;
+    /// <summary>
+    /// Result has a panic error
+    /// </summary>
+    public bool IsPanicError => PanicException != null;
 
     /// <summary>
     /// Operation succeeded.
@@ -27,7 +30,7 @@ public record Result<TResult>
     /// <summary>
     /// Result has a domain error
     /// </summary>
-    protected bool IsDomainError => DomainError != null;
+    public bool IsDomainError => DomainError != null;
 
     /// <summary>
     /// Ctor for success

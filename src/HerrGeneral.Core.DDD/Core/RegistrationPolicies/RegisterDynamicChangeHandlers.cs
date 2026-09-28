@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
-internal class RegisterDynamicChangeHandlers : IRegistrationPolicy
+internal sealed class RegisterDynamicChangeHandlers : IRegistrationPolicy
 {
     private readonly Type _commandInterface = typeof(INoHandlerChange<>);
 

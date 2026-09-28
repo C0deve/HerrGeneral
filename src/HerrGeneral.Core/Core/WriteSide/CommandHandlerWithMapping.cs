@@ -1,3 +1,4 @@
+using System.Globalization;
 using HerrGeneral.Core.ReadSide;
 
 namespace HerrGeneral.Core.WriteSide;
@@ -10,7 +11,7 @@ namespace HerrGeneral.Core.WriteSide;
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
 /// <typeparam name="TResult"></typeparam>
-internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler handler, CommandHandlerMappings mappingProvider)
+internal sealed class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler handler, CommandHandlerMappings mappingProvider)
     : ICommandHandler<TCommand, TResult>, IHandlerTypeProvider
     where TCommand : notnull
     where THandler : notnull
@@ -44,7 +45,7 @@ internal class CommandHandlerWithMapping<TCommand, THandler, TResult>(THandler h
             dynamic value =
                 mapping.MapValue is null
                     ? Unit.Default
-                    : Convert.ChangeType(mapping.MapValue(result), typeof(TResult));
+                    : Convert.ChangeType(mapping.MapValue(result), typeof(TResult), CultureInfo.InvariantCulture);
 
             return (events, value);
         }

@@ -123,9 +123,10 @@ public class OpenTelemetryExtensionsShould
         result.IsSuccess.ShouldBeTrue();
 
         tracerProvider.ForceFlush();
+        var activities = exportedActivities.ToArray();
 
         // 1. Root command activity
-        var rootActivity = exportedActivities.FirstOrDefault(a =>
+        var rootActivity = activities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.ExecuteCommand &&
             (string?)a.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName) == nameof(FullPipelineCommand));
 
@@ -134,34 +135,34 @@ public class OpenTelemetryExtensionsShould
         rootActivity.GetTagItem(HerrGeneralDiagnostics.Tags.Status)?.ToString().ShouldBe("Success");
 
         // 2. Write side dispatch & handler activities
-        var writeSideDispatch = exportedActivities.FirstOrDefault(a =>
+        var writeSideDispatch = activities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.WriteSideDispatch &&
             a.ParentSpanId == rootActivity.SpanId);
         writeSideDispatch.ShouldNotBeNull();
 
-        var writeSideHandler = exportedActivities.FirstOrDefault(a =>
+        var writeSideHandler = activities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.WriteSideHandleEvent &&
             a.ParentSpanId == writeSideDispatch.SpanId);
         writeSideHandler.ShouldNotBeNull();
 
         // 3. Sync projections dispatch & handler activities
-        var syncProjectionsDispatch = exportedActivities.FirstOrDefault(a =>
+        var syncProjectionsDispatch = activities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.SyncProjectionsDispatch &&
             a.ParentSpanId == rootActivity.SpanId);
         syncProjectionsDispatch.ShouldNotBeNull();
 
-        var syncProjectionsHandler = exportedActivities.FirstOrDefault(a =>
+        var syncProjectionsHandler = activities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.SyncProjectionsHandleEvent &&
             a.ParentSpanId == syncProjectionsDispatch.SpanId);
         syncProjectionsHandler.ShouldNotBeNull();
 
         // 4. Post transaction dispatch & handler activities
-        var postTxDispatch = exportedActivities.FirstOrDefault(a =>
+        var postTxDispatch = activities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.PostTransactionDispatch &&
             a.ParentSpanId == rootActivity.SpanId);
         postTxDispatch.ShouldNotBeNull();
 
-        var postTxHandlers = exportedActivities.Where(a =>
+        var postTxHandlers = activities.Where(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.PostTransactionHandleEvent &&
             a.ParentSpanId == postTxDispatch.SpanId).ToList();
         postTxHandlers.Count.ShouldBe(2); // Post projection + Side effect

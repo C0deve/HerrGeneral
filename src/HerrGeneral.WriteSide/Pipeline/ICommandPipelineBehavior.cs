@@ -11,9 +11,9 @@ public interface ICommandPipelineBehavior<TCommand, TResult>
     /// Handles the command execution within the pipeline.
     /// </summary>
     /// <param name="context">The command execution context.</param>
-    /// <param name="next">The delegate to invoke the next behavior or handler in the pipeline.</param>
+    /// <param name="nextHandler">The delegate to invoke the next behavior or handler in the pipeline.</param>
     /// <returns>A task returning the list of emitted domain events and the command result.</returns>
     Task<(IReadOnlyList<object> Events, TResult Result)> HandleAsync(
         CommandExecutionContext<TCommand, TResult> context,
-        CommandHandlerDelegate<TResult> next);
+        CommandHandlerDelegate<TResult> nextHandler);
 }

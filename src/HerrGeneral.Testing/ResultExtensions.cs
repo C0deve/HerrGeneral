@@ -2,7 +2,7 @@
 using Xunit;
 using Xunit.Sdk;
 
-namespace HerrGeneral.Test;
+namespace HerrGeneral.Testing;
 
 /// <summary>
 /// Extensions methods for <see cref="Result"/>

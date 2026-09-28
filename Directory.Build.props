@@ -6,5 +6,8 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AnalysisLevel>latest-recommended</AnalysisLevel>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
     </PropertyGroup>
 </Project>

@@ -16,15 +16,15 @@ public interface IEventPipelineBehavior<in TEvent>
     /// <summary>
     /// Handles the event execution within the pipeline.
     /// </summary>
-    /// <param name="event">The event being processed.</param>
+    /// <param name="domainEvent">The event being processed.</param>
     /// <param name="serviceProvider">The scoped service provider.</param>
-    /// <param name="next">The delegate to invoke the next behavior or handler in the pipeline.</param>
+    /// <param name="nextHandler">The delegate to invoke the next behavior or handler in the pipeline.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task returning the list of emitted cascading domain events.</returns>
     // ReSharper disable once UnusedMember.Global
     Task<IReadOnlyList<object>> HandleAsync(
-        TEvent @event,
+        TEvent domainEvent,
         IServiceProvider serviceProvider,
-        EventHandlerDelegate next,
+        EventHandlerDelegate nextHandler,
         CancellationToken cancellationToken = default);
 }

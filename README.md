@@ -191,21 +191,21 @@ Herr General is distributed as a set of focused NuGet packages to allow selectiv
 
 ### NuGet Packages
 
-#### Core Infrastructure
-- **[HerrGeneral.Core](https://www.nuget.org/packages/HerrGeneral.Core/)**: Essential components for application integration and configuration
+#### Core & Primitives
+- **[HerrGeneral.Primitives](https://www.nuget.org/packages/HerrGeneral.Primitives/)**: Lightweight functional primitives (`Result`, `Result<T>`, `Unit`, `DomainException`, `IUnitOfWork`) with zero external dependencies
+- **[HerrGeneral.Core](https://www.nuget.org/packages/HerrGeneral.Core/)**: Mediator execution engine, command pipeline, and registration scanner
 
-#### Optional: Observability Components
-- **[HerrGeneral.OpenTelemetry](https://www.nuget.org/packages/HerrGeneral.OpenTelemetry/)**: OpenTelemetry SDK registration extensions (`AddHerrGeneralInstrumentation`)
+#### Optional: Write & Read Side Contracts
+- **[HerrGeneral.WriteSide](https://www.nuget.org/packages/HerrGeneral.WriteSide/)**: Command handler contracts, pipeline interfaces, and concurrency control
+- **[HerrGeneral.ReadSide](https://www.nuget.org/packages/HerrGeneral.ReadSide/)**: Read-side handler contracts (`IHandleSyncProjection`, `IHandlePostProjection`, `IHandleSideEffect`)
 
-#### Optional: Write Side Components
-- **[HerrGeneral.WriteSide](https://www.nuget.org/packages/HerrGeneral.WriteSide/)**: Provides write-side interfaces for handling commands and domain events
-
-#### Optional: Read Side Components
-- **[HerrGeneral.ReadSide](https://www.nuget.org/packages/HerrGeneral.ReadSide/)**: Provides read-side `IProjectionEventHandler` for handling domain events
+#### Optional: Observability & Testing
+- **[HerrGeneral.OpenTelemetry](https://www.nuget.org/packages/HerrGeneral.OpenTelemetry/)**: OpenTelemetry SDK instrumentation extensions (`AddHerrGeneralInstrumentation`)
+- **[HerrGeneral.Testing](https://www.nuget.org/packages/HerrGeneral.Testing/)**: Test logging extensions and fluent assertions for commands and results
 
 #### Optional: DDD Components
 - **[HerrGeneral.WriteSide.DDD](https://www.nuget.org/packages/HerrGeneral.WriteSide.DDD/)**: Domain-Driven Design building blocks (AggregateRoot, Entity)
-- **[HerrGeneral.Core.DDD](https://www.nuget.org/packages/HerrGeneral.Core.DDD/)**: DDD handlers and infrastructure for command handling
+- **[HerrGeneral.Core.DDD](https://www.nuget.org/packages/HerrGeneral.Core.DDD/)**: DDD aggregate repository adapters and expression dispatcher infrastructure
 
 
 ## Getting Started

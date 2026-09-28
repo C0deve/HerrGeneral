@@ -10,6 +10,6 @@ public interface IHandleSideEffect<in TEvent>
     /// <summary>
     /// Handles the event after transaction commit.
     /// </summary>
-    /// <param name="event">The domain event being processed.</param>
-    void Handle(TEvent @event);
+    /// <param name="domainEvent">The domain event being processed.</param>
+    void Handle(TEvent domainEvent);
 }

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
-internal class RegisterIVoidDomainEventHandler : IRegistrationPolicy
+internal sealed class RegisterIVoidDomainEventHandler : IRegistrationPolicy
 {
     private readonly Type _handlerInterface = typeof(IVoidDomainEventHandler<>);
 

@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral;
+namespace HerrGeneral;
 
 /// <summary>
 /// Interface of the unit of work.
@@ -20,5 +20,4 @@ public interface IUnitOfWork : IDisposable
     /// Rolls back the transaction associated with unit of work
     /// </summary>
     void RollBack();
-
 }

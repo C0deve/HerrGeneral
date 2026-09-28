@@ -1,11 +1,11 @@
-# HerrGeneral.Test.Extension
+# HerrGeneral.Testing
 
 Testing utilities and fluent assertions for **HerrGeneral** CQRS applications and unit tests.
 
 ## Installation
 
 ```bash
-dotnet add package HerrGeneral.Test.Extension
+dotnet add package HerrGeneral.Testing
 ```
 
 ## Features & Usage
@@ -15,7 +15,7 @@ dotnet add package HerrGeneral.Test.Extension
 Simplify unit and integration testing of mediator commands with extension methods that automatically execute the command and assert success or return the expected value:
 
 ```csharp
-using HerrGeneral.Test;
+using HerrGeneral.Testing;
 
 // Dispatch and assert success
 await new FreezeBankAccount(accountId).AssertSendFrom(mediator);
@@ -29,7 +29,7 @@ Guid accountId = await new OpenBankAccount("John Doe").AssertSendFrom<Guid>(medi
 Assert the outcome of asynchronous command executions directly:
 
 ```csharp
-using HerrGeneral.Test;
+using HerrGeneral.Testing;
 
 // Assert success and unwrap value
 var accountId = await mediator.Send<Guid>(new OpenBankAccount("Alice")).ShouldSuccess();
@@ -51,11 +51,11 @@ await mediator.Send(new InvalidOperationCommand())
 Integrate Microsoft.Extensions.Logging with xUnit's `ITestOutputHelper` during test execution:
 
 ```csharp
-using HerrGeneral.Test;
+using HerrGeneral.Testing;
 
 services.AddHerrGeneralTestLogger(testOutputHelper, LogLevel.Debug);
 ```
 
-## NuGet Package
+## Compatibility
 
-- **[HerrGeneral.Test.Extension](https://www.nuget.org/packages/HerrGeneral.Test.Extension/)**
+- Targets `.NET 8.0`, `.NET 9.0`, and `.NET 10.0`.

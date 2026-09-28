@@ -9,6 +9,6 @@ public interface IHandlePostProjection<in TEvent>
     /// <summary>
     /// Updates eventual consistency projections with the specified event.
     /// </summary>
-    /// <param name="event">The domain event being processed.</param>
-    void Handle(TEvent @event);
+    /// <param name="domainEvent">The domain event being processed.</param>
+    void Handle(TEvent domainEvent);
 }

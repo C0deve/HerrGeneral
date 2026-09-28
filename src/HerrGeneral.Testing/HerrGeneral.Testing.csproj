@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>HerrGeneral.Test</RootNamespace>
+        <RootNamespace>HerrGeneral.Testing</RootNamespace>
+        <AssemblyName>HerrGeneral.Testing</AssemblyName>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -19,7 +20,7 @@
         <EnablePackageValidation>true</EnablePackageValidation>
         
         <Description>Testing utilities and fluent assertion extensions for HerrGeneral CQRS applications</Description>
-        <PackageTags>HerrGeneral;Test</PackageTags>
+        <PackageTags>HerrGeneral;Test;Testing;Assertions</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
@@ -42,6 +43,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\HerrGeneral.Core\HerrGeneral.Core.csproj" />
+      <ProjectReference Include="..\HerrGeneral.Primitives\HerrGeneral.Primitives.csproj" />
     </ItemGroup>
     
     <ItemGroup>

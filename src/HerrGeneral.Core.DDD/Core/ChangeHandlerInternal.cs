@@ -13,7 +13,7 @@ namespace HerrGeneral.DDD.Core;
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
-internal class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Unit>, IHandlerTypeProvider
+internal sealed class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Unit>, IHandlerTypeProvider
     where TAggregate : Aggregate<TAggregate>
     where TCommand : Change<TAggregate>
     where THandler : IChangeHandler<TAggregate, TCommand>

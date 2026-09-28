@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
-internal class RegisterICreateHandler : IRegistrationPolicy
+internal sealed class RegisterICreateHandler : IRegistrationPolicy
 {
     private readonly Type _handlerInterface = typeof(ICreateHandler<,>);
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.DDD.Core.RegistrationPolicies;
 
-internal class RegisterIChangeHandler : IRegistrationPolicy
+internal sealed class RegisterIChangeHandler : IRegistrationPolicy
 {
     private readonly Type _handlerInterface = typeof(IChangeHandler<,>);
 

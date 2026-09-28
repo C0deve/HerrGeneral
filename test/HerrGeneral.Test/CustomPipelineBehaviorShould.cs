@@ -30,7 +30,7 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
 
         public async Task<(IReadOnlyList<object> Events, TResult Result)> HandleAsync(
             CommandExecutionContext<TCommand, TResult> context,
-            CommandHandlerDelegate<TResult> next)
+            CommandHandlerDelegate<TResult> nextHandler)
         {
             tracker.Steps.Add("Validation:Start");
             if (context.Command is CreateUserCommand { Age: < 18 })
@@ -38,7 +38,7 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
                 throw new InvalidOperationException("User must be at least 18 years old");
             }
 
-            var result = await next().ConfigureAwait(false);
+            var result = await nextHandler().ConfigureAwait(false);
             tracker.Steps.Add("Validation:End");
             return result;
         }
@@ -52,11 +52,11 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
 
         public async Task<(IReadOnlyList<object> Events, TResult Result)> HandleAsync(
             CommandExecutionContext<TCommand, TResult> context,
-            CommandHandlerDelegate<TResult> next)
+            CommandHandlerDelegate<TResult> nextHandler)
         {
             tracker.Steps.Add("Security:Authorized");
             context.Items["AuditUser"] = "admin";
-            var result = await next().ConfigureAwait(false);
+            var result = await nextHandler().ConfigureAwait(false);
             tracker.Steps.Add("Security:AuditLogged");
             return result;
         }
@@ -70,10 +70,10 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
 
         public async Task<(IReadOnlyList<object> Events, TResult Result)> HandleAsync(
             CommandExecutionContext<TCommand, TResult> context,
-            CommandHandlerDelegate<TResult> next)
+            CommandHandlerDelegate<TResult> nextHandler)
         {
             tracker.Steps.Add("Validation:FastCheck");
-            return await next().ConfigureAwait(false);
+            return await nextHandler().ConfigureAwait(false);
         }
     }
 
@@ -161,12 +161,12 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
 
         public async Task<(IReadOnlyList<object> Events, TResult Result)> HandleAsync(
             CommandExecutionContext<TCommand, TResult> context,
-            CommandHandlerDelegate<TResult> next)
+            CommandHandlerDelegate<TResult> nextHandler)
         {
             context.Items["AuthenticatedUserId"] = "user-42";
             context.Items["TenantId"] = "tenant-xyz";
 
-            return await next().ConfigureAwait(false);
+            return await nextHandler().ConfigureAwait(false);
         }
     }
 
@@ -178,7 +178,7 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
 
         public async Task<(IReadOnlyList<object> Events, TResult Result)> HandleAsync(
             CommandExecutionContext<TCommand, TResult> context,
-            CommandHandlerDelegate<TResult> next)
+            CommandHandlerDelegate<TResult> nextHandler)
         {
             var userId = context.Items["AuthenticatedUserId"] as string;
             var tenantId = context.Items["TenantId"] as string;
@@ -189,7 +189,7 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
 
             tracker.Steps.Add($"AuditRecorded:{userId}:{tenantId}");
 
-            return await next().ConfigureAwait(false);
+            return await nextHandler().ConfigureAwait(false);
         }
     }
 

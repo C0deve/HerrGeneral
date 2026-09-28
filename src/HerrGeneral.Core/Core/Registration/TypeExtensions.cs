@@ -6,7 +6,7 @@ internal static class TypeExtensions
     extension(Type type)
     {
         public bool IsInNameSpace(ICollection<string> nameSpaces) =>
-            type.Namespace is not null && nameSpaces.Any(nameSpace => type.Namespace.StartsWith(nameSpace));
+            type.Namespace is not null && nameSpaces.Any(nameSpace => type.Namespace.StartsWith(nameSpace, StringComparison.Ordinal));
 
         public bool IsAssignableFromOpenType(Type openType)
         {

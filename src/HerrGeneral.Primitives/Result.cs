@@ -1,4 +1,4 @@
-﻿namespace HerrGeneral;
+namespace HerrGeneral;
 
 /// <summary>
 /// Result of an handled command.
