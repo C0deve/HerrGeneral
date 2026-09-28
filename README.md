@@ -164,15 +164,53 @@ services.AddOpenTelemetry()
 
 ## Debug logger output sample
 
-```
-<------------------- SetFriend <46a0deab-0485-403e-821a-834a96517a7c> thread<1> ------------------->
-|| Publish Write Side on thread<1>
-  HerrGeneral.SampleApplication.WriteSide.FriendChanged
+HerrGeneral includes a structured causal tree formatter (`ActivityTreeFormatter`) that renders the full execution lifecycle of commands, cascading write-side domain events, unit-of-work boundaries, synchronous read-side projections, and post-transaction side effects into a readable ASCII hierarchical tree.
 
-|| Publish Read Side (1 event) on thread<1>
-  HerrGeneral.SampleApplication.WriteSide.FriendChanged
-  -> Handle by HerrGeneral.SampleApplication.ReadSide.PersonFriendRM+PersonFriendRMRepository
-<------------------- SetFriend Finished 00:00:00.0021475 -------------------/>
+### Nominal Execution Flow
+
+```text
+CMD [ProcessCardPayment] (thread #12) ............................. [OK] (16.2ms)
+ |
+ \--> (cmd) ProcessCardPaymentHandler (0.8ms)
+       |
+       |-- (evt) CardPaymentAuthorized
+       |    \--> (wr) DebitAccountOnCardPayment (2.3ms)
+       |          \-- (evt) AccountDebited
+       |               \--> (wr) ApplyOverdraftFeeOnAccountDebited (1.4ms)
+       |                     \-- (evt) FeeApplied
+       |
+       \== [TX COMMIT] (1.1ms)
+       |
+       +-- [SYNC PROJECTIONS] (Read-Side)
+       |    |-- CardPaymentAuthorized        ===> CardTransactionsView         (1.8ms)
+       |    |-- AccountDebited               ===> AccountBalanceView           (2.1ms)
+       |    \-- FeeApplied                   ===> AccountStatementView         (1.2ms)
+       |
+       \-- [POST TRANSACTION] (Side Effects & Outbox)
+            |-- CardPaymentAuthorized        ===> SendSmsConfirmation          (2.4ms)
+            \-- FeeApplied                   ===> SendOverdraftWarning         (2.0ms)
+```
+
+### Error & Transaction Rollback Flow
+
+When an exception occurs during command or write-side event handling, the diagnostic logger isolates the domain failure, indicates the exact origin method, captures execution duration, marks transaction rollback, and visualizes skipped projections:
+
+```text
+CMD [TransferFunds] (thread #14) ................................. [FAILED] (6.4ms)
+ |
+ \--> (cmd) TransferFundsHandler (0.2ms)
+       |
+       |-- (evt) CardPaymentAuthorized
+       |    \--> (wr) DebitAccountOnCardPayment ........................... [ERR]
+       |          |
+       |          \--! EXCEPTION: InvalidOperationException (2.8ms)
+       |               Message : "Account balance cannot be negative."
+       |               Origin  : BankingDomain.DebitAccount()
+       |
+       \== [TX ROLLBACK] (0.4ms)
+       |
+       +--x [SYNC PROJECTIONS] (Skipped: Transaction aborted)
+       \--x [POST TRANSACTION] (Skipped: Transaction aborted)
 ```
 ## Design Decisions
 

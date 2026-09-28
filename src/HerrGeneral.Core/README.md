@@ -197,3 +197,30 @@ services.UseHerrGeneral(config =>
 - Registered exceptions are treated as expected business outcomes rather than system errors
 - They are automatically wrapped in a `DomainError` result instead of an `Exception` result
 - Provides a cleaner separation between technical failures and business rule violations
+
+## Diagnostic Logging & Causal Tree Tracing
+
+HerrGeneral includes a structured causal tree formatter (`ActivityTreeFormatter`) that logs the hierarchical execution path of every command when logging is enabled (`LogLevel.Information` or `LogLevel.Debug`):
+
+```text
+CMD [ProcessCardPayment] (thread #12) ............................. [OK] (16.2ms)
+ |
+ \--> (cmd) ProcessCardPaymentHandler (0.8ms)
+       |
+       |-- (evt) CardPaymentAuthorized
+       |    \--> (wr) DebitAccountOnCardPayment (2.3ms)
+       |          \-- (evt) AccountDebited
+       |               \--> (wr) ApplyOverdraftFeeOnAccountDebited (1.4ms)
+       |                     \-- (evt) FeeApplied
+       |
+       \== [TX COMMIT] (1.1ms)
+       |
+       +-- [SYNC PROJECTIONS] (Read-Side)
+       |    |-- CardPaymentAuthorized        ===> CardTransactionsView         (1.8ms)
+       |    |-- AccountDebited               ===> AccountBalanceView           (2.1ms)
+       |    \-- FeeApplied                   ===> AccountStatementView         (1.2ms)
+       |
+       \-- [POST TRANSACTION] (Side Effects & Outbox)
+            |-- CardPaymentAuthorized        ===> SendSmsConfirmation          (2.4ms)
+            \-- FeeApplied                   ===> SendOverdraftWarning         (2.0ms)
+```

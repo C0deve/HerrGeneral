@@ -56,6 +56,26 @@ using HerrGeneral.Testing;
 services.AddHerrGeneralTestLogger(testOutputHelper, LogLevel.Debug);
 ```
 
+When enabled, test runs produce a structured hierarchical causal tree in test output:
+
+```text
+CMD [OpenBankAccount] (thread #4) ................................. [OK] (8.3ms)
+ |
+ \--> (cmd) OpenBankAccountHandler (0.5ms)
+       |
+       |-- (evt) AccountOpened
+       |    \--> (wr) CreateDebitCardOnAccountOpened (3.1ms)
+       |          \-- (evt) DebitCardCreated
+       |
+       \== [TX COMMIT] (1.2ms)
+       |
+       +-- [SYNC PROJECTIONS] (Read-Side)
+       |    \-- AccountOpened                ===> AccountSummaryView           (1.1ms)
+       |
+       \-- [POST TRANSACTION] (Side Effects & Outbox)
+            \-- AccountOpened                ===> SendWelcomeEmailSideEffect   (1.9ms)
+```
+
 ## Compatibility
 
 - Targets `.NET 8.0`, `.NET 9.0`, and `.NET 10.0`.
