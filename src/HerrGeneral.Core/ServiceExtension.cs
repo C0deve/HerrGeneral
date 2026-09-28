@@ -17,10 +17,13 @@ public static class ServiceExtension
     /// <returns>The updated service collection including the HerrGeneral services.</returns>
     public static IServiceCollection AddHerrGeneral(
         this IServiceCollection serviceCollection,
-        Func<ConfigurationBuilder, ConfigurationBuilder> configurationDelegate) =>
-        new ServiceConfigurator(new RegistrationPolicyProvider())
-            .ConfigureServiceCollection(
-                serviceCollection,
-                configurationDelegate(new ConfigurationBuilder()).Build()
-            );
+        Func<ConfigurationBuilder, ConfigurationBuilder> configurationDelegate)
+    {
+        var builder = new ConfigurationBuilder(serviceCollection);
+        var configured = configurationDelegate(builder);
+        var configuration = configured.Build();
+
+        return new ServiceConfigurator(new RegistrationPolicyProvider())
+            .ConfigureServiceCollection(serviceCollection, configuration);
+    }
 }

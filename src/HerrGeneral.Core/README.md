@@ -1,6 +1,6 @@
 # HerrGeneral.Core
 
-Essential components for application integration, mediator dispatch, and command concurrency control.
+Essential components for application integration, mediator dispatch, open pipeline execution, and command concurrency control.
 
 ### Registration with Dependency Injection
 
@@ -18,6 +18,27 @@ services.AddHerrGeneral(configuration =>
         .ScanPostProjectionsOn(typeof(PersonFriendRM).Assembly, typeof(PersonFriendRM).Namespace!)
         // Register post-transaction side effects (emails, notifications, external message bus)
         .ScanSideEffectsOn(typeof(SendWelcomeEmailSideEffect).Assembly));
+```
+
+### Pipeline Behaviors & Extension
+
+Modules and consuming applications can intercept command handling by implementing `ICommandPipelineBehavior<TCommand, TResult>` and optional `IOrderedPipelineBehavior`:
+
+```csharp
+public class AuditBehavior<TCommand, TResult> : ICommandPipelineBehavior<TCommand, TResult>, IOrderedPipelineBehavior
+{
+    public PipelinePhase Phase => PipelinePhase.Security;
+
+    public async Task<(IReadOnlyList<object> Events, TResult Result)> HandleAsync(
+        CommandExecutionContext<TCommand, TResult> context,
+        CommandHandlerDelegate<TResult> next)
+    {
+        // Custom pre-processing
+        var result = await next();
+        // Custom post-processing
+        return result;
+    }
+}
 ```
 
 This registration process scans the specified assemblies for command handlers, event handlers, projections, and side-effects, registering them with the appropriate lifetime scopes in the dependency injection container.

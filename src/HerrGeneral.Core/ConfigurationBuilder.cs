@@ -1,16 +1,19 @@
 ﻿using HerrGeneral.Core.Configuration;
 using HerrGeneral.Core.Registration;
 
+using HerrGeneral.Core.Registration.Policy;
+
 namespace HerrGeneral;
 
 /// <summary>
 /// Fluent configuration for HerrGeneral framework.
 /// </summary>
-public class ConfigurationBuilder
+public class ConfigurationBuilder : IHerrGeneralBuilder
 {
     private readonly HashSet<ScanParam> _writeSideSearchParams = [];
     private readonly HashSet<ScanParam> _readSideSearchParams = [];
     private readonly HashSet<Type> _domainExceptionInterfaces = [];
+    private readonly List<IRegistrationPolicy> _customPolicies = [];
     
     /// <summary>
     /// Collection of mappings for external command handlers.
@@ -38,8 +41,33 @@ public class ConfigurationBuilder
 
     private short _maximumConcurrentCommands = 1;
 
-    internal ConfigurationBuilder()
+    /// <summary>
+    /// Gets the service collection for dependency injection registrations.
+    /// </summary>
+    public IServiceCollection Services { get; }
+
+    /// <summary>
+    /// Gets the property bag for sharing state and configuration between extensions.
+    /// </summary>
+    public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConfigurationBuilder"/> class.
+    /// </summary>
+    /// <param name="services">The service collection, or null to create a default one.</param>
+    public ConfigurationBuilder(IServiceCollection? services = null) => 
+        Services = services ?? new ServiceCollection();
+
+    /// <summary>
+    /// Registers a custom registration policy for discovering and registering handler types.
+    /// </summary>
+    /// <param name="policy">The registration policy to add.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public IHerrGeneralBuilder RegisterPolicy(IRegistrationPolicy policy)
     {
+        ArgumentNullException.ThrowIfNull(policy);
+        _customPolicies.Add(policy);
+        return this;
     }
 
     internal Configuration Build() => new(
@@ -50,7 +78,8 @@ public class ConfigurationBuilder
         _writeSideEventHandlerMappingsConfiguration,
         _readSideEventHandlerMappingsConfiguration,
         _isTracingEnabled,
-        _maximumConcurrentCommands);
+        _maximumConcurrentCommands,
+        _customPolicies);
     
     /// <summary>
     /// Validates the configuration and throws an exception if it is not valid.

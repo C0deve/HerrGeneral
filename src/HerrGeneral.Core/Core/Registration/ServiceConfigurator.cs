@@ -21,7 +21,7 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         {
             serviceCollection.AddScoped<ActivityTreeCollector>();
 #pragma warning disable CS0618
-            serviceCollection.AddScoped<CommandExecutionTracer>(sp => new CommandExecutionTracer());
+            serviceCollection.AddScoped<CommandExecutionTracer>(_ => new CommandExecutionTracer());
 #pragma warning restore CS0618
         }
         serviceCollection.AddScoped<ReadSideEventDispatcher>();
@@ -44,6 +44,10 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         RegistrationPolicyProvider policyProvider)
     {
         var policies = policyProvider.GetWriteSidePolicies(configuration);
+        if (configuration.CustomPolicies is { Count: > 0 })
+        {
+            policies = [.. policies, .. configuration.CustomPolicies];
+        }
         Register(serviceCollection, policies, configuration.WriteSideSearchParams);
     }
 
@@ -53,6 +57,10 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         RegistrationPolicyProvider policyProvider)
     {
         var policies = policyProvider.GetReadSidePolicies(configuration);
+        if (configuration.CustomPolicies is { Count: > 0 })
+        {
+            policies = [.. policies, .. configuration.CustomPolicies];
+        }
         Register(serviceCollection, policies, configuration.ReadSideSearchParams);
     }
 

@@ -3,7 +3,7 @@
 /// <summary>
 /// Manage registration of all handlers that implements open type provided by GetOpenTypes()
 /// </summary>
-internal interface IRegistrationPolicy
+public interface IRegistrationPolicy
 {
     /// <summary>
     /// Returns base open types affected by this policy

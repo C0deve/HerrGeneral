@@ -22,7 +22,7 @@ internal class ActivityTreeCollector
 
     public List<WriteSideEventNode> RootWriteSideEvents { get; } = [];
     private readonly Dictionary<object, WriteSideEventNode> _eventNodes = new(ReferenceEqualityComparer.Instance);
-    private object? _currentWriteSideEvent;
+    private readonly AsyncLocal<object?> _currentWriteSideEvent = new();
 
     public List<SyncProjectionTraceNode> SyncProjections { get; } = [];
     public List<PostTransactionTraceNode> PostTransactions { get; } = [];
@@ -111,9 +111,9 @@ internal class ActivityTreeCollector
 
     public void PublishEventOnWriteSide(object @event)
     {
+        _currentWriteSideEvent.Value = @event;
         lock (_lock)
         {
-            _currentWriteSideEvent = @event;
             if (_eventNodes.TryGetValue(@event, out var node)) return;
             node = new WriteSideEventNode(@event.GetType());
             _eventNodes[@event] = node;
@@ -123,12 +123,13 @@ internal class ActivityTreeCollector
 
     public void RecordWriteSideHandler(Type handlerType, Type eventType, TimeSpan duration, IReadOnlyList<object>? childEvents, System.Exception? exception)
     {
+        var currentEvent = _currentWriteSideEvent.Value;
         lock (_lock)
         {
             WriteSideEventNode? eventNode = null;
-            if (_currentWriteSideEvent != null)
+            if (currentEvent != null)
             {
-                _eventNodes.TryGetValue(_currentWriteSideEvent, out eventNode);
+                _eventNodes.TryGetValue(currentEvent, out eventNode);
             }
 
             if (eventNode == null)
@@ -338,6 +339,7 @@ internal partial record ExceptionInfo(Type Type, string Message, string? Origin)
     private static bool IsPipelineOrSystemNamespace(ReadOnlySpan<char> typeOrNamespace) =>
         typeOrNamespace.StartsWith("HerrGeneral.Core.")
         || typeOrNamespace.StartsWith("HerrGeneral.Core")
+        || typeOrNamespace.StartsWith("HerrGeneral.WriteSide.")
         || typeOrNamespace.StartsWith("HerrGeneral.Mediator")
         || IsSystemNamespace(typeOrNamespace);
 

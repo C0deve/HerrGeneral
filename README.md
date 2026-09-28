@@ -9,11 +9,60 @@ Herr General is a lightweight CQRS (Command Query Responsibility Segregation) im
 ## Key Features
 
 - **Clean CQRS Implementation**: Separates command and query responsibilities for better maintainability
+- **Open Execution Pipeline**: Pluggable pipeline behaviors (`ICommandPipelineBehavior<TCommand, TResult>`) with canonical execution phases (`PipelinePhase`)
+- **Extensible Builder**: Modular configuration API via `IHerrGeneralBuilder` supporting dynamic policies and plugin packages
 - **Built-in Diagnostics**: Comprehensive debug logging for easy troubleshooting
 - **Simple Integration**: Easy to integrate with Microsoft Dependency Injection
 - **No dependency on HerrGeneral in your code**: HerrGeneral can map your handlers, no need to inherit from a ICommandHandler or IEventHandler
 - **Command Concurrency Control**: Partition-based locking per aggregate to serialize commands on the same entity while processing independent commands concurrently
 - **Result Pattern**: Uses a functional-style result pattern
+
+## Open Pipeline & Pipeline Behaviors
+
+HerrGeneral provides an open, onion-like middleware pipeline supporting open generic pipeline behaviors resolved from Dependency Injection:
+
+```csharp
+using HerrGeneral.WriteSide.Pipeline;
+
+public class ValidationBehavior<TCommand, TResult>(IValidator<TCommand>? validator = null) 
+    : ICommandPipelineBehavior<TCommand, TResult>, IOrderedPipelineBehavior
+{
+    public PipelinePhase Phase => PipelinePhase.Validation;
+    public int OrderWithinPhase => 0;
+
+    public async Task<(IReadOnlyList<object> Events, TResult Result)> HandleAsync(
+        CommandExecutionContext<TCommand, TResult> context, 
+        CommandHandlerDelegate<TResult> next)
+    {
+        if (validator is not null)
+        {
+            var validationResult = await validator.ValidateAsync(context.Command, context.CancellationToken);
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
+        }
+
+        return await next();
+    }
+}
+```
+
+Register custom behaviors simply in your DI container:
+
+```csharp
+services.AddTransient(typeof(ICommandPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+```
+
+### Execution Phases (`PipelinePhase`)
+
+The pipeline guarantees deterministic execution order across the following phases:
+1. **Diagnostics (100)**: OpenTelemetry tracing, metrics, activity tree logging.
+2. **Security (200)**: Authentication and authorization verification.
+3. **Resilience (300)**: Rate limiting, retry, and partition concurrency.
+4. **Validation (400)**: Command payload validation and preconditions.
+5. **Transaction (500)**: Unit of Work transaction boundary (Start / Commit / Rollback).
+6. **Core (600)**: Command handler execution, cascading domain events, and synchronous projections.
 
 ## Command Processing Flow
 

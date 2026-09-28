@@ -1,33 +1,49 @@
-﻿using HerrGeneral.Core.Registration;
-using HerrGeneral.Core.Registration.Policy;
-using HerrGeneral.DDD.Core.RegistrationPolicies;
+﻿using HerrGeneral.DDD.Core.RegistrationPolicies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.DDD;
 
 /// <summary>
-/// Extensions method for IServiceCollection
-/// Registration of dynamic handlers
+/// Extensions method for configuring HerrGeneral with DDD support.
 /// </summary>
 public static class ServiceExtension
 {
     /// <summary>
-    /// Adds HerrGeneral framework services to the provided service collection.
-    /// <para>Quick Start:</para>
-    /// <code>
-    /// services
-    ///     .AddHerrGeneral(config => config
-    ///         .ScanWriteSideOn(typeof(BankAccount).Assembly)
-    ///         .ScanReadSideOn(typeof(AccountProjection).Assembly)
-    ///         .UseDomainException&lt;DomainExceptionBase&gt;());
-    /// </code>
-    /// 
-    /// <para>What this does:</para>
-    /// <list type="bullet">
-    /// <item>Set the location of your write side handlers (command and event handlers)</item>
-    /// <item>Set the location of your read side event handlers</item>
-    /// <item>Set the base type of your domain-specific exceptions</item>
-    /// </list>
+    /// Enables Domain-Driven Design (DDD) support, registering aggregate create/change handlers and domain event handlers.
+    /// </summary>
+    /// <param name="builder">The HerrGeneral builder.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    // ReSharper disable once MemberCanBePrivate.Global
+    public static IHerrGeneralBuilder UseDDD(this IHerrGeneralBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        return builder
+            .RegisterPolicy(new RegisterICreateHandler())
+            .RegisterPolicy(new RegisterIChangeHandler())
+            .RegisterPolicy(new RegisterIDomainEventHandler())
+            .RegisterPolicy(new RegisterIVoidDomainEventHandler())
+            .RegisterPolicy(new RegisterIChangeMultiHandler())
+            .RegisterPolicy(new RegisterDynamicCreateHandlers())
+            .RegisterPolicy(new RegisterDynamicChangeHandlers())
+            .RegisterPolicy(new RegisterICrossAggregateChangeHandler())
+            .RegisterPolicy(new RegisterIHandleCrossAggregate());
+    }
+
+    /// <summary>
+    /// Enables Domain-Driven Design (DDD) support, registering aggregate create/change handlers and domain event handlers.
+    /// </summary>
+    /// <param name="builder">The ConfigurationBuilder.</param>
+    /// <returns>The ConfigurationBuilder instance for chaining.</returns>
+    // ReSharper disable once MemberCanBePrivate.Global
+    public static ConfigurationBuilder UseDDD(this ConfigurationBuilder builder)
+    {
+        ((IHerrGeneralBuilder)builder).UseDDD();
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds HerrGeneral framework services with DDD support to the provided service collection.
     /// </summary>
     /// <param name="serviceCollection">The service collection to which the services will be added.</param>
     /// <param name="configurationDelegate">A delegate to configure the HerrGeneral framework settings.</param>
@@ -35,29 +51,9 @@ public static class ServiceExtension
     public static IServiceCollection AddHerrGeneral(
         this IServiceCollection serviceCollection,
         Func<ConfigurationBuilder, ConfigurationBuilder> configurationDelegate) =>
-        new ServiceConfigurator(new RegistrationPolicyProviderForDDD())
-            .ConfigureServiceCollection(
-                serviceCollection,
-                configurationDelegate(new ConfigurationBuilder()).Build()
-            );
-
-    /// <summary>
-    /// Custom policy manager with additional registration policies
-    /// </summary>
-    private class RegistrationPolicyProviderForDDD : RegistrationPolicyProvider
-    {
-        public override IRegistrationPolicy[] GetWriteSidePolicies(HerrGeneral.Core.Configuration.Configuration configuration) =>
-        [
-            ..base.GetWriteSidePolicies(configuration),
-            new RegisterICreateHandler(),
-            new RegisterIChangeHandler(),
-            new RegisterIDomainEventHandler(),
-            new RegisterIVoidDomainEventHandler(),
-            new RegisterIChangeMultiHandler(),
-            new RegisterDynamicCreateHandlers(),
-            new RegisterDynamicChangeHandlers(),
-            new RegisterICrossAggregateChangeHandler(),
-            new RegisterIHandleCrossAggregate()
-        ];
-    }
+        Registration.ServiceExtension.AddHerrGeneral(serviceCollection, cfg =>
+        {
+            cfg.UseDDD();
+            return configurationDelegate(cfg);
+        });
 }

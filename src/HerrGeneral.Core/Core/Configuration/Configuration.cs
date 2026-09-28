@@ -13,6 +13,7 @@ namespace HerrGeneral.Core.Configuration;
 /// <param name="ReadSideEventHandlerMappingsConfiguration">Collection of mappings for external read side event handlers. Facilitates updating views and projections by registering appropriate event handlers.</param>
 /// <param name="IsTracingEnabled">Indicates whether execution tracing for command handlers is enabled. Enables detailed logging of command processing for debugging and performance monitoring.</param>
 /// <param name="MaxConcurrentCommands">Defines the maximum number of concurrently running commands allowed by the mediator.</param>
+/// <param name="CustomPolicies">Optional collection of custom registration policies provided by modules or plugins.</param>
 internal record Configuration(
     IReadOnlyCollection<ScanParam> WriteSideSearchParams,
     IReadOnlyCollection<ScanParam> ReadSideSearchParams,
@@ -21,5 +22,6 @@ internal record Configuration(
     EventHandlerMappingsConfiguration WriteSideEventHandlerMappingsConfiguration,
     EventHandlerMappingsConfiguration ReadSideEventHandlerMappingsConfiguration,
     bool IsTracingEnabled,
-    short MaxConcurrentCommands
+    short MaxConcurrentCommands,
+    IReadOnlyList<Registration.Policy.IRegistrationPolicy>? CustomPolicies = null
 );

@@ -4,8 +4,19 @@ public class ToBeNotifiedOnNameChangedTracker
 {
     private readonly List<Guid> _ids = [];
 
-    public Guid[] GetIds()=> [.. _ids];
+    public Guid[] GetIds()
+    {
+        lock (_ids)
+        {
+            return [.. _ids];
+        }
+    }
 
-    public void Track(Guid id) => _ids.Add(id);
-
+    public void Track(Guid id)
+    {
+        lock (_ids)
+        {
+            _ids.Add(id);
+        }
+    }
 }
