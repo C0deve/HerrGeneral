@@ -1,4 +1,4 @@
-﻿name: Cleanup Pre-releases
+name: Cleanup Pre-releases
 
 on:
   workflow_dispatch: # Permet de lancer l'action manuellement
@@ -10,7 +10,7 @@ jobs:
       contents: write
     steps:
       - name: Delete pre-releases
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const owner = context.repo.owner;
