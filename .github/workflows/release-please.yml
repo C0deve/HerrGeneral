@@ -11,6 +11,10 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created || steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v7
@@ -26,6 +30,78 @@ jobs:
         run: dotnet test --configuration Release
 
       - name: Release Please
+        id: release
         uses: googleapis/release-please-action@v5
         with:
           release-type: simple
+
+  publish:
+    name: Publish to NuGet
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' || needs.release-please.outputs.release_created == true }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: Directory.Packages.props
+
+      - name: Run tests
+        run: dotnet test --configuration Release
+
+      - name: Resolve version
+        shell: bash
+        env:
+          OUTPUT_VERSION: ${{ needs.release-please.outputs.version }}
+          OUTPUT_TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          raw_version="${OUTPUT_VERSION:-}"
+          if [[ -z "$raw_version" ]]; then
+            raw_tag="${OUTPUT_TAG:-}"
+            raw_version="${raw_tag#v}"
+          fi
+          if [[ -z "$raw_version" ]]; then
+            echo "Error: Version could not be resolved from release-please outputs."
+            exit 1
+          fi
+          echo "VERSION=$raw_version" >> "$GITHUB_ENV"
+          echo "Resolved version: $raw_version"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build HerrGeneral.slnx -c Release --no-restore
+
+      - name: Pack (force version)
+        run: dotnet pack HerrGeneral.slnx -c Release --no-build -p:ContinuousIntegrationBuild=true -p:Version=$VERSION -o dist
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: 'dist/*.nupkg'
+
+      - name: List packages
+        shell: pwsh
+        run: Get-ChildItem dist -Filter *.nupkg | ForEach-Object { $_.FullName }
+
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push to NuGet
+        run: dotnet nuget push "dist/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
