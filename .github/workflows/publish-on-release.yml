@@ -83,7 +83,7 @@ jobs:
         run: dotnet pack HerrGeneral.slnx -c Release --no-build -p:ContinuousIntegrationBuild=true -p:Version=$VERSION -o dist
 
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: 'dist/*.nupkg'
 
