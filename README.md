@@ -1,5 +1,12 @@
 # Herr General
 
+[![CI](https://github.com/C0deve/HerrGeneral/actions/workflows/ci.yml/badge.svg)](https://github.com/C0deve/HerrGeneral/actions/workflows/ci.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/C0deve/HerrGeneral?logo=github)](https://github.com/C0deve/HerrGeneral/releases)
+[![NuGet Version](https://img.shields.io/nuget/v/HerrGeneral.Core.svg?logo=nuget)](https://www.nuget.org/packages/HerrGeneral.Core)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/HerrGeneral.Core.svg?logo=nuget)](https://www.nuget.org/packages/HerrGeneral.Core)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE.md)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+
 ## Overview
 
 Herr General is a lightweight CQRS (Command Query Responsibility Segregation) implementation designed for building modular monolithic applications in .NET. It provides a structured approach to handling commands and events with built-in debug logging and unit of work.
