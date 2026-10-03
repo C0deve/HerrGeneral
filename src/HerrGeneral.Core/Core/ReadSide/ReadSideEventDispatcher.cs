@@ -44,11 +44,6 @@ internal sealed class ReadSideEventDispatcher(IServiceProvider serviceProvider)
         wrapper.Handle(eventToDispatch, serviceProvider);
     }
 
-    private static IEventHandlerWrapper CreateWrapper(Type eventType)
-    {
-        var wrapperType = typeof(EventHandlerWrapper<>).MakeGenericType(eventType);
-        var newExpr = Expression.New(wrapperType);
-        var lambda = Expression.Lambda<Func<IEventHandlerWrapper>>(newExpr);
-        return lambda.Compile()();
-    }
+    private static IEventHandlerWrapper CreateWrapper(Type eventType) =>
+        (IEventHandlerWrapper)Activator.CreateInstance(typeof(EventHandlerWrapper<>).MakeGenericType(eventType))!;
 }

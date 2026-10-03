@@ -22,13 +22,9 @@ internal sealed class TransactionalProjectionEventDispatcher(IServiceProvider se
         HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
             new KeyValuePair<string, object?>("herrgeneral.stage", "SyncProjections"));
 
-        foreach (var eventToDispatch in events)
-        {
+        foreach (var eventToDispatch in events) 
             DispatchSingle(eventToDispatch);
-        }
     }
-
-    public void Dispatch(params object[] events) => Dispatch((IReadOnlyList<object>)events);
 
     private void DispatchSingle(object eventToDispatch)
     {
@@ -36,11 +32,6 @@ internal sealed class TransactionalProjectionEventDispatcher(IServiceProvider se
         wrapper.Handle(eventToDispatch, serviceProvider);
     }
 
-    private static ISyncProjectionEventHandlerWrapper CreateWrapper(Type eventType)
-    {
-        var wrapperType = typeof(SyncProjectionEventHandlerWrapper<>).MakeGenericType(eventType);
-        var newExpr = Expression.New(wrapperType);
-        var lambda = Expression.Lambda<Func<ISyncProjectionEventHandlerWrapper>>(newExpr);
-        return lambda.Compile()();
-    }
+    private static ISyncProjectionEventHandlerWrapper CreateWrapper(Type eventType) =>
+        (ISyncProjectionEventHandlerWrapper)Activator.CreateInstance(typeof(SyncProjectionEventHandlerWrapper<>).MakeGenericType(eventType))!;
 }

@@ -4,12 +4,18 @@ using HerrGeneral.Core.ReadSide;
 
 namespace HerrGeneral.Core.WriteSide;
 
+/// <summary>
+/// Pipeline delegates and middleware extensions for write-side event handling.
+/// </summary>
 internal static class EventHandlerPipeline
 {
     public delegate IReadOnlyList<object> EventHandlerDelegate<in TEvent>(TEvent @event);
 
     extension<TEvent>(EventHandlerDelegate<TEvent> next)
     {
+        /// <summary>
+        /// Wraps handler execution to catch and map domain exceptions using the configured DomainExceptionMapper.
+        /// </summary>
         public EventHandlerDelegate<TEvent> WithDomainExceptionMapping(DomainExceptionMapper mapper) =>
             @event =>
             {
@@ -25,6 +31,9 @@ internal static class EventHandlerPipeline
                 }
             };
 
+        /// <summary>
+        /// Instruments handler execution with OpenTelemetry activity tracing, metrics, and diagnostic tree collection.
+        /// </summary>
         public EventHandlerDelegate<TEvent> WithTracer(IEventHandler<TEvent> handler, ActivityTreeCollector? collector) =>
             @event =>
             {

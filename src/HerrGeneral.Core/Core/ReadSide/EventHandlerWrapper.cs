@@ -1,5 +1,6 @@
 using HerrGeneral.Core.Diagnostics;
 using HerrGeneral.ReadSide;
+using static HerrGeneral.Core.ReadSide.ReadSidePipeline;
 
 namespace HerrGeneral.Core.ReadSide;
 
@@ -10,16 +11,19 @@ internal class EventHandlerWrapper<TEvent> : IEventHandlerWrapper
 
     private static void Handle(TEvent @event, IServiceProvider serviceProvider)
     {
+        var handlers = serviceProvider.GetServices<IProjectionEventHandler<TEvent>>();
+        if (handlers is ICollection<IProjectionEventHandler<TEvent>> { Count: 0 })
+        {
+            return;
+        }
+
         var collector = serviceProvider.GetService<ActivityTreeCollector>();
 
-        foreach (var handler in serviceProvider.GetServices<IProjectionEventHandler<TEvent>>())
+        // Dispatch the read-side event to all registered projection handlers through the pipeline (tracing and diagnostics)
+        foreach (var handler in handlers)
         {
-            Start(handler)
-                .WithReadSideHandlerLogging(handler, collector)
-                (@event);
+            EventHandlerDelegate<TEvent> pipeline = handler.Handle;
+            pipeline.WithTracer(handler, collector)(@event);
         }
     }
-    
-    private static ReadSidePipeline.EventHandlerDelegate<TEvent> Start(IProjectionEventHandler<TEvent> handler) =>
-        handler.Handle;
 }

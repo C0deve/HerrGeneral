@@ -61,11 +61,6 @@ internal class WriteSideEventDispatcher(
         return wrapper.Handle(eventToDispatch, serviceProvider);
     }
 
-    private static IEventHandlerWrapper CreateWrapper(Type eventType)
-    {
-        var wrapperType = typeof(WriteSideEventHandlerWrapper<>).MakeGenericType(eventType);
-        var newExpr = Expression.New(wrapperType);
-        var lambda = Expression.Lambda<Func<IEventHandlerWrapper>>(newExpr);
-        return lambda.Compile()();
-    }
+    private static IEventHandlerWrapper CreateWrapper(Type eventType) =>
+        (IEventHandlerWrapper)Activator.CreateInstance(typeof(WriteSideEventHandlerWrapper<>).MakeGenericType(eventType))!;
 }
