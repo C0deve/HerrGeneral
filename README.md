@@ -1,9 +1,9 @@
 # Herr General
 
-[![CI](https://github.com/C0deve/HerrGeneral/actions/workflows/ci.yml/badge.svg)](https://github.com/C0deve/HerrGeneral/actions/workflows/ci.yml)
+[![CI](https://github.com/C0deve/HerrGeneral/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/C0deve/HerrGeneral/actions/workflows/ci.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/C0deve/HerrGeneral?logo=github)](https://github.com/C0deve/HerrGeneral/releases)
-[![NuGet Version](https://img.shields.io/nuget/v/HerrGeneral.Core.svg?logo=nuget)](https://www.nuget.org/packages/HerrGeneral.Core)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/HerrGeneral.Core.svg?logo=nuget)](https://www.nuget.org/packages/HerrGeneral.Core)
+[![NuGet Version](https://img.shields.io/nuget/v/HerrGeneral.Core?logo=nuget)](https://www.nuget.org/packages/HerrGeneral.Core)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/HerrGeneral.Core?logo=nuget)](https://www.nuget.org/packages/HerrGeneral.Core)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE.md)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 
