@@ -12,6 +12,7 @@ on:
 permissions:
   contents: 'read'
   id-token: 'write'
+  attestations: 'write'
 
 jobs:
   publish:
@@ -28,7 +29,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: Directory.Packages.props
 
       - name: Run tests
         run: dotnet test --configuration Release
@@ -78,6 +81,11 @@ jobs:
 
       - name: Pack (force version)
         run: dotnet pack HerrGeneral.slnx -c Release --no-build -p:ContinuousIntegrationBuild=true -p:Version=$VERSION -o dist
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'dist/*.nupkg'
 
       - name: List packages
         shell: pwsh
