@@ -29,19 +29,12 @@ jobs:
 
       - name: Run tests
         run: dotnet test --configuration Release
-
-      - name: Generate GitHub App Token
-        id: app-token
-        uses: actions/create-github-app-token@v3
-        with:
-          client-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-
+        
       - name: Release Please
         id: release
         uses: googleapis/release-please-action@v5
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           release-type: simple
 
   publish:
