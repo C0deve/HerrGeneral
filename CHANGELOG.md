@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0](https://github.com/C0deve/HerrGeneral/compare/v1.5.0...v1.6.0) (2026-10-05)
+
+
+### Features
+
+* **pipeline:** add pipeline behaviors, execution context, and builder support ([a4df64a](https://github.com/C0deve/HerrGeneral/commit/a4df64a2b671a9fa360daa8556fbfcac699f63b3))
+
+
+### Bug Fixes
+
+* **ci:** remove invalid releases permission ([048246d](https://github.com/C0deve/HerrGeneral/commit/048246d5f3d34cceea58ddec30e1be258b322eb9))
+* **ci:** update sdk version in global.json and remove obsolete workflow ([c84c7ae](https://github.com/C0deve/HerrGeneral/commit/c84c7ae61c2c6566ecfda6f888e043c64c6d45ca))
+* **testing:** Add missing files ([ecff4cb](https://github.com/C0deve/HerrGeneral/commit/ecff4cb3a7aaf46f5940be597ea4ecd606bfff1f))
+
 ## [1.5.0](https://github.com/C0deve/HerrGeneral/compare/v1.4.0...v1.5.0) (2026-10-05)
 
 
