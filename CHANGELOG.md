@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.6.0](https://github.com/C0deve/HerrGeneral/compare/v1.5.0...v1.6.0) (2026-10-05)
+
+
+### Features
+
+* **pipeline:** add pipeline behaviors, execution context, and builder support ([a4df64a](https://github.com/C0deve/HerrGeneral/commit/a4df64a2b671a9fa360daa8556fbfcac699f63b3))
+
+
+### Bug Fixes
+
+* **ci:** remove invalid releases permission ([048246d](https://github.com/C0deve/HerrGeneral/commit/048246d5f3d34cceea58ddec30e1be258b322eb9))
+* **ci:** update sdk version in global.json and remove obsolete workflow ([c84c7ae](https://github.com/C0deve/HerrGeneral/commit/c84c7ae61c2c6566ecfda6f888e043c64c6d45ca))
+* **testing:** Add missing files ([ecff4cb](https://github.com/C0deve/HerrGeneral/commit/ecff4cb3a7aaf46f5940be597ea4ecd606bfff1f))
+
+## [1.5.0](https://github.com/C0deve/HerrGeneral/compare/v1.4.0...v1.5.0) (2026-10-05)
+
+
+### Features
+
+* **opentelemetry:** add HerrGeneral.OpenTelemetry package with instrumentation extensions and tests ([adb77e8](https://github.com/C0deve/HerrGeneral/commit/adb77e8f2d4b8bf51d74df6ddebe36d6d8d05c58))
+* **pipeline:** add pipeline behaviors, execution context, and builder support ([a4df64a](https://github.com/C0deve/HerrGeneral/commit/a4df64a2b671a9fa360daa8556fbfcac699f63b3))
+* **telemetry:** introduce OpenTelemetry tracing, metrics and activity tree formatting ([864bdc2](https://github.com/C0deve/HerrGeneral/commit/864bdc2edd57b39ea44e9be1ed7fa122766df631))
+
+
+### Bug Fixes
+
+* add junie to gitignore ([6937473](https://github.com/C0deve/HerrGeneral/commit/6937473ce0079074a98f78a07b7ab759edbc429e))
+* **ci:** remove invalid releases permission ([048246d](https://github.com/C0deve/HerrGeneral/commit/048246d5f3d34cceea58ddec30e1be258b322eb9))
+* **ci:** update sdk version in global.json and remove obsolete workflow ([c84c7ae](https://github.com/C0deve/HerrGeneral/commit/c84c7ae61c2c6566ecfda6f888e043c64c6d45ca))
+* **pipeline:** use slnx for build ([f81efe5](https://github.com/C0deve/HerrGeneral/commit/f81efe53195172f9028fa5d617e9decec61e3a49))
+* **testing:** Add missing files ([ecff4cb](https://github.com/C0deve/HerrGeneral/commit/ecff4cb3a7aaf46f5940be597ea4ecd606bfff1f))
+
 ## [1.4.0](https://github.com/C0deve/HerrGeneral/compare/v1.3.0...v1.4.0) (2026-10-03)
 
 
