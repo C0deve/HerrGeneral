@@ -35,7 +35,11 @@ public class DefaultAggregateFactory<TAggregate, TKey> : IAggregateFactory<TAggr
     private static Func<Create<TAggregate, TKey>, TKey, TAggregate> CompileFactory(Type commandType)
     {
         var constructors = typeof(TAggregate).GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-        var ctor = constructors.FirstOrDefault(c =>
+        var commandParam = Expression.Parameter(typeof(Create<TAggregate, TKey>), "command");
+        var aggregateIdParam = Expression.Parameter(typeof(TKey), "aggregateId");
+
+        // 1. (TCommand command, TKey aggregateId)
+        var ctor2 = constructors.FirstOrDefault(c =>
         {
             var parameters = c.GetParameters();
             return parameters.Length == 2
@@ -43,22 +47,67 @@ public class DefaultAggregateFactory<TAggregate, TKey> : IAggregateFactory<TAggr
                    && parameters[1].ParameterType == typeof(TKey);
         });
 
-        if (ctor is null)
+        if (ctor2 != null)
         {
-            return (_, _) => throw new MissingMethodException(
-                $"Constructor new {typeof(TAggregate)}({commandType} command, {typeof(TKey)} aggregateId) not found.");
+            var ctorParamType = ctor2.GetParameters()[0].ParameterType;
+            Expression typedCommand = ctorParamType == typeof(Create<TAggregate, TKey>)
+                ? commandParam
+                : Expression.Convert(commandParam, ctorParamType);
+            var newExpression = Expression.New(ctor2, typedCommand, aggregateIdParam);
+            return Expression.Lambda<Func<Create<TAggregate, TKey>, TKey, TAggregate>>(newExpression, commandParam, aggregateIdParam).Compile();
         }
 
-        var commandParam = Expression.Parameter(typeof(Create<TAggregate, TKey>), "command");
-        var aggregateIdParam = Expression.Parameter(typeof(TKey), "aggregateId");
+        // 2. (TKey aggregateId, TCommand command)
+        var ctor2Inverted = constructors.FirstOrDefault(c =>
+        {
+            var parameters = c.GetParameters();
+            return parameters.Length == 2
+                   && parameters[0].ParameterType == typeof(TKey)
+                   && parameters[1].ParameterType.IsAssignableFrom(commandType);
+        });
 
-        var ctorParamType = ctor.GetParameters()[0].ParameterType;
-        Expression typedCommand = ctorParamType == typeof(Create<TAggregate, TKey>)
-            ? commandParam
-            : Expression.Convert(commandParam, ctorParamType);
+        if (ctor2Inverted != null)
+        {
+            var ctorParamType = ctor2Inverted.GetParameters()[1].ParameterType;
+            Expression typedCommand = ctorParamType == typeof(Create<TAggregate, TKey>)
+                ? commandParam
+                : Expression.Convert(commandParam, ctorParamType);
+            var newExpression = Expression.New(ctor2Inverted, aggregateIdParam, typedCommand);
+            return Expression.Lambda<Func<Create<TAggregate, TKey>, TKey, TAggregate>>(newExpression, commandParam, aggregateIdParam).Compile();
+        }
 
-        var newExpression = Expression.New(ctor, typedCommand, aggregateIdParam);
-        return Expression.Lambda<Func<Create<TAggregate, TKey>, TKey, TAggregate>>(newExpression, commandParam, aggregateIdParam).Compile();
+        // 3. (TKey aggregateId)
+        var ctorKeyOnly = constructors.FirstOrDefault(c =>
+        {
+            var parameters = c.GetParameters();
+            return parameters.Length == 1 && parameters[0].ParameterType == typeof(TKey);
+        });
+
+        if (ctorKeyOnly != null)
+        {
+            var newExpression = Expression.New(ctorKeyOnly, aggregateIdParam);
+            return Expression.Lambda<Func<Create<TAggregate, TKey>, TKey, TAggregate>>(newExpression, commandParam, aggregateIdParam).Compile();
+        }
+
+        // 4. (TCommand command)
+        var ctorCommandOnly = constructors.FirstOrDefault(c =>
+        {
+            var parameters = c.GetParameters();
+            return parameters.Length == 1 && parameters[0].ParameterType.IsAssignableFrom(commandType);
+        });
+
+        if (ctorCommandOnly != null)
+        {
+            var ctorParamType = ctorCommandOnly.GetParameters()[0].ParameterType;
+            Expression typedCommand = ctorParamType == typeof(Create<TAggregate, TKey>)
+                ? commandParam
+                : Expression.Convert(commandParam, ctorParamType);
+            var newExpression = Expression.New(ctorCommandOnly, typedCommand);
+            return Expression.Lambda<Func<Create<TAggregate, TKey>, TKey, TAggregate>>(newExpression, commandParam, aggregateIdParam).Compile();
+        }
+
+        return (_, _) => throw new MissingMethodException(
+            $"Constructor new {typeof(TAggregate)}({commandType} command, {typeof(TKey)} aggregateId) or ({typeof(TKey)} aggregateId) not found.");
     }
 }
 
