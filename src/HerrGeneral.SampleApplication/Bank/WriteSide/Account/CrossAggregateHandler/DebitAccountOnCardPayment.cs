@@ -7,12 +7,10 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.CrossAggregateHan
 /// <summary>
 /// Cross-aggregate handler: Debit account balance when card payment is processed
 /// </summary>
-public class DebitAccountOnCardPayment(
-    IAccountIdFromCardNumberProvider accountIdProvider,
-    ILogger<DebitAccountOnCardPayment> logger)
-    : ChangesPlanner<BankAccount>, ICrossAggregateChangeHandler<CardPaymentProcessed, BankAccount>
+public class DebitAccountOnCardPayment(ILogger<DebitAccountOnCardPayment> logger)
+    : ChangesPlanner<BankAccount, AccountNumber>, ICrossAggregateChangeHandler<CardPaymentProcessed, BankAccount, AccountNumber>
 {
-    public ChangeRequests<BankAccount> Handle(CardPaymentProcessed @event) =>
+    public ChangeRequests<BankAccount, AccountNumber> Handle(CardPaymentProcessed @event) =>
         Changes
             .Add(account =>
                 {
@@ -24,6 +22,6 @@ public class DebitAccountOnCardPayment(
 
                     return account;
                 },
-                accountIdProvider.GetFromCardNumber(@event.CardNumber)
+                @event.AccountNumber
             );
 }

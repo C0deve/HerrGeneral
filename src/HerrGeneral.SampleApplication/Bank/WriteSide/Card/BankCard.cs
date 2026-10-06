@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using HerrGeneral.DDD;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Account;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Exception;
 
@@ -8,30 +9,27 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card;
 /// <summary>
 /// Bank Card aggregate representing debit/credit cards linked to bank accounts
 /// </summary>
-public class BankCard : Aggregate<BankCard>
+public class BankCard : Aggregate<BankCard, CardNumber>
 {
     private readonly List<CardTransaction> _transactions = [];
 
-    public BankCard(Guid id, Guid accountId, string accountNumber, string cardholderName, CardType cardType, Guid commandId)
-        : base(id)
+    public BankCard(CardNumber cardNumber, AccountNumber accountNumber, string cardholderName, CardType cardType, Guid commandId)
+        : base(cardNumber)
     {
-        AccountId = accountId;
         AccountNumber = accountNumber;
         CardholderName = cardholderName;
         CardType = cardType;
-        CardNumber = GenerateCardNumber();
         ExpiryDate = DateTime.Now.AddYears(3);
         IsActive = true;
         DailyLimit = cardType == CardType.Credit ? 5000m : 1000m;
         DailySpent = 0m;
 
-        Emit(new BankCardCreated(AccountId, CardNumber, CardholderName, cardType, commandId, Id));
+        Emit(new BankCardCreated(AccountNumber, Id, CardholderName, cardType, commandId, Id));
     }
 
-    public Guid AccountId { get; }
-    public string AccountNumber { get; }
+    public AccountNumber AccountNumber { get; }
     public string CardholderName { get; }
-    public string CardNumber { get; }
+    public CardNumber CardNumber => Id;
     public CardType CardType { get; }
     public DateTime ExpiryDate { get; }
     public bool IsActive { get; private set; }
@@ -42,22 +40,21 @@ public class BankCard : Aggregate<BankCard>
     public BankCard ProcessPayment(decimal amount, string merchantName, Guid commandId)
     {
         if (!IsActive)
-            throw new InactiveCardException(CardNumber, "process payment");
+            throw new InactiveCardException(Id, "process payment");
         if (DateTime.Now > ExpiryDate)
-            throw new ExpiredCardException(CardNumber, ExpiryDate);
+            throw new ExpiredCardException(Id, ExpiryDate);
         if (amount <= 0)
             throw new InvalidAmountException(amount, "Payment");
         if (DailySpent + amount > DailyLimit)
-            throw new DailyLimitExceededException(CardNumber, amount, DailySpent, DailyLimit);
+            throw new DailyLimitExceededException(Id, amount, DailySpent, DailyLimit);
 
         DailySpent += amount;
         var transaction = new CardTransaction(amount, merchantName, DateTime.Now);
         _transactions.Add(transaction);
 
         return Emit(new CardPaymentProcessed(
-            AccountId,
             AccountNumber,
-            CardNumber,
+            Id,
             amount,
             merchantName,
             DailySpent,
@@ -68,21 +65,21 @@ public class BankCard : Aggregate<BankCard>
     public BankCard BlockCard(string reason, Guid commandId)
     {
         if (!IsActive)
-            throw new CardAlreadyBlockedException(CardNumber);
+            throw new CardAlreadyBlockedException(Id);
 
         IsActive = false;
-        return Emit(new BankCardBlocked(CardNumber, reason, commandId, Id));
+        return Emit(new BankCardBlocked(Id, reason, commandId, Id));
     }
 
     public BankCard UnblockCard(Guid commandId)
     {
         if (IsActive)
-            throw new CardAlreadyActiveException(CardNumber);
+            throw new CardAlreadyActiveException(Id);
         if (DateTime.Now > ExpiryDate)
-            throw new ExpiredCardException(CardNumber, ExpiryDate);
+            throw new ExpiredCardException(Id, ExpiryDate);
 
         IsActive = true;
-        return Emit(new BankCardUnblocked(CardNumber, commandId, Id));
+        return Emit(new BankCardUnblocked(Id, commandId, Id));
     }
 
     public BankCard UpdateDailyLimit(decimal newLimit, Guid commandId)
@@ -95,7 +92,7 @@ public class BankCard : Aggregate<BankCard>
         var oldLimit = DailyLimit;
         DailyLimit = newLimit;
 
-        return Emit(new CardDailyLimitUpdated(CardNumber, oldLimit, newLimit, commandId, Id));
+        return Emit(new CardDailyLimitUpdated(Id, oldLimit, newLimit, commandId, Id));
     }
 
     public BankCard ResetDailySpent()
@@ -104,10 +101,10 @@ public class BankCard : Aggregate<BankCard>
         return this;
     }
 
-    private static string GenerateCardNumber()
+    public static CardNumber GenerateCardNumber()
     {
         // Simplified card number generation
         var random = new Random();
-        return $"4532-{random.Next(1000, 9999)}-{random.Next(1000, 9999)}-{random.Next(1000, 9999)}";
+        return new CardNumber($"4532-{random.Next(1000, 9999)}-{random.Next(1000, 9999)}-{random.Next(1000, 9999)}");
     }
 }

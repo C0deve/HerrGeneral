@@ -2,5 +2,5 @@
 
 public interface IAccountIdFromCardNumberProvider  
 {
-    Guid GetFromCardNumber(string eventCardNumber);
+    Account.AccountNumber GetFromCardNumber(Card.CardNumber eventCardNumber);
 }

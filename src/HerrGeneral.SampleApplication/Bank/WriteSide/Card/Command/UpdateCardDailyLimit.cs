@@ -2,12 +2,12 @@
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.Command;
 
-public record UpdateCardDailyLimit(Guid AggregateId, decimal NewLimit) : Change<BankCard>(AggregateId)
+public record UpdateCardDailyLimit(CardNumber AggregateId, decimal NewLimit) : Change<BankCard, CardNumber>(AggregateId)
 {
     /// <summary>
     /// Handler for updating bank card daily spending limits
     /// </summary>
-    public class Handler : IChangeHandler<BankCard, UpdateCardDailyLimit>
+    public class Handler : IChangeHandler<BankCard, UpdateCardDailyLimit, CardNumber>
     {
         /// <summary>
         /// Updates the daily spending limit for the bank card

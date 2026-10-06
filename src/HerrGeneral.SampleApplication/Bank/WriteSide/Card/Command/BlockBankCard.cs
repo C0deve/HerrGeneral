@@ -2,12 +2,12 @@
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.Command;
 
-public record BlockBankCard(Guid AggregateId, string Reason) : Change<BankCard>(AggregateId)
+public record BlockBankCard(CardNumber AggregateId, string Reason) : Change<BankCard, CardNumber>(AggregateId)
 {
     /// <summary>
     /// Handler for blocking bank cards with validation and business logic
     /// </summary>
-    public class Handler : IChangeHandler<BankCard, BlockBankCard>
+    public class Handler : IChangeHandler<BankCard, BlockBankCard, CardNumber>
     {
         /// <summary>
         /// Blocks the bank card with the specified reason

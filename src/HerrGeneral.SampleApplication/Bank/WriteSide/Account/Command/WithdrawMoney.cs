@@ -7,12 +7,12 @@ namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.Command;
 // Events
 
 // Commandes
-public record WithdrawMoney(Guid AggregateId, decimal Amount, string Description) : Change<BankAccount>(AggregateId)
+public record WithdrawMoney(AccountNumber AggregateId, decimal Amount, string Description) : Change<BankAccount, AccountNumber>(AggregateId)
 {
     /// <summary>
     /// Handler for withdrawing money from bank accounts
     /// </summary>
-    public class Handler : IChangeHandler<BankAccount, WithdrawMoney>
+    public class Handler : IChangeHandler<BankAccount, WithdrawMoney, AccountNumber>
     {
         /// <summary>
         /// Processes a money withdrawal operation on the bank account
