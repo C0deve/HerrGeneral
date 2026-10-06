@@ -8,6 +8,6 @@
         <Nullable>enable</Nullable>
         <AnalysisLevel>latest-recommended</AnalysisLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 </Project>
