@@ -77,4 +77,14 @@ public class CreateAggregateShould
             .Select(x => x.Name)
             .ShouldBe(["John"]);
     }
+
+    [Fact]
+    public void ResolveOpenGenericAggregateFactory()
+    {
+        var factoryGuid = _container.GetService<IAggregateFactory<TheThing>>();
+        factoryGuid.ShouldNotBeNull();
+
+        var factoryGeneric = _container.GetService<IAggregateFactory<TheThing, Guid>>();
+        factoryGeneric.ShouldNotBeNull();
+    }
 }

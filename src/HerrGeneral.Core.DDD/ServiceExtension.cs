@@ -1,5 +1,6 @@
 ﻿using HerrGeneral.DDD.Core.RegistrationPolicies;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HerrGeneral.DDD;
 
@@ -17,6 +18,9 @@ public static class ServiceExtension
     public static IHerrGeneralBuilder UseDDD(this IHerrGeneralBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Services.TryAddTransient(typeof(IAggregateFactory<,>), typeof(DefaultAggregateFactory<,>));
+        builder.Services.TryAddTransient(typeof(IAggregateFactory<>), typeof(DefaultAggregateFactory<>));
 
         return builder
             .RegisterPolicy(new RegisterICreateHandler())
