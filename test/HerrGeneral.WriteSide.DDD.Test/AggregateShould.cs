@@ -35,4 +35,17 @@ public class AggregateShould
         Should.Throw<IdMismatchOnEventEmit<TheThing>>(() =>
             new TheThing(Guid.NewGuid(), "John", Guid.NewGuid()).AddFriendWithDifferentAggregateId("Smith", Guid.NewGuid())
         );
+
+    [Fact]
+    public void ExposeTypedIdInAggregateNotFoundException()
+    {
+        var exString = new AggregateNotFound<TheThing, string>("ORDER-123");
+        exString.Id.ShouldBe("ORDER-123");
+        exString.Message.ShouldContain("ORDER-123");
+
+        var guid = Guid.NewGuid();
+        var exGuid = new AggregateNotFound<TheThing>(guid);
+        exGuid.Id.ShouldBe(guid);
+        exGuid.Message.ShouldContain(guid.ToString());
+    }
 }
