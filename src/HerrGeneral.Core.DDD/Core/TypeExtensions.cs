@@ -13,16 +13,6 @@ internal static class TypeExtensions
             var repo1 = typeof(IAggregateRepository<>).MakeGenericType(aggregateType);
             serviceCollection.TryAddTransient(repo2, sp => sp.GetRequiredService(repo1));
             serviceCollection.TryAddTransient(repo1, sp => sp.GetRequiredService(repo2));
-
-            var factory2 = typeof(IAggregateFactory<,>).MakeGenericType(aggregateType, typeof(Guid));
-            var factory1 = typeof(IAggregateFactory<>).MakeGenericType(aggregateType);
-            serviceCollection.TryAddTransient(factory2, sp => sp.GetService(factory1) ?? Activator.CreateInstance(typeof(DefaultAggregateFactory<,>).MakeGenericType(aggregateType, typeof(Guid)))!);
-            serviceCollection.TryAddTransient(factory1, sp => sp.GetService(factory2) ?? Activator.CreateInstance(typeof(DefaultAggregateFactory<>).MakeGenericType(aggregateType))!);
-        }
-        else
-        {
-            var factory2 = typeof(IAggregateFactory<,>).MakeGenericType(aggregateType, keyType);
-            serviceCollection.TryAddTransient(factory2, typeof(DefaultAggregateFactory<,>).MakeGenericType(aggregateType, keyType));
         }
     }
     public static (Type AggregateType, Type KeyType) GetAggregateAndKeyTypeFromCreateCommand(this Type commandType)
