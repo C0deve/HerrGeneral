@@ -1,10 +1,12 @@
 ﻿namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
+using HerrGeneral.SampleApplication.Bank.WriteSide.Account;
+
 public record BankCardCreated(
-    Guid AccountId,
-    string CardNumber,
+    AccountNumber AccountNumber,
+    CardNumber CardNumber,
     string CardholderName,
     CardType CardType,
     Guid SourceCommandId,
-    Guid AggregateId) 
-    : DomainEvent<BankCard>(SourceCommandId, AggregateId);
+    CardNumber AggregateId) 
+    : DomainEvent<BankCard, CardNumber>(SourceCommandId, AggregateId);

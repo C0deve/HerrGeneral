@@ -1,4 +1,4 @@
 ﻿namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
-public record CardDailyLimitUpdated(string CardNumber, decimal OldLimit, decimal NewLimit, Guid SourceCommandId, Guid AggregateId) 
-    : DomainEvent<BankCard>(SourceCommandId, AggregateId);
+public record CardDailyLimitUpdated(CardNumber CardNumber, decimal OldLimit, decimal NewLimit, Guid SourceCommandId, CardNumber AggregateId) 
+    : DomainEvent<BankCard, CardNumber>(SourceCommandId, AggregateId);

@@ -2,12 +2,12 @@
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Account.Command;
 
-public record DepositMoney(Guid AggregateId, decimal Amount, string Description) : Change<BankAccount>(AggregateId)
+public record DepositMoney(AccountNumber AggregateId, decimal Amount, string Description) : Change<BankAccount, AccountNumber>(AggregateId)
 {
     /// <summary>
     /// Handler for depositing money into bank accounts
     /// </summary>
-    public class Handler : IChangeHandler<BankAccount, DepositMoney>
+    public class Handler : IChangeHandler<BankAccount, DepositMoney, AccountNumber>
     {
         /// <summary>
         /// Processes a money deposit operation on the bank account

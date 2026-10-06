@@ -2,12 +2,12 @@
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.Command;
 
-public record UnblockBankCard(Guid AggregateId) : Change<BankCard>(AggregateId)
+public record UnblockBankCard(CardNumber AggregateId) : Change<BankCard, CardNumber>(AggregateId)
 {
     /// <summary>
     /// Handler for unblocking bank cards with validation and business logic
     /// </summary>
-    public class Handler : IChangeHandler<BankCard, UnblockBankCard>
+    public class Handler : IChangeHandler<BankCard, UnblockBankCard, CardNumber>
     {
         /// <summary>
         /// Unblocks the bank card

@@ -18,8 +18,8 @@ public class CreateBankCardOnAccountCreated : IDomainEventHandler<AccountCreated
 {
     public IEnumerable<BankCard> Handle(AccountCreated @event)
     {
-        yield return new BankCard(Guid.NewGuid(),
-            @event.AggregateId,
+        yield return new BankCard(
+            BankCard.GenerateCardNumber(),
             @event.AccountNumber,
             @event.OwnerName,
             CardType.Credit,

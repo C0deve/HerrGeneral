@@ -1,4 +1,4 @@
 ﻿namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
-public record BankCardUnblocked(string CardNumber, Guid SourceCommandId, Guid AggregateId) 
-    : DomainEvent<BankCard>(SourceCommandId, AggregateId);
+public record BankCardUnblocked(CardNumber CardNumber, Guid SourceCommandId, CardNumber AggregateId) 
+    : DomainEvent<BankCard, CardNumber>(SourceCommandId, AggregateId);

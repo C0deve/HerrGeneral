@@ -3,15 +3,16 @@ using HerrGeneral.DDD.Exception;
 
 namespace HerrGeneral.SampleApplication.Bank.Infrastructure;
 
-public class Repository<TAggregate> : WriteSide.IMyAggregateRepository<TAggregate> 
-    where TAggregate : IAggregate<Guid>
+public class Repository<TAggregate, TKey> : WriteSide.IMyAggregateRepository<TAggregate, TKey> 
+    where TAggregate : IAggregate<TKey>
+    where TKey : notnull
 {
-    private readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, TAggregate> _aggregates = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<TKey, TAggregate> _aggregates = new();
 
-    public TAggregate Get(Guid id)
+    public TAggregate Get(TKey id)
     {
         _aggregates.TryGetValue(id, out var value);
-        return value ?? throw new AggregateNotFound<TAggregate>(id);
+        return value ?? throw new AggregateNotFound<TAggregate, TKey>(id);
     }
 
     public void Save(TAggregate aggregate) =>

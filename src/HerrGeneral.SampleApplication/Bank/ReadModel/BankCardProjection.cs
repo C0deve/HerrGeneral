@@ -1,12 +1,13 @@
 ﻿using HerrGeneral.ReadSide;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Account;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Card;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
 namespace HerrGeneral.SampleApplication.Bank.ReadModel;
 
 public record BankCardProjectionItem(
-    Guid Id,
-    Guid AccountId,
-    string CardNumber = "",
+    CardNumber CardNumber,
+    AccountNumber AccountNumber,
     string CardholderName = "",
     string CardType = "", // "Debit", "Credit"
     bool IsActive = false,
@@ -28,9 +29,8 @@ public class BankCardProjection : Projection<BankCardProjectionItem>,
     public void Handle(BankCardCreated @event) =>
         Add(
             new BankCardProjectionItem(
-                Id: @event.AggregateId,
-                AccountId: @event.AccountId,
                 CardNumber: @event.CardNumber,
+                AccountNumber: @event.AccountNumber,
                 CardholderName: @event.CardholderName,
                 CardType: @event.CardType.ToString(),
                 IsActive: true,
@@ -40,7 +40,7 @@ public class BankCardProjection : Projection<BankCardProjectionItem>,
 
     public void Handle(CardPaymentProcessed @event) =>
         Update(
-            item => item.Id == @event.AggregateId,
+            item => item.CardNumber == @event.CardNumber,
             item => item with
             {
                 DailySpent = @event.DailySpentTotal,
@@ -50,7 +50,7 @@ public class BankCardProjection : Projection<BankCardProjectionItem>,
 
     public void Handle(BankCardBlocked @event) =>
         Update(
-            item => item.Id == @event.AggregateId,
+            item => item.CardNumber == @event.CardNumber,
             item => item with
             {
                 IsActive = false,
@@ -60,7 +60,7 @@ public class BankCardProjection : Projection<BankCardProjectionItem>,
 
     public void Handle(BankCardUnblocked @event) =>
         Update(
-            item => item.Id == @event.AggregateId,
+            item => item.CardNumber == @event.CardNumber,
             item => item with
             {
                 IsActive = true,
@@ -70,7 +70,7 @@ public class BankCardProjection : Projection<BankCardProjectionItem>,
 
     public void Handle(CardDailyLimitUpdated @event) =>
         Update(
-            item => item.Id == @event.AggregateId,
+            item => item.CardNumber == @event.CardNumber,
             item => item with
             {
                 DailyLimit = @event.NewLimit

@@ -1,5 +1,7 @@
 ﻿using HerrGeneral.ReadSide;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Account;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Account.Event;
+using HerrGeneral.SampleApplication.Bank.WriteSide.Card;
 using HerrGeneral.SampleApplication.Bank.WriteSide.Card.Event;
 
 namespace HerrGeneral.SampleApplication.Bank.ReadModel;
@@ -9,8 +11,7 @@ namespace HerrGeneral.SampleApplication.Bank.ReadModel;
 /// </summary>
 public record TransactionHistoryItem(
     Guid Id,
-    Guid AccountId,
-    string AccountNumber,
+    AccountNumber AccountNumber,
     string Type, // "Deposit", "Withdrawal", "Card Payment"
     decimal Amount,
     decimal BalanceAfter,
@@ -18,7 +19,7 @@ public record TransactionHistoryItem(
     string Description,
     string Channel, // "Branch/ATM", "Card", "Online"
     string? MerchantName, // For card payments
-    string? CardNumber // For card payments
+    CardNumber? CardNumber // For card payments
 );
 
 /// <summary>
@@ -32,7 +33,6 @@ public class TransactionHistory : Projection<TransactionHistoryItem>,
     public void Handle(MoneyDeposited @event) =>
         Add(new TransactionHistoryItem(
             Guid.NewGuid(),
-            @event.AggregateId,
             @event.AccountNumber,
             "Deposit",
             @event.Amount,
@@ -47,7 +47,6 @@ public class TransactionHistory : Projection<TransactionHistoryItem>,
     public void Handle(MoneyWithdrawn @event) =>
         Add(new TransactionHistoryItem(
             Guid.NewGuid(),
-            @event.AggregateId,
             @event.AccountNumber,
             "Withdrawal",
             -@event.Amount,
@@ -62,7 +61,6 @@ public class TransactionHistory : Projection<TransactionHistoryItem>,
     public void Handle(CardPaymentProcessed @event) =>
         Add(new TransactionHistoryItem(
             Guid.NewGuid(),
-            @event.AccountId,
             @event.AccountNumber,
             "Card Payment",
             -@event.Amount,

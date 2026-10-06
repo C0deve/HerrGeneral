@@ -2,12 +2,12 @@
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide.Card.Command;
 
-public record ProcessCardPayment(Guid AggregateId, decimal Amount, string MerchantName) : Change<BankCard>(AggregateId)
+public record ProcessCardPayment(CardNumber AggregateId, decimal Amount, string MerchantName) : Change<BankCard, CardNumber>(AggregateId)
 {
     /// <summary>
     /// Handler for processing card payments with fraud detection and validation
     /// </summary>
-    public class Handler : IChangeHandler<BankCard, ProcessCardPayment>
+    public class Handler : IChangeHandler<BankCard, ProcessCardPayment, CardNumber>
     {
         /// <summary>
         /// Processes a payment transaction on the bank card
