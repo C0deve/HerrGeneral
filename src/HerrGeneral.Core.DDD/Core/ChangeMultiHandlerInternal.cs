@@ -3,11 +3,12 @@ using HerrGeneral.WriteSide;
 
 namespace HerrGeneral.DDD.Core;
 
-internal sealed class ChangeMultiHandlerInternal<TAggregate, TCommand, THandler>(
-    IAggregateRepository<TAggregate> repository,
+internal sealed class ChangeMultiHandlerInternal<TAggregate, TKey, TCommand, THandler>(
+    IAggregateRepository<TAggregate, TKey> repository,
     THandler handler) : ICommandHandler<TCommand, Unit>, IHandlerTypeProvider
-    where TAggregate : Aggregate<TAggregate>
-    where THandler : IChangeMultiHandler<TAggregate, TCommand>
+    where TAggregate : Aggregate<TAggregate, TKey>
+    where THandler : IChangeMultiHandler<TAggregate, TCommand, TKey>
+    where TKey : notnull
 {
     /// <summary>
     /// Handle incoming command and produces events

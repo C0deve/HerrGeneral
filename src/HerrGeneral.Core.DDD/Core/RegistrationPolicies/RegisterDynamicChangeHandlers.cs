@@ -1,4 +1,5 @@
 ﻿using HerrGeneral.Core.Registration.Policy;
+using HerrGeneral.Core.Registration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HerrGeneral.DDD.Core.RegistrationPolicies;
@@ -16,12 +17,13 @@ internal sealed class RegisterDynamicChangeHandlers : IRegistrationPolicy
 
         foreach (var externalCommand in externalCommands)
         {
-            var @interface = externalCommand.MakeHandlerInterfaceForChangeCommand();
-            var aggregateType = externalCommand.GetAggregateTypeFromCommand();
+            var (aggregateType, keyType) = externalCommand.GetAggregateAndKeyTypeFromChangeCommand();
+            var @interface = TypeDefinition.CommandHandlerInterface.MakeGenericType(externalCommand, typeof(Unit));
 
-            var dynamicHandlerType = externalCommand.MakeDynamicChangeHandlerType(aggregateType);
-            var internalHandlerType = externalCommand.MakeChangeHandlerType(aggregateType, dynamicHandlerType);
+            var dynamicHandlerType = typeof(ChangeHandlerByReflection<,,>).MakeGenericType(aggregateType, keyType, externalCommand);
+            var internalHandlerType = typeof(ChangeHandlerInternal<,,,>).MakeGenericType(aggregateType, keyType, externalCommand, dynamicHandlerType);
 
+            serviceCollection.TryAddAggregateDependencies(aggregateType, keyType);
             serviceCollection.AddTransient(dynamicHandlerType);
             serviceCollection.AddTransient(@interface, internalHandlerType);
         }

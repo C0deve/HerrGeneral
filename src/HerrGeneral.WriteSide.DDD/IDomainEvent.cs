@@ -1,10 +1,13 @@
 namespace HerrGeneral.DDD;
 
 /// <summary>
-/// Interface for all domain event
+/// Interface for all domain event with typed key
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
-public interface IDomainEvent<TAggregate> where TAggregate : IAggregate
+/// <typeparam name="TKey"></typeparam>
+public interface IDomainEvent<TAggregate, out TKey>
+    where TAggregate : IAggregate
+    where TKey : notnull
 {
     /// <summary>
     /// Date of the event
@@ -24,5 +27,14 @@ public interface IDomainEvent<TAggregate> where TAggregate : IAggregate
     /// <summary>
     /// Id of the aggregate who produce the event
     /// </summary>
-    public Guid AggregateId { get; }
+    public TKey AggregateId { get; }
+}
+
+/// <summary>
+/// Interface for domain event with Guid key
+/// </summary>
+/// <typeparam name="TAggregate"></typeparam>
+public interface IDomainEvent<TAggregate> : IDomainEvent<TAggregate, Guid>
+    where TAggregate : IAggregate
+{
 }

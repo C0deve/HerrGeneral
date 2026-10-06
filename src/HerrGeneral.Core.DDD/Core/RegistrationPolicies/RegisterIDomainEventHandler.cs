@@ -37,9 +37,18 @@ internal sealed class RegisterIDomainEventHandler : IRegistrationPolicy
     {
         var eventType = genericArguments[0];
         var aggregateType = genericArguments[1];
+        var keyType = aggregateType.GetKeyTypeFromAggregate();
             
         var @interface = TypeDefinition.WriteSideEventHandlerInterface.MakeGenericType(eventType);
-        var internalHandler = typeof(EventHandlerInternal<,,>).MakeGenericType(eventType, externalWriteSideEventHandler, aggregateType);
+        Type internalHandler;
+        if (keyType != null && keyType != typeof(Guid))
+        {
+            internalHandler = typeof(EventHandlerInternal<,,,>).MakeGenericType(eventType, externalWriteSideEventHandler, aggregateType, keyType);
+        }
+        else
+        {
+            internalHandler = typeof(EventHandlerInternal<,,>).MakeGenericType(eventType, externalWriteSideEventHandler, aggregateType);
+        }
 
         serviceCollection.TryAddTransient(externalWriteSideEventHandler);
             

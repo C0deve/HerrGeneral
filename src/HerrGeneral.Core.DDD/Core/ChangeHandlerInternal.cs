@@ -11,6 +11,7 @@ namespace HerrGeneral.DDD.Core;
 /// 4. Dispatch events
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
+/// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
 /// <remarks>

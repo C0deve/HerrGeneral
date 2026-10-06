@@ -4,7 +4,7 @@ using HerrGeneral.DDD.Exception;
 namespace HerrGeneral.SampleApplication.Bank.Infrastructure;
 
 public class Repository<TAggregate> : WriteSide.IMyAggregateRepository<TAggregate> 
-    where TAggregate : IAggregate
+    where TAggregate : IAggregate<Guid>
 {
     private readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, TAggregate> _aggregates = new();
 

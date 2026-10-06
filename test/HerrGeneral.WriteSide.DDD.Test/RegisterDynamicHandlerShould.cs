@@ -1,5 +1,4 @@
 ﻿using HerrGeneral.DDD;
-using HerrGeneral.Testing;
 using HerrGeneral.WriteSide.DDD.Test.Data;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;

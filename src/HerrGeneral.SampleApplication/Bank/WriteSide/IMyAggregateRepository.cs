@@ -3,7 +3,7 @@
 namespace HerrGeneral.SampleApplication.Bank.WriteSide;
 
 public interface IMyAggregateRepository<T> : IAggregateRepository<T> 
-    where T : IAggregate
+    where T : IAggregate<Guid>
 {
     /// <summary>
     /// Find aggregates based on a given specification.

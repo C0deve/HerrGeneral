@@ -10,6 +10,7 @@ namespace HerrGeneral.DDD.Core;
 /// 3. Dispatch events
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
+/// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
 /// <remarks>
@@ -31,14 +32,44 @@ internal sealed class CreateHandlerInternal<TAggregate, TKey, TCommand, THandler
     /// </summary>
     /// <param name="command"></param>
     /// <returns></returns>
-    public (IReadOnlyList<object> Events, Guid Result) Handle(TCommand command)
+    public (IReadOnlyList<object> Events, TKey Result) Handle(TCommand command)
     {
-        var id = Guid.NewGuid();
+        var id = GenerateOrExtractId(command);
         var aggregate = _handler.Handle(command, id);
         _repository.Save(aggregate);
         var result = ((IReadOnlyList<object>)aggregate.NewEvents, aggregate.Id);
         aggregate.ClearNewEvents();
         return result;
+    }
+
+    private static TKey GenerateOrExtractId(TCommand command)
+    {
+        if (typeof(TKey) == typeof(Guid))
+        {
+            var prop = typeof(TCommand).GetProperty("AggregateId") ?? typeof(TCommand).GetProperty("Id");
+            if (prop != null && prop.PropertyType == typeof(Guid))
+            {
+                var val = (Guid)prop.GetValue(command)!;
+                if (val != Guid.Empty)
+                    return (TKey)(object)val;
+            }
+            return (TKey)(object)Guid.NewGuid();
+        }
+
+        var idProp = typeof(TCommand).GetProperty("AggregateId") ?? typeof(TCommand).GetProperty("Id");
+        if (idProp != null && typeof(TKey).IsAssignableFrom(idProp.PropertyType))
+        {
+            var val = idProp.GetValue(command);
+            if (val is TKey typedVal)
+                return typedVal;
+        }
+
+        if (typeof(TKey) == typeof(string))
+        {
+            return (TKey)(object)Guid.NewGuid().ToString();
+        }
+
+        return default!;
     }
     
     public Type GetHandlerType() => typeof(THandler);

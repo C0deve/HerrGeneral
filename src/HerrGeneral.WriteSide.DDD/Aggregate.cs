@@ -3,32 +3,36 @@
 namespace HerrGeneral.DDD;
 
 /// <summary>
-/// Aggregate implementation with IDomainEvent publication
+/// Aggregate implementation with IDomainEvent publication and typed key
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
+/// <typeparam name="TAggregate"></typeparam>
+/// <typeparam name="TKey"></typeparam>
+public abstract class Aggregate<TAggregate, TKey> : IAggregate<TKey>
+    where TAggregate : Aggregate<TAggregate, TKey>
+    where TKey : notnull
 {
-    private readonly List<IDomainEvent<T>> _newEvents = [];
+    private readonly List<IDomainEvent<TAggregate, TKey>> _newEvents = [];
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="id"></param>
-    protected Aggregate(Guid id)
+    protected Aggregate(TKey id)
     {
-        if (id == Guid.Empty) throw new ArgumentNullException(nameof(id));
+        ArgumentNullException.ThrowIfNull(id);
+        if (id is Guid guid && guid == Guid.Empty) throw new ArgumentNullException(nameof(id));
         Id = id;
     }
 
     /// <summary>
     /// Unique Id of the Aggregate 
     /// </summary>
-    public Guid Id { get; }
+    public TKey Id { get; }
 
     /// <summary>
     /// All new IDomainEvent to dispatch
     /// </summary>
-    public IReadOnlyList<IDomainEvent<T>> NewEvents
+    public IReadOnlyList<IDomainEvent<TAggregate, TKey>> NewEvents
     {
         get
         {
@@ -43,14 +47,14 @@ public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
     /// Clear all IDomainEvents waiting for dispatch
     /// </summary>
     /// <returns></returns>
-    internal T ClearNewEvents()
+    internal TAggregate ClearNewEvents()
     {
         lock (_newEvents)
         {
             _newEvents.Clear();
         }
 
-        return (T)this;
+        return (TAggregate)this;
     }
 
     /// <summary>
@@ -59,18 +63,43 @@ public abstract class Aggregate<T> : IAggregate where T : Aggregate<T>
     /// <param name="domainEvent"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="IdMismatchOnEventEmit{T}"></exception>
+    /// <exception cref="IdMismatchOnEventEmit{TAggregate, TKey}"></exception>
     // ReSharper disable once VirtualMemberNeverOverridden.Global
-    protected virtual T Emit(IDomainEvent<T> domainEvent)
+    protected virtual TAggregate Emit(IDomainEvent<TAggregate, TKey> domainEvent)
     {
         ArgumentNullException.ThrowIfNull(domainEvent);
 
-        if (domainEvent.AggregateId != Id)
-            throw new IdMismatchOnEventEmit<T>(this, domainEvent);
+        if (!EqualityComparer<TKey>.Default.Equals(domainEvent.AggregateId, Id))
+            throw CreateIdMismatchException(domainEvent);
 
         lock (_newEvents)
             _newEvents.Add(domainEvent);
 
-        return (T)this;
+        return (TAggregate)this;
     }
+
+    /// <summary>
+    /// Creates the exception to throw when an event ID does not match aggregate ID.
+    /// </summary>
+    /// <param name="domainEvent"></param>
+    /// <returns></returns>
+    protected virtual System.Exception CreateIdMismatchException(IDomainEvent<TAggregate, TKey> domainEvent) =>
+        new IdMismatchOnEventEmit<TAggregate, TKey>(this, domainEvent);
+}
+
+/// <summary>
+/// Aggregate implementation with Guid key for backwards compatibility
+/// </summary>
+/// <typeparam name="TAggregate"></typeparam>
+/// <remarks>
+/// Constructor
+/// </remarks>
+/// <param name="id"></param>
+public abstract class Aggregate<TAggregate>(Guid id) : Aggregate<TAggregate, Guid>(id)
+    where TAggregate : Aggregate<TAggregate>
+{
+
+    /// <inheritdoc />
+    protected override System.Exception CreateIdMismatchException(IDomainEvent<TAggregate, Guid> domainEvent) =>
+        new IdMismatchOnEventEmit<TAggregate>(this, (IDomainEvent<TAggregate>)domainEvent);
 }

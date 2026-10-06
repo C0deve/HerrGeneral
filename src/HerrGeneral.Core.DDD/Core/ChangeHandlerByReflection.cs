@@ -8,10 +8,12 @@ namespace HerrGeneral.DDD.Core;
 /// Allows you to avoid declaring a handler for the command
 /// </summary>
 /// <typeparam name="TAggregate"></typeparam>
+/// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
-internal sealed class ChangeHandlerByReflection<TAggregate, TCommand> : IChangeHandler<TAggregate, TCommand>
-    where TAggregate : Aggregate<TAggregate> 
-    where TCommand : Change<TAggregate>
+internal sealed class ChangeHandlerByReflection<TAggregate, TKey, TCommand> : IChangeHandler<TAggregate, TCommand, TKey>
+    where TAggregate : Aggregate<TAggregate, TKey> 
+    where TCommand : Change<TAggregate, TKey>
+    where TKey : notnull
 {
     private static readonly Func<TAggregate, TCommand, TAggregate> Handler = CompileHandler();
 

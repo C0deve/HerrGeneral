@@ -1,30 +1,119 @@
-﻿using HerrGeneral.WriteSide;
+﻿namespace HerrGeneral.DDD.Core;
 
-namespace HerrGeneral.DDD.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 internal static class TypeExtensions
 {
-    extension(Type commandType)
+    public static void TryAddAggregateDependencies(this IServiceCollection serviceCollection, Type aggregateType, Type keyType)
     {
-        public Type MakeHandlerInterfaceForCreateCommand<TResult>() =>
-            typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(TResult));
+        if (keyType == typeof(Guid))
+        {
+            var repo2 = typeof(IAggregateRepository<,>).MakeGenericType(aggregateType, typeof(Guid));
+            var repo1 = typeof(IAggregateRepository<>).MakeGenericType(aggregateType);
+            serviceCollection.TryAddTransient(repo2, sp => sp.GetRequiredService(repo1));
+            serviceCollection.TryAddTransient(repo1, sp => sp.GetRequiredService(repo2));
 
-        public Type MakeCreateHandlerInternalType(Type aggregateType, Type dynamicHandler) =>
-            typeof(CreateHandlerInternal<,,>).MakeGenericType(aggregateType, commandType, dynamicHandler);
+            var factory2 = typeof(IAggregateFactory<,>).MakeGenericType(aggregateType, typeof(Guid));
+            var factory1 = typeof(IAggregateFactory<>).MakeGenericType(aggregateType);
+            serviceCollection.TryAddTransient(factory2, sp => sp.GetService(factory1) ?? Activator.CreateInstance(typeof(DefaultAggregateFactory<,>).MakeGenericType(aggregateType, typeof(Guid)))!);
+            serviceCollection.TryAddTransient(factory1, sp => sp.GetService(factory2) ?? Activator.CreateInstance(typeof(DefaultAggregateFactory<>).MakeGenericType(aggregateType))!);
+        }
+        else
+        {
+            var factory2 = typeof(IAggregateFactory<,>).MakeGenericType(aggregateType, keyType);
+            serviceCollection.TryAddTransient(factory2, typeof(DefaultAggregateFactory<,>).MakeGenericType(aggregateType, keyType));
+        }
+    }
+    public static (Type AggregateType, Type KeyType) GetAggregateAndKeyTypeFromCreateCommand(this Type commandType)
+    {
+        var current = commandType;
+        while (current != null && current != typeof(object))
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(Create<,>))
+            {
+                return (current.GetGenericArguments()[0], current.GetGenericArguments()[1]);
+            }
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(Create<>))
+            {
+                return (current.GetGenericArguments()[0], typeof(Guid));
+            }
+            current = current.BaseType;
+        }
 
-        public Type MakeDynamicCreateHandlerType(Type aggregateType) =>
-            typeof(CreateHandlerByReflection<,>).MakeGenericType(aggregateType, commandType);
+        var aggType = commandType.GetAggregateTypeFromCommand();
+        var keyType = aggType.GetKeyTypeFromAggregate() ?? typeof(Guid);
+        return (aggType, keyType);
+    }
 
-        public Type MakeHandlerInterfaceForChangeCommand() =>
-            typeof(ICommandHandler<,>).MakeGenericType(commandType, typeof(Unit));
+    public static (Type AggregateType, Type KeyType) GetAggregateAndKeyTypeFromChangeCommand(this Type commandType)
+    {
+        var current = commandType;
+        while (current != null && current != typeof(object))
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(Change<,>))
+            {
+                return (current.GetGenericArguments()[0], current.GetGenericArguments()[1]);
+            }
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(Change<>))
+            {
+                return (current.GetGenericArguments()[0], typeof(Guid));
+            }
+            current = current.BaseType;
+        }
 
-        public Type MakeChangeHandlerType(Type aggregateType, Type dynamicHandler) =>
-            typeof(ChangeHandlerInternal<,,>).MakeGenericType(aggregateType, commandType, dynamicHandler);
+        var aggType = commandType.GetAggregateTypeFromCommand();
+        var keyType = aggType.GetKeyTypeFromAggregate() ?? typeof(Guid);
+        return (aggType, keyType);
+    }
 
-        public Type MakeDynamicChangeHandlerType(Type aggregateType) =>
-            typeof(ChangeHandlerByReflection<,>).MakeGenericType(aggregateType, commandType);
+    public static Type? GetKeyTypeFromAggregate(this Type aggregateType)
+    {
+        var aggInterface = aggregateType.GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAggregate<>));
+        if (aggInterface != null)
+            return aggInterface.GetGenericArguments()[0];
 
-        public Type GetAggregateTypeFromCommand() =>
-            commandType.BaseType!.GetGenericArguments()[0];
+        var current = aggregateType;
+        while (current != null && current != typeof(object))
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(Aggregate<,>))
+                return current.GetGenericArguments()[1];
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(Aggregate<>))
+                return typeof(Guid);
+            current = current.BaseType;
+        }
+
+        return null;
+    }
+
+    public static Type GetAggregateTypeFromCommand(this Type commandType)
+    {
+        var current = commandType;
+        while (current != null && current != typeof(object))
+        {
+            if (current.IsGenericType)
+            {
+                var def = current.GetGenericTypeDefinition();
+                if (def == typeof(Create<,>) || def == typeof(Create<>) ||
+                    def == typeof(Change<,>) || def == typeof(Change<>))
+                {
+                    return current.GetGenericArguments()[0];
+                }
+            }
+            current = current.BaseType;
+        }
+
+        var noHandlerCreate = commandType.GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(INoHandlerCreate<>));
+        if (noHandlerCreate != null)
+            return noHandlerCreate.GetGenericArguments()[0];
+
+        var noHandlerChange = commandType.GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(INoHandlerChange<>));
+        if (noHandlerChange != null)
+            return noHandlerChange.GetGenericArguments()[0];
+
+        throw new InvalidOperationException($"Could not determine Aggregate type from command {commandType.FullName}");
     }
 }

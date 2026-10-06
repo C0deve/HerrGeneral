@@ -10,7 +10,7 @@ public class AggregateNotFound<T> : System.Exception //where T : EventSourcingAg
     /// Constructor
     /// </summary>
     /// <param name="id"></param>
-    public AggregateNotFound(Guid id) : base($"Unable to find aggregate n°'{id}' of type '{typeof(T).FullName}'.")
+    public AggregateNotFound(object id) : base($"Unable to find aggregate n°'{id}' of type '{typeof(T).FullName}'.")
     {}
 
     /// <summary>
@@ -18,7 +18,7 @@ public class AggregateNotFound<T> : System.Exception //where T : EventSourcingAg
     /// </summary>
     /// <param name="id"></param>
     /// <param name="message"></param>
-    public AggregateNotFound(Guid id, string message) : base($"{message} \nUnable to find aggregate n°'{id}' of type '{typeof(T).FullName}'.")
+    public AggregateNotFound(object id, string message) : base($"{message} \nUnable to find aggregate n°'{id}' of type '{typeof(T).FullName}'.")
     {
             
     }

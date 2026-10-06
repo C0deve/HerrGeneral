@@ -4,11 +4,13 @@ using HerrGeneral.DDD.Exception;
 
 namespace HerrGeneral.WriteSide.DDD.Test.Data;
 
-public class Repository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : IAggregate
+public class Repository<TAggregate, TKey> : IAggregateRepository<TAggregate, TKey>
+    where TAggregate : IAggregate<TKey>
+    where TKey : notnull
 {
-    private readonly ConcurrentDictionary<Guid, TAggregate> _aggregates = new();
+    private readonly ConcurrentDictionary<TKey, TAggregate> _aggregates = new();
 
-    public TAggregate Get(Guid id)
+    public TAggregate Get(TKey id)
     {
         _aggregates.TryGetValue(id, out var value);
         return value ?? throw new AggregateNotFound<TAggregate>(id);
@@ -19,4 +21,9 @@ public class Repository<TAggregate> : IAggregateRepository<TAggregate> where TAg
 
     public IEnumerable<TAggregate> FindBySpecification(Func<TAggregate, bool> func) => 
         _aggregates.Values.Where(func);
+}
+
+public class Repository<TAggregate> : Repository<TAggregate, Guid>, IAggregateRepository<TAggregate>
+    where TAggregate : IAggregate<Guid>
+{
 }
