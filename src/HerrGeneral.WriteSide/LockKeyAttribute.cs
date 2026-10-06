@@ -3,22 +3,17 @@
 /// <summary>
 /// Specifies that a property represents a lock/partition key for command concurrency control.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of <see cref="LockKeyAttribute"/> with a specific aggregate type qualification.
+/// </remarks>
+/// <param name="keyGroup"></param>
 [AttributeUsage(AttributeTargets.Property)]
-public class LockKeyAttribute : Attribute
+public class LockKeyAttribute(string keyGroup) : Attribute
 {
     /// <summary>
     /// Gets the group used to qualify the lock key.
     /// </summary>
-    public string KeyGroup { get; }
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="LockKeyAttribute"/> with a specific aggregate type qualification.
-    /// </summary>
-    /// <param name="keyGroup"></param>
-    public LockKeyAttribute(string keyGroup)
-    {
-        KeyGroup = keyGroup ?? throw new ArgumentNullException(nameof(keyGroup));
-    }
+    public string KeyGroup { get; } = keyGroup ?? throw new ArgumentNullException(nameof(keyGroup));
 }
 
 /// <summary>

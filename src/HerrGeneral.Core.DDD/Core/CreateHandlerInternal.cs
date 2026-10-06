@@ -12,25 +12,19 @@ namespace HerrGeneral.DDD.Core;
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
-internal sealed class CreateHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Guid>, IHandlerTypeProvider
-    where TAggregate : Aggregate<TAggregate>
-    where TCommand : Create<TAggregate>
-    where THandler : ICreateHandler<TAggregate, TCommand>
-
+/// <remarks>
+/// Constructor
+/// </remarks>
+/// <param name="repository"></param>
+/// <param name="handler"></param>
+internal sealed class CreateHandlerInternal<TAggregate, TKey, TCommand, THandler>(IAggregateRepository<TAggregate, TKey> repository, THandler handler) : ICommandHandler<TCommand, TKey>, IHandlerTypeProvider
+    where TAggregate : Aggregate<TAggregate, TKey>
+    where TCommand : Create<TAggregate, TKey>
+    where THandler : ICreateHandler<TAggregate, TCommand, TKey>
+    where TKey : notnull
 {
-    private readonly IAggregateRepository<TAggregate> _repository;
-    private readonly THandler _handler;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="repository"></param>
-    /// <param name="handler"></param>
-    public CreateHandlerInternal(IAggregateRepository<TAggregate> repository, THandler handler)
-    {
-        _repository = repository;
-        _handler = handler;
-    }
+    private readonly IAggregateRepository<TAggregate, TKey> _repository = repository;
+    private readonly THandler _handler = handler;
 
     /// <summary>
     /// Handle the command and return events and the aggregate id.

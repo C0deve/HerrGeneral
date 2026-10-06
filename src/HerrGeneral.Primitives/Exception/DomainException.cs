@@ -3,14 +3,11 @@ namespace HerrGeneral.Exception;
 /// <summary>
 /// Exception wrapper for a domain error
 /// </summary>
-public class DomainException : System.Exception
+/// <remarks>
+/// Ctor
+/// </remarks>
+/// <param name="innerDomainException"></param>
+/// <exception cref="ArgumentNullException"></exception>
+public class DomainException(System.Exception innerDomainException) : System.Exception($"{innerDomainException.GetType()} : {innerDomainException.Message}", innerDomainException)
 {
-    /// <summary>
-    /// Ctor
-    /// </summary>
-    /// <param name="innerDomainException"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public DomainException(System.Exception innerDomainException) : base($"{innerDomainException.GetType()} : {innerDomainException.Message}", innerDomainException)
-    {
-    }
 }

@@ -3,11 +3,15 @@ namespace HerrGeneral.Core.WriteSide;
 /// <summary>
 /// Controls concurrency for mediator command execution using keyed (partitioned) locks and global limits.
 /// </summary>
-public sealed class CommandConcurrencyLimiter : IDisposable
+/// <remarks>
+/// Initializes a new instance of <see cref="CommandConcurrencyLimiter"/>.
+/// </remarks>
+/// <param name="maxConcurrentCommands">The maximum number of concurrent unkeyed/global commands.</param>
+public sealed class CommandConcurrencyLimiter(int maxConcurrentCommands = 1) : IDisposable
 {
     private static readonly ConcurrentDictionary<Type, Func<object, object?>?> KeyExtractors = new();
 
-    private readonly SemaphoreSlim _globalSemaphore;
+    private readonly SemaphoreSlim _globalSemaphore = new SemaphoreSlim(maxConcurrentCommands, maxConcurrentCommands);
 #if NET9_0_OR_GREATER
     private readonly Lock _syncRoot = new();
 #else
@@ -15,13 +19,6 @@ public sealed class CommandConcurrencyLimiter : IDisposable
 #endif
     private readonly Dictionary<object, KeyedLockEntry> _keyedLocks = new();
     private bool _disposed;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="CommandConcurrencyLimiter"/>.
-    /// </summary>
-    /// <param name="maxConcurrentCommands">The maximum number of concurrent unkeyed/global commands.</param>
-    public CommandConcurrencyLimiter(int maxConcurrentCommands = 1) => 
-        _globalSemaphore = new SemaphoreSlim(maxConcurrentCommands, maxConcurrentCommands);
 
     /// <summary>
     /// Acquires a lock for the specified command or key.

@@ -9,16 +9,13 @@ using Xunit.Abstractions;
 
 namespace HerrGeneral.WriteSide.DDD.Test;
 
-public class RegisterDynamicHandlersShould
+public class RegisterDynamicHandlersShould(ITestOutputHelper output)
 {
-    private readonly IServiceProvider _container;
-
-    public RegisterDynamicHandlersShould(ITestOutputHelper output) =>
-        _container = new ServiceCollection()
+    private readonly IServiceProvider _container = new ServiceCollection()
             .AddHerrGeneralTestLogger(output)
             .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
             .AddSingleton<IAggregateFactory<TheThing>, DefaultAggregateFactory<TheThing>>()
-            .AddHerrGeneral(configuration => 
+            .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(
                         typeof(TheThing).Assembly,

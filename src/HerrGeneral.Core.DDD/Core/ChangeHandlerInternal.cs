@@ -13,22 +13,17 @@ namespace HerrGeneral.DDD.Core;
 /// <typeparam name="TAggregate"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 /// <typeparam name="THandler"></typeparam>
-internal sealed class ChangeHandlerInternal<TAggregate, TCommand, THandler> : ICommandHandler<TCommand, Unit>, IHandlerTypeProvider
-    where TAggregate : Aggregate<TAggregate>
-    where TCommand : Change<TAggregate>
-    where THandler : IChangeHandler<TAggregate, TCommand>
+/// <remarks>
+/// Constructor
+/// </remarks>
+internal sealed class ChangeHandlerInternal<TAggregate, TKey, TCommand, THandler>(IAggregateRepository<TAggregate, TKey> repository, THandler handler) : ICommandHandler<TCommand, Unit>, IHandlerTypeProvider
+    where TAggregate : Aggregate<TAggregate, TKey>
+    where TCommand : Change<TAggregate, TKey>
+    where THandler : IChangeHandler<TAggregate, TCommand, TKey>
+    where TKey : notnull
 {
-    private readonly IAggregateRepository<TAggregate> _repository;
-    private readonly IChangeHandler<TAggregate, TCommand> _handler;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    public ChangeHandlerInternal(IAggregateRepository<TAggregate> repository, THandler handler)
-    {
-        _repository = repository;
-        _handler = handler;
-    }
+    private readonly IAggregateRepository<TAggregate, TKey> _repository = repository;
+    private readonly IChangeHandler<TAggregate, TCommand, TKey> _handler = handler;
 
     /// <summary>
     /// Handle incoming command and produces events

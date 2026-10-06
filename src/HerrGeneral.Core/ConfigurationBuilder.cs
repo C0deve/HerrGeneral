@@ -8,7 +8,11 @@ namespace HerrGeneral;
 /// <summary>
 /// Fluent configuration for HerrGeneral framework.
 /// </summary>
-public class ConfigurationBuilder : IHerrGeneralBuilder
+/// <remarks>
+/// Initializes a new instance of the <see cref="ConfigurationBuilder"/> class.
+/// </remarks>
+/// <param name="services">The service collection, or null to create a default one.</param>
+public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGeneralBuilder
 {
     private readonly HashSet<ScanParam> _writeSideSearchParams = [];
     private readonly HashSet<ScanParam> _readSideSearchParams = [];
@@ -44,19 +48,12 @@ public class ConfigurationBuilder : IHerrGeneralBuilder
     /// <summary>
     /// Gets the service collection for dependency injection registrations.
     /// </summary>
-    public IServiceCollection Services { get; }
+    public IServiceCollection Services { get; } = services ?? new ServiceCollection();
 
     /// <summary>
     /// Gets the property bag for sharing state and configuration between extensions.
     /// </summary>
     public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigurationBuilder"/> class.
-    /// </summary>
-    /// <param name="services">The service collection, or null to create a default one.</param>
-    public ConfigurationBuilder(IServiceCollection? services = null) => 
-        Services = services ?? new ServiceCollection();
 
     /// <summary>
     /// Registers a custom registration policy for discovering and registering handler types.
