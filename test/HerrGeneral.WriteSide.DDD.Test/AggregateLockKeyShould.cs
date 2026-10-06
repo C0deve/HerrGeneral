@@ -1,6 +1,7 @@
 ﻿using HerrGeneral.Core.WriteSide;
 using HerrGeneral.DDD;
 using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing;
+using HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 using Shouldly;
 
 namespace HerrGeneral.WriteSide.DDD.Test;
@@ -25,5 +26,18 @@ public class AggregateLockKeyShould
         var key = CommandConcurrencyLimiter.ExtractKey(cmd);
 
         key.ShouldBe((typeof(TheThing).FullName, (object)id));
+    }
+
+    [Fact]
+    public void Change_command_key_matches_lock_key_attribute_and_is_cached()
+    {
+        var id = Guid.NewGuid();
+        var changeCmd = new ChangeTheThing("newName", id);
+
+        var key = CommandConcurrencyLimiter.ExtractKey(changeCmd);
+
+        key.ShouldBe((typeof(TheThing).FullName, (object)id));
+        changeCmd.Key.ShouldBe((typeof(TheThing).FullName, (object)id));
+        ReferenceEquals(changeCmd.Key, changeCmd.Key).ShouldBeTrue();
     }
 }
