@@ -38,7 +38,7 @@ public abstract record Change<TAggregate, TKey>(TKey AggregateId) : CommandBase,
     /// <summary>
     /// Key used for partitioned concurrency locking.
     /// </summary>
-    public virtual object Key => (typeof(TAggregate), (object)AggregateId);
+    public virtual object Key { get; } = (typeof(TAggregate).FullName ?? throw new InvalidOperationException(), (object)AggregateId);
 }
 
 /// <summary>
