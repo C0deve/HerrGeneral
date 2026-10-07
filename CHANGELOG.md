@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.7.0](https://github.com/C0deve/HerrGeneral/compare/v1.6.0...v1.7.0) (2026-10-07)
+
+
+### Features
+
+* cache reflection lookups in TypeExtensions ([1ea808e](https://github.com/C0deve/HerrGeneral/commit/1ea808e83fdac4ae70953c1c2f3ba8afe18f2bb3))
+* Introduce strongly-typed AggregateNotFound&lt;TAggregate, TKey&gt; exception ([be9b5a8](https://github.com/C0deve/HerrGeneral/commit/be9b5a804630ac1af701bb89b08ada3461fa0a11))
+* register open generic IAggregateFactory in UseDDD ([b56e1c3](https://github.com/C0deve/HerrGeneral/commit/b56e1c31fb1feaf7c7eefbe1febe9b607c12794f))
+* support flexible constructors in DefaultAggregateFactory ([ec5c439](https://github.com/C0deve/HerrGeneral/commit/ec5c439927d4d909dbf7fbca4a9c066c2da8def8))
+
 ## [1.6.0](https://github.com/C0deve/HerrGeneral/compare/v1.5.0...v1.6.0) (2026-10-05)
 
 
