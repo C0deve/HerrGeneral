@@ -24,6 +24,7 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
             serviceCollection.AddScoped<CommandExecutionTracer>(_ => new CommandExecutionTracer());
 #pragma warning restore CS0618
         }
+        serviceCollection.AddSingleton(new Diagnostics.DiagnosticTypeNames(configuration.DiagnosticTypeNaming));
         serviceCollection.AddScoped<ReadSideEventDispatcher>();
         serviceCollection.AddScoped<TransactionalProjectionEventDispatcher>();
         serviceCollection.AddScoped<PostTransactionEventDispatcher>();

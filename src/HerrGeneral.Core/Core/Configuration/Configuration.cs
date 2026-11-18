@@ -14,6 +14,7 @@ namespace HerrGeneral.Core.Configuration;
 /// <param name="IsTracingEnabled">Indicates whether execution tracing for command handlers is enabled. Enables detailed logging of command processing for debugging and performance monitoring.</param>
 /// <param name="MaxConcurrentCommands">Defines the maximum number of concurrently running commands allowed by the mediator.</param>
 /// <param name="CustomPolicies">Optional collection of custom registration policies provided by modules or plugins.</param>
+/// <param name="DiagnosticTypeNaming">Optional naming of commands, events and handlers in diagnostics: receives the type and its default name, returns the name to use.</param>
 internal record Configuration(
     IReadOnlyCollection<ScanParam> WriteSideSearchParams,
     IReadOnlyCollection<ScanParam> ReadSideSearchParams,
@@ -23,5 +24,6 @@ internal record Configuration(
     EventHandlerMappingsConfiguration ReadSideEventHandlerMappingsConfiguration,
     bool IsTracingEnabled,
     short MaxConcurrentCommands,
-    IReadOnlyList<Registration.Policy.IRegistrationPolicy>? CustomPolicies = null
+    IReadOnlyList<Registration.Policy.IRegistrationPolicy>? CustomPolicies = null,
+    Func<Type, string, string>? DiagnosticTypeNaming = null
 );

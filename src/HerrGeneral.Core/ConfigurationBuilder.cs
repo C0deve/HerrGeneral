@@ -45,6 +45,8 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
 
     private short _maximumConcurrentCommands = 1;
 
+    private Func<Type, string, string>? _diagnosticTypeNaming;
+
     /// <summary>
     /// Gets the service collection for dependency injection registrations.
     /// </summary>
@@ -76,7 +78,8 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
         _readSideEventHandlerMappingsConfiguration,
         _isTracingEnabled,
         _maximumConcurrentCommands,
-        _customPolicies);
+        _customPolicies,
+        _diagnosticTypeNaming);
     
     /// <summary>
     /// Validates the configuration and throws an exception if it is not valid.
@@ -327,6 +330,25 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
     public ConfigurationBuilder EnableCommandExecutionTracing(bool enabled = true)
     {
         _isTracingEnabled = enabled;
+        return this;
+    }
+
+    /// <summary>
+    /// Names commands, events and handlers in diagnostics: the command name tag of activities and metrics, and the
+    /// causal tree written to the logs.
+    /// </summary>
+    /// <remarks>
+    /// By default a type is named by its short name, prefixed by its declaring types when it is nested
+    /// (<c>CreateOrder.Command</c>). Use this to tell apart types sharing a name in different namespaces, for
+    /// example by prefixing a meaningful namespace segment. An empty result falls back to the default name.
+    /// Exception messages keep the default name.
+    /// </remarks>
+    /// <param name="naming">Receives the type and its default name, returns the name to use.</param>
+    /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
+    public ConfigurationBuilder UseDiagnosticTypeNames(Func<Type, string, string> naming)
+    {
+        ArgumentNullException.ThrowIfNull(naming);
+        _diagnosticTypeNaming = naming;
         return this;
     }
 

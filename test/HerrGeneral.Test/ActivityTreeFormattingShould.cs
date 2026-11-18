@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using FakeItEasy;
 using HerrGeneral.Core.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -206,6 +208,67 @@ public class ActivityTreeFormattingShould
         collector.StopHandlingCommand("CreateBankCard", TimeSpan.FromMilliseconds(1));
 
         collector.RootWriteSideEvents.Select(node => node.EventType).ShouldBe([typeof(AccountCreated)]);
+    }
+
+    /// <summary>Names given by the application, here prefixed by "Banking.", replace the default ones.</summary>
+    private static string BankingNames(Type type, string defaultName) =>
+        defaultName.StartsWith("E2E") ? $"Banking.{defaultName}" : "";
+
+    [Fact]
+    public async Task WriteTheTreeWithTheNamesGivenByTheApplication()
+    {
+        var loggerProvider = new InMemoryLoggerProvider();
+        var services = new ServiceCollection()
+            .AddScoped<IUnitOfWork>(_ => A.Fake<IUnitOfWork>())
+            .AddLogging(builder => builder.AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Information))
+            .AddHerrGeneral(cfg =>
+                cfg.ScanWriteSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .ScanReadSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .UseDiagnosticTypeNames(BankingNames));
+
+        var mediator = services.BuildServiceProvider().GetRequiredService<Mediator>();
+        (await mediator.Send(new E2ECommand())).IsSuccess.ShouldBeTrue();
+
+        var log = loggerProvider.Messages.Single(m => m.Contains("CMD [Banking.E2ECommand]"));
+        log.ShouldContain("\\--> (cmd) Banking.E2ECommand.Handler");
+        log.ShouldContain("|-- (evt) Banking.E2ERootEvent");
+        log.ShouldContain("\\--> (wr) Banking.E2EWriteSideHandler");
+        log.ShouldContain("\\-- (evt) Banking.E2EChildEvent");
+        log.ShouldContain("===> Banking.E2EProjection");
+    }
+
+    [Fact]
+    public async Task TagTheCommandActivityWithTheNameGivenByTheApplication()
+    {
+        var commandNames = new ConcurrentBag<string?>();
+        using var listener = new ActivityListener();
+        listener.ShouldListenTo = source => source.Name == HerrGeneralDiagnostics.SourceName;
+        listener.Sample = (ref _) => ActivitySamplingResult.AllDataAndRecorded;
+        listener.ActivityStopped = activity =>
+        {
+            if (activity.OperationName == HerrGeneralDiagnostics.Activities.ExecuteCommand)
+                commandNames.Add(activity.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName)?.ToString());
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        var services = new ServiceCollection()
+            .AddScoped<IUnitOfWork>(_ => A.Fake<IUnitOfWork>())
+            .AddHerrGeneral(cfg =>
+                cfg.ScanWriteSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .ScanReadSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .UseDiagnosticTypeNames(BankingNames));
+
+        (await services.BuildServiceProvider().GetRequiredService<Mediator>().Send(new E2ECommand())).IsSuccess.ShouldBeTrue();
+
+        commandNames.ShouldContain("Banking.E2ECommand");
+    }
+
+    [Fact]
+    public void FallBackOnTheDefaultNameWhenTheApplicationGivesNone()
+    {
+        var names = new DiagnosticTypeNames((_, _) => " ");
+
+        names.Of(typeof(E2ECommand.Handler)).ShouldBe("E2ECommand.Handler");
     }
 
     [Fact]

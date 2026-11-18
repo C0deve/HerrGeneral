@@ -3,8 +3,11 @@ namespace HerrGeneral.Core.Diagnostics;
 /// <summary>
 /// Collects execution trace events during command handling for hierarchical ASCII causal tree formatting.
 /// </summary>
-internal class ActivityTreeCollector
+internal class ActivityTreeCollector(DiagnosticTypeNames? names = null)
 {
+    /// <summary>Names of the types written in the causal tree.</summary>
+    public DiagnosticTypeNames Names { get; } = names ?? DiagnosticTypeNames.Default;
+
 #if NET9_0_OR_GREATER
     private readonly Lock _lock = new();
 #else
