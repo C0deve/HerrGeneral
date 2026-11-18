@@ -47,7 +47,8 @@ internal static class PipelineBuilder
             handlerType ??= commandHandler.GetType();
         }
 
-        var tracingBehavior = new TracingBehavior<TCommand, TResult>(handlerType, logger, collector);
+        var tracingBehavior = new TracingBehavior<TCommand, TResult>(handlerType, logger, collector,
+            serviceProvider.GetService<DiagnosticTypeNames>());
         var postTxBehavior = new PostTransactionBehavior<TCommand, TResult>(postTransactionDispatcher);
         var uowBehavior = new UnitOfWorkBehavior<TCommand, TResult>(unitOfWork, collector);
         var txProjBehavior = new TransactionalProjectionBehavior<TCommand, TResult>(transactionalProjectionDispatcher);

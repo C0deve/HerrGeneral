@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using FakeItEasy;
 using HerrGeneral.Core.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -6,24 +8,6 @@ namespace HerrGeneral.Tracing;
 
 public class ActivityTreeFormattingShould
 {
-    private class SampleCommand;
-    private class SampleCommandHandler;
-    private class CardPaymentAuthorizedEvent;
-    private class DebitAccountOnCardPayment;
-    private class AccountDebitedEvent;
-    private class ApplyOverdraftFeeOnAccountDebited;
-    private class FeeAppliedEvent;
-    private class CardTransactionsView;
-    private class AccountBalanceView;
-    private class AccountStatementView;
-    private class SendSmsConfirmation;
-    private class SendOverdraftWarning;
-    private class AccountCreated;
-    private class CreateBankCardOnAccountCreated;
-    private class BankCardCreated;
-    private class MoneyDeposited;
-    private class MoneyWithdrawn;
-
     [Fact]
     public void FormatCompactTreeWithoutRedundantEmptyLines()
     {
@@ -179,7 +163,7 @@ public class ActivityTreeFormattingShould
         log.ShouldNotBeNull();
         log.ShouldContain("CMD [E2ECommand]");
         log.ShouldContain("[OK]");
-        log.ShouldContain("\\--> (cmd) Handler");
+        log.ShouldContain("\\--> (cmd) E2ECommand.Handler");
         log.ShouldContain("|-- (evt) E2ERootEvent");
         log.ShouldContain("\\--> (wr) E2EWriteSideHandler");
         log.ShouldContain("\\-- (evt) E2EChildEvent");
@@ -224,6 +208,89 @@ public class ActivityTreeFormattingShould
         collector.StopHandlingCommand("CreateBankCard", TimeSpan.FromMilliseconds(1));
 
         collector.RootWriteSideEvents.Select(node => node.EventType).ShouldBe([typeof(AccountCreated)]);
+    }
+
+    /// <summary>Names given by the application, here prefixed by "Banking.", replace the default ones.</summary>
+    private static string BankingNames(Type type, string defaultName) =>
+        defaultName.StartsWith("E2E") ? $"Banking.{defaultName}" : "";
+
+    [Fact]
+    public async Task WriteTheTreeWithTheNamesGivenByTheApplication()
+    {
+        var loggerProvider = new InMemoryLoggerProvider();
+        var services = new ServiceCollection()
+            .AddScoped<IUnitOfWork>(_ => A.Fake<IUnitOfWork>())
+            .AddLogging(builder => builder.AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Information))
+            .AddHerrGeneral(cfg =>
+                cfg.ScanWriteSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .ScanReadSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .UseDiagnosticTypeNames(BankingNames));
+
+        var mediator = services.BuildServiceProvider().GetRequiredService<Mediator>();
+        (await mediator.Send(new E2ECommand())).IsSuccess.ShouldBeTrue();
+
+        var log = loggerProvider.Messages.Single(m => m.Contains("CMD [Banking.E2ECommand]"));
+        log.ShouldContain("\\--> (cmd) Banking.E2ECommand.Handler");
+        log.ShouldContain("|-- (evt) Banking.E2ERootEvent");
+        log.ShouldContain("\\--> (wr) Banking.E2EWriteSideHandler");
+        log.ShouldContain("\\-- (evt) Banking.E2EChildEvent");
+        log.ShouldContain("===> Banking.E2EProjection");
+    }
+
+    [Fact]
+    public async Task TagTheCommandActivityWithTheNameGivenByTheApplication()
+    {
+        var commandNames = new ConcurrentBag<string?>();
+        using var listener = new ActivityListener();
+        listener.ShouldListenTo = source => source.Name == HerrGeneralDiagnostics.SourceName;
+        listener.Sample = (ref _) => ActivitySamplingResult.AllDataAndRecorded;
+        listener.ActivityStopped = activity =>
+        {
+            if (activity.OperationName == HerrGeneralDiagnostics.Activities.ExecuteCommand)
+                commandNames.Add(activity.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName)?.ToString());
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        var services = new ServiceCollection()
+            .AddScoped<IUnitOfWork>(_ => A.Fake<IUnitOfWork>())
+            .AddHerrGeneral(cfg =>
+                cfg.ScanWriteSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .ScanReadSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .UseDiagnosticTypeNames(BankingNames));
+
+        (await services.BuildServiceProvider().GetRequiredService<Mediator>().Send(new E2ECommand())).IsSuccess.ShouldBeTrue();
+
+        commandNames.ShouldContain("Banking.E2ECommand");
+    }
+
+    [Theory]
+    [InlineData("App.", "CMD [App.Banking.E2ECommand]")]
+    [InlineData("", "CMD [Banking.E2ECommand]")]
+    public async Task CombineSuccessiveNamings(string secondPrefix, string expectedHeader)
+    {
+        var loggerProvider = new InMemoryLoggerProvider();
+        var services = new ServiceCollection()
+            .AddScoped<IUnitOfWork>(_ => A.Fake<IUnitOfWork>())
+            .AddLogging(builder => builder.AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Information))
+            .AddHerrGeneral(cfg =>
+                cfg.ScanWriteSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .ScanReadSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .UseDiagnosticTypeNames(BankingNames)
+                   // Receives the name produced by the first naming; an empty prefix gives an empty name, which keeps it.
+                   .UseDiagnosticTypeNames((_, name) => secondPrefix == "" ? "" : $"{secondPrefix}{name}"));
+
+        var mediator = services.BuildServiceProvider().GetRequiredService<Mediator>();
+        (await mediator.Send(new E2ECommand())).IsSuccess.ShouldBeTrue();
+
+        loggerProvider.Messages.ShouldContain(m => m.StartsWith(expectedHeader));
+    }
+
+    [Fact]
+    public void FallBackOnTheDefaultNameWhenTheApplicationGivesNone()
+    {
+        var names = new DiagnosticTypeNames((_, _) => " ");
+
+        names.Of(typeof(E2ECommand.Handler)).ShouldBe("E2ECommand.Handler");
     }
 
     [Fact]
@@ -271,8 +338,8 @@ public class ActivityTreeFormattingShould
         log.ShouldContain("[FAILED]");
         log.ShouldContain("EXCEPTION: InvalidOperationException");
         log.ShouldContain("Message : \"Command business error\"");
-        log.ShouldContain($"Origin  : {typeof(ActivityTreeFormattingShould).FullName}.E2EDomain.ThrowDomainError()");
-        log.ShouldNotContain("HerrGeneral.Core.WriteSide.CommandPipeline");
+        log.ShouldContain($"Origin  : {typeof(E2EDomain).FullName}.ThrowDomainError()");
+        log.ShouldNotContain("Origin  : HerrGeneral.Core.");
     }
 
     [Fact]
@@ -300,72 +367,9 @@ public class ActivityTreeFormattingShould
         log.ShouldContain("[ERR]");
         log.ShouldContain("EXCEPTION: InvalidOperationException");
         log.ShouldContain("Message : \"Event handler business error\"");
-        log.ShouldContain($"Origin  : {typeof(ActivityTreeFormattingShould).FullName}.E2EDomain.ThrowEventHandlerDomainError()");
+        log.ShouldContain($"Origin  : {typeof(E2EDomain).FullName}.ThrowEventHandlerDomainError()");
         log.ShouldContain("\\== [TX ROLLBACK]");
         log.ShouldNotContain("HerrGeneral.Core.WriteSide.EventHandlerPipeline");
-    }
-
-    public record E2ECommand
-    {
-        public class Handler : ICommandHandler<E2ECommand, Unit>
-        {
-            public (IReadOnlyList<object> Events, Unit Result) Handle(E2ECommand command) =>
-                ((IReadOnlyList<object>)[new E2ERootEvent()], Unit.Default);
-        }
-    }
-
-    public record E2EFailingCommand
-    {
-        public class Handler : ICommandHandler<E2EFailingCommand, Unit>
-        {
-            public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingCommand command)
-            {
-                E2EDomain.ThrowDomainError();
-                return ([], Unit.Default);
-            }
-        }
-    }
-
-    public record E2EFailingEventCommand
-    {
-        public class Handler : ICommandHandler<E2EFailingEventCommand, Unit>
-        {
-            public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingEventCommand command) =>
-                ((IReadOnlyList<object>)[new E2EFailingEvent()], Unit.Default);
-        }
-    }
-
-    public static class E2EDomain
-    {
-        public static void ThrowDomainError() =>
-            throw new InvalidOperationException("Command business error");
-
-        public static void ThrowEventHandlerDomainError() =>
-            throw new InvalidOperationException("Event handler business error");
-    }
-
-    public record E2ERootEvent;
-    public record E2EChildEvent;
-    public record E2EFailingEvent;
-
-    public class E2EWriteSideHandler : IEventHandler<E2ERootEvent>
-    {
-        public IReadOnlyList<object> Handle(E2ERootEvent @event) =>
-            [new E2EChildEvent()];
-    }
-
-    public class E2EFailingWriteSideHandler : IEventHandler<E2EFailingEvent>
-    {
-        public IReadOnlyList<object> Handle(E2EFailingEvent @event)
-        {
-            E2EDomain.ThrowEventHandlerDomainError();
-            return [];
-        }
-    }
-
-    public class E2EProjection : IHandleSyncProjection<E2ERootEvent>
-    {
-        public void Handle(E2ERootEvent @event) { }
     }
 
     private class InMemoryLoggerProvider : ILoggerProvider
@@ -385,4 +389,87 @@ public class ActivityTreeFormattingShould
             }
         }
     }
+}
+
+// Sample types are declared outside the test class: nested in it, they would be named
+// "ActivityTreeFormattingShould.X" in the traces these tests assert on.
+internal class SampleCommand;
+internal class SampleCommandHandler;
+internal class CardPaymentAuthorizedEvent;
+internal class DebitAccountOnCardPayment;
+internal class AccountDebitedEvent;
+internal class ApplyOverdraftFeeOnAccountDebited;
+internal class FeeAppliedEvent;
+internal class CardTransactionsView;
+internal class AccountBalanceView;
+internal class AccountStatementView;
+internal class SendSmsConfirmation;
+internal class SendOverdraftWarning;
+internal class AccountCreated;
+internal class CreateBankCardOnAccountCreated;
+internal class BankCardCreated;
+internal class MoneyDeposited;
+internal class MoneyWithdrawn;
+
+public record E2ECommand
+{
+    public class Handler : ICommandHandler<E2ECommand, Unit>
+    {
+        public (IReadOnlyList<object> Events, Unit Result) Handle(E2ECommand command) =>
+            ((IReadOnlyList<object>)[new E2ERootEvent()], Unit.Default);
+    }
+}
+
+public record E2EFailingCommand
+{
+    public class Handler : ICommandHandler<E2EFailingCommand, Unit>
+    {
+        public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingCommand command)
+        {
+            E2EDomain.ThrowDomainError();
+            return ([], Unit.Default);
+        }
+    }
+}
+
+public record E2EFailingEventCommand
+{
+    public class Handler : ICommandHandler<E2EFailingEventCommand, Unit>
+    {
+        public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingEventCommand command) =>
+            ((IReadOnlyList<object>)[new E2EFailingEvent()], Unit.Default);
+    }
+}
+
+public static class E2EDomain
+{
+    public static void ThrowDomainError() =>
+        throw new InvalidOperationException("Command business error");
+
+    public static void ThrowEventHandlerDomainError() =>
+        throw new InvalidOperationException("Event handler business error");
+}
+
+public record E2ERootEvent;
+public record E2EChildEvent;
+public record E2EFailingEvent;
+
+public class E2EWriteSideHandler : IEventHandler<E2ERootEvent>
+{
+    public IReadOnlyList<object> Handle(E2ERootEvent @event) =>
+        [new E2EChildEvent()];
+}
+
+public class E2EFailingWriteSideHandler : IEventHandler<E2EFailingEvent>
+{
+    public IReadOnlyList<object> Handle(E2EFailingEvent @event)
+    {
+        E2EDomain.ThrowEventHandlerDomainError();
+        return [];
+    }
+}
+
+public class E2EProjection : IHandleSyncProjection<E2ERootEvent>
+{
+    public void Handle(E2ERootEvent @event) { }
 }

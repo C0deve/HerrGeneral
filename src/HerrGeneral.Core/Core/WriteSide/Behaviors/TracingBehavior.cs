@@ -9,7 +9,8 @@ namespace HerrGeneral.Core.WriteSide.Behaviors;
 internal sealed class TracingBehavior<TCommand, TResult>(
     Type handlerType,
     ILogger<ICommandHandler<TCommand, TResult>>? logger,
-    ActivityTreeCollector? activityCollector)
+    ActivityTreeCollector? activityCollector,
+    DiagnosticTypeNames? typeNames = null)
     : ICommandPipelineBehavior<TCommand, TResult>, IOrderedPipelineBehavior
 {
     public PipelinePhase Phase => PipelinePhase.Diagnostics;
@@ -21,7 +22,7 @@ internal sealed class TracingBehavior<TCommand, TResult>(
     {
         var log = logger ?? NullLogger<ICommandHandler<TCommand, TResult>>.Instance;
 
-        var commandName = typeof(TCommand).GetFriendlyName();
+        var commandName = (typeNames ?? DiagnosticTypeNames.Default).Of(typeof(TCommand));
         var threadId = Environment.CurrentManagedThreadId;
 
         using var activity = HerrGeneralDiagnostics.StartActivity(

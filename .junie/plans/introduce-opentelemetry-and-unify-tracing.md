@@ -88,16 +88,17 @@ Actuellement, le traçage dans HerrGeneral repose sur une approche ad-hoc :
 3. **Séparation claire de l'instrumentation et de l'exportation**
    - *Rationale* : Le traçage (création des spans/métriques) est découplé de la façon dont les données sont affichées (Console, xUnit, OTLP).
 4. **Conservation intégrale du modèle d'étapes de pipeline (`WithTracer` / `WithTracing`)**
+   - *Mise à jour (nov. 2026)* : côté commandes, ce rôle est tenu par `TracingBehavior` (phase `Diagnostics` du `PipelineBuilder`, introduit par l'ouverture du pipeline). `CommandPipeline` et son étape `WithTracer`, devenus inutilisés, ont été supprimés. Les étapes `WithTracer` d'`EventHandlerPipeline` et de `ReadSidePipeline` restent en place.
    - *Rationale* : L'approche par composition de middleware/pipeline fonctionnel (`extension (HandlerDelegate next)`) est le cœur architectural de `HerrGeneral`. L'étape `WithTracer` (ou `WithTracing`) reste l'étape enveloppante qui gère le cycle de vie de l'activité (`Activity`), la capture des métriques et le déclenchement de l'export/logging, sans aucune intrusion dans le code métier ou les handlers. De même, les étapes `WithTracer` dans `EventHandlerPipeline` et `ReadSidePipeline` ainsi que `UnitOfWorkTraceDecorator` conservent leur rôle de décorateurs de pipeline pour les sous-activités.
 
 ### Architecture Diagram
 ```mermaid
 graph TD
-    Mediator[Mediator.Send] --> CommandPipeline[CommandHandler Pipeline]
+    Mediator[Mediator.Send] --> Tracing[PipelineBuilder: TracingBehavior]
     
     subgraph Instrumentation [Instrumentation BCL System.Diagnostics]
-        CommandPipeline -->|StartActivity / RecordMetric| ActSource[ActivitySource: HerrGeneral]
-        CommandPipeline -->|Counter / Histogram| Meter[Meter: HerrGeneral]
+        Tracing -->|StartActivity / RecordMetric| ActSource[ActivitySource: HerrGeneral]
+        Tracing -->|Counter / Histogram| Meter[Meter: HerrGeneral]
     end
 
     subgraph Dispatchers [Dispatchers & Handlers]
@@ -126,7 +127,7 @@ graph TD
      - `public static readonly Meter Meter = new("HerrGeneral", ...);`
      - Définition des compteurs : `CommandsTotal`, `CommandsDuration`, `EventsDispatchedTotal`, `EventsDuration`, `ActiveCommands`.
    - **Conservation et évolution des étapes de pipeline (`WithTracer`)** :
-     - `CommandPipeline.WithTracer` (ou `WithTracing`) : Reste l'étape englobante de premier niveau dans `CommandHandlerWrapperBase.BuildPipeline`. Elle démarre l'activité racine `HerrGeneral.ExecuteCommand`, mesure la durée, enregistre les métriques `CommandsTotal`/`CommandsDuration`, intercepte les exceptions pour les marquer sur l'activité (`activity.RecordException`), et déclenche le rendu ASCII/Log à la complétion si le logging est activé.
+     - `TracingBehavior` (anciennement `CommandPipeline.WithTracer`, supprimé) : étape englobante de premier niveau, en phase `Diagnostics` du `PipelineBuilder`. Elle démarre l'activité racine `HerrGeneral.ExecuteCommand`, mesure la durée, enregistre les métriques `CommandsTotal`/`CommandsDuration`, intercepte les exceptions pour les marquer sur l'activité (`activity.RecordException`), et déclenche le rendu ASCII/Log à la complétion si le logging est activé.
      - `EventHandlerPipeline.WithTracer` : Reste l'étape de pipeline par handler d'événement, créant la sous-activité `HerrGeneral.Event.Handle` avec le type d'événement et le handler.
      - `ReadSidePipeline.WithReadSideHandlerLogging` (ou `WithTracer`) : Conserve l'étape de pipeline pour les projections read side.
      - `UnitOfWorkTraceDecorator` : Conserve le motif de décorateur de pipeline pour tracer `Start`, `Commit`, `Rollback` et `Dispose`.
