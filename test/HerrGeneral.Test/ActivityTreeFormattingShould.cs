@@ -263,6 +263,28 @@ public class ActivityTreeFormattingShould
         commandNames.ShouldContain("Banking.E2ECommand");
     }
 
+    [Theory]
+    [InlineData("App.", "CMD [App.Banking.E2ECommand]")]
+    [InlineData("", "CMD [Banking.E2ECommand]")]
+    public async Task CombineSuccessiveNamings(string secondPrefix, string expectedHeader)
+    {
+        var loggerProvider = new InMemoryLoggerProvider();
+        var services = new ServiceCollection()
+            .AddScoped<IUnitOfWork>(_ => A.Fake<IUnitOfWork>())
+            .AddLogging(builder => builder.AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Information))
+            .AddHerrGeneral(cfg =>
+                cfg.ScanWriteSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .ScanReadSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .UseDiagnosticTypeNames(BankingNames)
+                   // Receives the name produced by the first naming; an empty prefix gives an empty name, which keeps it.
+                   .UseDiagnosticTypeNames((_, name) => secondPrefix == "" ? "" : $"{secondPrefix}{name}"));
+
+        var mediator = services.BuildServiceProvider().GetRequiredService<Mediator>();
+        (await mediator.Send(new E2ECommand())).IsSuccess.ShouldBeTrue();
+
+        loggerProvider.Messages.ShouldContain(m => m.StartsWith(expectedHeader));
+    }
+
     [Fact]
     public void FallBackOnTheDefaultNameWhenTheApplicationGivesNone()
     {

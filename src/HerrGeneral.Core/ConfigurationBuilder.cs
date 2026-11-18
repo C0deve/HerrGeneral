@@ -340,16 +340,45 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
     /// <remarks>
     /// By default a type is named by its short name, prefixed by its declaring types when it is nested
     /// (<c>CreateOrder.Command</c>). Use this to tell apart types sharing a name in different namespaces, for
-    /// example by prefixing a meaningful namespace segment. An empty result falls back to the default name.
-    /// Exception messages keep the default name.
+    /// example by prefixing a meaningful namespace segment. Exception messages keep the default name.
+    /// <para>
+    /// Calls are combined, not replaced: each naming receives the name produced by the previous ones, so that a
+    /// module can add its own naming on top of the application's. A naming returning an empty name keeps the
+    /// name it received.
+    /// </para>
     /// </remarks>
-    /// <param name="naming">Receives the type and its default name, returns the name to use.</param>
+    /// <example>
+    /// Prefix types of <c>Shop.Billing.Handlers</c> and <c>Shop.Shipping.Handlers</c> by their module, so that both
+    /// <c>OnOrderPlaced</c> handlers can be told apart (<c>Billing.OnOrderPlaced</c>, <c>Shipping.OnOrderPlaced</c>):
+    /// <code>
+    /// services.AddHerrGeneral(configuration =>
+    ///     configuration
+    ///         .ScanWriteSideOn(typeof(PlaceOrder).Assembly)
+    ///         .UseDiagnosticTypeNames((type, name) =>
+    ///             type.Namespace?.Split('.') is ["Shop", var module, ..] &amp;&amp; !type.IsNested
+    ///                 ? $"{module}.{name}"
+    ///                 : name));
+    /// </code>
+    /// </example>
+    /// <param name="naming">Receives the type and its current name (the default name, or the name produced by the
+    /// previous calls), returns the name to use.</param>
     /// <returns>The current Configuration instance to enable fluent method chaining.</returns>
     public ConfigurationBuilder UseDiagnosticTypeNames(Func<Type, string, string> naming)
     {
         ArgumentNullException.ThrowIfNull(naming);
-        _diagnosticTypeNaming = naming;
+
+        var previous = _diagnosticTypeNaming;
+        _diagnosticTypeNaming = previous is null
+            ? naming
+            : (type, name) =>
+            {
+                var received = KeepIfEmpty(previous(type, name), name);
+                return KeepIfEmpty(naming(type, received), received);
+            };
         return this;
+
+        static string KeepIfEmpty(string? produced, string received) =>
+            string.IsNullOrWhiteSpace(produced) ? received : produced;
     }
 
     /// <summary>

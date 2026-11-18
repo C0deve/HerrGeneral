@@ -219,6 +219,27 @@ CMD [TransferFunds] (thread #14) ................................. [FAILED] (6.4
        +--x [SYNC PROJECTIONS] (Skipped: Transaction aborted)
        \--x [POST TRANSACTION] (Skipped: Transaction aborted)
 ```
+
+### Naming types in diagnostics
+
+The causal tree and the `herrgeneral.command.name` tag name each command, event and handler by its short name. A nested type is prefixed by its declaring types, generic arguments included: `CreateOrder.Command`, `OrderView.Service`, `Repository<String>.Cache<Int32>`.
+
+Types sharing a short name in different namespaces (for instance an `OnOrderPlaced` handler in several modules) still look alike. Only the application knows which part of the namespace matters, so it can name them itself with `UseDiagnosticTypeNames`, which receives the type and its default name:
+
+```csharp
+services.AddHerrGeneral(configuration =>
+    configuration
+        .ScanWriteSideOn(typeof(PlaceOrder).Assembly)
+        .UseDiagnosticTypeNames((type, name) =>
+            type.Namespace?.Split('.') is ["Shop", var module, ..] && !type.IsNested
+                ? $"{module}.{name}"   // Billing.OnOrderPlaced, Shipping.OnOrderPlaced
+                : name));
+```
+
+- Successive calls are combined: each naming receives the name produced by the previous ones.
+- A naming returning an empty name keeps the name it received.
+- Event and handler type tags (`herrgeneral.event.type`, `herrgeneral.handler.type`) keep the full type name; exception messages keep the default name.
+
 ## Design Decisions
 
 ### Architectural Approach
