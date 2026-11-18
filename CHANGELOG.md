@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/C0deve/HerrGeneral/compare/v1.7.0...v1.7.1) (2026-11-18)
+
+
+### Bug Fixes
+
+* **tracing:** start each command from an empty activity tree ([b5d3fac](https://github.com/C0deve/HerrGeneral/commit/b5d3fac38e73d0ffff8821b2b4ed3663c61fde27))
+* **tracing:** start each command from an empty activity tree ([f74e16e](https://github.com/C0deve/HerrGeneral/commit/f74e16e35b492e6235f31ee4bbdd1edb716b3982))
+
 ## [1.7.0](https://github.com/C0deve/HerrGeneral/compare/v1.6.0...v1.7.0) (2026-10-07)
 
 
