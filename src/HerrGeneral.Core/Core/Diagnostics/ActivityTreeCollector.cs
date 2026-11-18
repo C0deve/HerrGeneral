@@ -28,10 +28,22 @@ internal class ActivityTreeCollector
     public List<PostTransactionTraceNode> PostTransactions { get; } = [];
     public List<ReadSideTraceNode> ReadSideHandlers { get; } = [];
 
+    /// <summary>Number of commands in progress: a command sent from a handler is nested in the current one.</summary>
+    private int _commandDepth;
+
+    /// <remarks>
+    /// The collector is registered as scoped, but the mediator does not create a scope per command: when it is
+    /// resolved from the root provider, the same collector traces every command. A new outermost command therefore
+    /// starts from an empty trace, otherwise each logged tree would repeat all the previous ones.
+    /// </remarks>
     public void StartHandlingCommand(string commandName, Type handlerType, int? threadId = null)
     {
         lock (_lock)
         {
+            if (_commandDepth == 0)
+                Reset();
+            _commandDepth++;
+
             CommandName = commandName;
             HandlerType = handlerType;
             ThreadId = threadId ?? Environment.CurrentManagedThreadId;
@@ -42,9 +54,29 @@ internal class ActivityTreeCollector
     {
         lock (_lock)
         {
+            if (_commandDepth > 0)
+                _commandDepth--;
+
             CommandName ??= commandName;
             TotalDuration = elapsed;
         }
+    }
+
+    private void Reset()
+    {
+        CommandName = null;
+        HandlerType = null;
+        ThreadId = null;
+        TotalDuration = TimeSpan.Zero;
+        IsSuccess = true;
+        CommandException = null;
+        UnitOfWork = null;
+        RootWriteSideEvents.Clear();
+        _eventNodes.Clear();
+        _currentWriteSideEvent.Value = null;
+        SyncProjections.Clear();
+        PostTransactions.Clear();
+        ReadSideHandlers.Clear();
     }
 
     public void RecordCommandException(System.Exception exception)

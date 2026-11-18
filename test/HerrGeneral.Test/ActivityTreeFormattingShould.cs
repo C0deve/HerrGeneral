@@ -188,6 +188,66 @@ public class ActivityTreeFormattingShould
     }
 
     [Fact]
+    public void StartEachCommandFromAnEmptyTrace()
+    {
+        var collector = new ActivityTreeCollector();
+        collector.StartHandlingCommand("WithdrawMoney", typeof(SampleCommandHandler), 2);
+        var evtWithdrawn = new MoneyWithdrawn();
+        collector.RegisterRootWriteSideEvent(evtWithdrawn);
+        collector.PublishEventOnWriteSide(evtWithdrawn);
+        collector.RecordSyncProjection(typeof(MoneyWithdrawn), typeof(AccountBalanceView), TimeSpan.FromMilliseconds(1), null);
+        collector.RecordCommandException(new InvalidOperationException("boom"));
+        collector.StopHandlingCommand("WithdrawMoney", TimeSpan.FromMilliseconds(5));
+
+        collector.StartHandlingCommand("DepositMoney", typeof(SampleCommandHandler), 2);
+        var evtDeposited = new MoneyDeposited();
+        collector.RegisterRootWriteSideEvent(evtDeposited);
+        collector.PublishEventOnWriteSide(evtDeposited);
+        collector.StopHandlingCommand("DepositMoney", TimeSpan.FromMilliseconds(1));
+
+        collector.IsSuccess.ShouldBeTrue();
+        collector.CommandException.ShouldBeNull();
+        collector.SyncProjections.ShouldBeEmpty();
+        collector.RootWriteSideEvents.Select(node => node.EventType).ShouldBe([typeof(MoneyDeposited)]);
+    }
+
+    [Fact]
+    public void KeepTheTraceOfTheOuterCommandWhenACommandIsSentFromAHandler()
+    {
+        var collector = new ActivityTreeCollector();
+        collector.StartHandlingCommand("OpenAccount", typeof(SampleCommandHandler), 2);
+        var evtCreated = new AccountCreated();
+        collector.RegisterRootWriteSideEvent(evtCreated);
+        collector.PublishEventOnWriteSide(evtCreated);
+
+        collector.StartHandlingCommand("CreateBankCard", typeof(SampleCommandHandler), 2);
+        collector.StopHandlingCommand("CreateBankCard", TimeSpan.FromMilliseconds(1));
+
+        collector.RootWriteSideEvents.Select(node => node.EventType).ShouldBe([typeof(AccountCreated)]);
+    }
+
+    [Fact]
+    public async Task LogOnlyTheEventsOfEachCommandWhenTheMediatorIsResolvedFromTheRootProvider()
+    {
+        var loggerProvider = new InMemoryLoggerProvider();
+        var services = new ServiceCollection()
+            .AddScoped<IUnitOfWork>(_ => A.Fake<IUnitOfWork>())
+            .AddLogging(builder => builder.AddProvider(loggerProvider).SetMinimumLevel(LogLevel.Information))
+            .AddHerrGeneral(cfg =>
+                cfg.ScanWriteSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!)
+                   .ScanReadSideOn(typeof(E2ECommand).Assembly, typeof(E2ECommand).Namespace!));
+
+        var mediator = services.BuildServiceProvider().GetRequiredService<Mediator>();
+
+        (await mediator.Send(new E2ECommand())).IsSuccess.ShouldBeTrue();
+        (await mediator.Send(new E2ECommand())).IsSuccess.ShouldBeTrue();
+
+        var logs = loggerProvider.Messages.Where(m => m.Contains("CMD [E2ECommand]")).ToList();
+        logs.Count.ShouldBe(2);
+        logs.ShouldAllBe(log => log.Split("(evt) E2ERootEvent", StringSplitOptions.None).Length == 2);
+    }
+
+    [Fact]
     public async Task ProduceOriginFromDomainCodeWhenCommandHandlerFails()
     {
         var unitOfWork = A.Fake<IUnitOfWork>();
