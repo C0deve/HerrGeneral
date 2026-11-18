@@ -128,7 +128,7 @@ public class OpenTelemetryExtensionsShould
         // 1. Root command activity
         var rootActivity = activities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.ExecuteCommand &&
-            (string?)a.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName) == nameof(FullPipelineCommand));
+            (string?)a.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName) == "OpenTelemetryExtensionsShould.FullPipelineCommand");
 
         rootActivity.ShouldNotBeNull();
         rootActivity.Status.ShouldBe(ActivityStatusCode.Ok);
@@ -192,7 +192,7 @@ public class OpenTelemetryExtensionsShould
 
         var rootActivity = exportedActivities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.ExecuteCommand &&
-            (string?)a.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName) == nameof(FailingCommand));
+            (string?)a.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName) == "OpenTelemetryExtensionsShould.FailingCommand");
 
         rootActivity.ShouldNotBeNull();
         rootActivity.Status.ShouldBe(ActivityStatusCode.Error);

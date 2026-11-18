@@ -6,24 +6,6 @@ namespace HerrGeneral.Tracing;
 
 public class ActivityTreeFormattingShould
 {
-    private class SampleCommand;
-    private class SampleCommandHandler;
-    private class CardPaymentAuthorizedEvent;
-    private class DebitAccountOnCardPayment;
-    private class AccountDebitedEvent;
-    private class ApplyOverdraftFeeOnAccountDebited;
-    private class FeeAppliedEvent;
-    private class CardTransactionsView;
-    private class AccountBalanceView;
-    private class AccountStatementView;
-    private class SendSmsConfirmation;
-    private class SendOverdraftWarning;
-    private class AccountCreated;
-    private class CreateBankCardOnAccountCreated;
-    private class BankCardCreated;
-    private class MoneyDeposited;
-    private class MoneyWithdrawn;
-
     [Fact]
     public void FormatCompactTreeWithoutRedundantEmptyLines()
     {
@@ -179,7 +161,7 @@ public class ActivityTreeFormattingShould
         log.ShouldNotBeNull();
         log.ShouldContain("CMD [E2ECommand]");
         log.ShouldContain("[OK]");
-        log.ShouldContain("\\--> (cmd) Handler");
+        log.ShouldContain("\\--> (cmd) E2ECommand.Handler");
         log.ShouldContain("|-- (evt) E2ERootEvent");
         log.ShouldContain("\\--> (wr) E2EWriteSideHandler");
         log.ShouldContain("\\-- (evt) E2EChildEvent");
@@ -271,7 +253,7 @@ public class ActivityTreeFormattingShould
         log.ShouldContain("[FAILED]");
         log.ShouldContain("EXCEPTION: InvalidOperationException");
         log.ShouldContain("Message : \"Command business error\"");
-        log.ShouldContain($"Origin  : {typeof(ActivityTreeFormattingShould).FullName}.E2EDomain.ThrowDomainError()");
+        log.ShouldContain($"Origin  : {typeof(E2EDomain).FullName}.ThrowDomainError()");
         log.ShouldNotContain("HerrGeneral.Core.WriteSide.CommandPipeline");
     }
 
@@ -300,72 +282,9 @@ public class ActivityTreeFormattingShould
         log.ShouldContain("[ERR]");
         log.ShouldContain("EXCEPTION: InvalidOperationException");
         log.ShouldContain("Message : \"Event handler business error\"");
-        log.ShouldContain($"Origin  : {typeof(ActivityTreeFormattingShould).FullName}.E2EDomain.ThrowEventHandlerDomainError()");
+        log.ShouldContain($"Origin  : {typeof(E2EDomain).FullName}.ThrowEventHandlerDomainError()");
         log.ShouldContain("\\== [TX ROLLBACK]");
         log.ShouldNotContain("HerrGeneral.Core.WriteSide.EventHandlerPipeline");
-    }
-
-    public record E2ECommand
-    {
-        public class Handler : ICommandHandler<E2ECommand, Unit>
-        {
-            public (IReadOnlyList<object> Events, Unit Result) Handle(E2ECommand command) =>
-                ((IReadOnlyList<object>)[new E2ERootEvent()], Unit.Default);
-        }
-    }
-
-    public record E2EFailingCommand
-    {
-        public class Handler : ICommandHandler<E2EFailingCommand, Unit>
-        {
-            public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingCommand command)
-            {
-                E2EDomain.ThrowDomainError();
-                return ([], Unit.Default);
-            }
-        }
-    }
-
-    public record E2EFailingEventCommand
-    {
-        public class Handler : ICommandHandler<E2EFailingEventCommand, Unit>
-        {
-            public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingEventCommand command) =>
-                ((IReadOnlyList<object>)[new E2EFailingEvent()], Unit.Default);
-        }
-    }
-
-    public static class E2EDomain
-    {
-        public static void ThrowDomainError() =>
-            throw new InvalidOperationException("Command business error");
-
-        public static void ThrowEventHandlerDomainError() =>
-            throw new InvalidOperationException("Event handler business error");
-    }
-
-    public record E2ERootEvent;
-    public record E2EChildEvent;
-    public record E2EFailingEvent;
-
-    public class E2EWriteSideHandler : IEventHandler<E2ERootEvent>
-    {
-        public IReadOnlyList<object> Handle(E2ERootEvent @event) =>
-            [new E2EChildEvent()];
-    }
-
-    public class E2EFailingWriteSideHandler : IEventHandler<E2EFailingEvent>
-    {
-        public IReadOnlyList<object> Handle(E2EFailingEvent @event)
-        {
-            E2EDomain.ThrowEventHandlerDomainError();
-            return [];
-        }
-    }
-
-    public class E2EProjection : IHandleSyncProjection<E2ERootEvent>
-    {
-        public void Handle(E2ERootEvent @event) { }
     }
 
     private class InMemoryLoggerProvider : ILoggerProvider
@@ -385,4 +304,87 @@ public class ActivityTreeFormattingShould
             }
         }
     }
+}
+
+// Sample types are declared outside the test class: nested in it, they would be named
+// "ActivityTreeFormattingShould.X" in the traces these tests assert on.
+internal class SampleCommand;
+internal class SampleCommandHandler;
+internal class CardPaymentAuthorizedEvent;
+internal class DebitAccountOnCardPayment;
+internal class AccountDebitedEvent;
+internal class ApplyOverdraftFeeOnAccountDebited;
+internal class FeeAppliedEvent;
+internal class CardTransactionsView;
+internal class AccountBalanceView;
+internal class AccountStatementView;
+internal class SendSmsConfirmation;
+internal class SendOverdraftWarning;
+internal class AccountCreated;
+internal class CreateBankCardOnAccountCreated;
+internal class BankCardCreated;
+internal class MoneyDeposited;
+internal class MoneyWithdrawn;
+
+public record E2ECommand
+{
+    public class Handler : ICommandHandler<E2ECommand, Unit>
+    {
+        public (IReadOnlyList<object> Events, Unit Result) Handle(E2ECommand command) =>
+            ((IReadOnlyList<object>)[new E2ERootEvent()], Unit.Default);
+    }
+}
+
+public record E2EFailingCommand
+{
+    public class Handler : ICommandHandler<E2EFailingCommand, Unit>
+    {
+        public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingCommand command)
+        {
+            E2EDomain.ThrowDomainError();
+            return ([], Unit.Default);
+        }
+    }
+}
+
+public record E2EFailingEventCommand
+{
+    public class Handler : ICommandHandler<E2EFailingEventCommand, Unit>
+    {
+        public (IReadOnlyList<object> Events, Unit Result) Handle(E2EFailingEventCommand command) =>
+            ((IReadOnlyList<object>)[new E2EFailingEvent()], Unit.Default);
+    }
+}
+
+public static class E2EDomain
+{
+    public static void ThrowDomainError() =>
+        throw new InvalidOperationException("Command business error");
+
+    public static void ThrowEventHandlerDomainError() =>
+        throw new InvalidOperationException("Event handler business error");
+}
+
+public record E2ERootEvent;
+public record E2EChildEvent;
+public record E2EFailingEvent;
+
+public class E2EWriteSideHandler : IEventHandler<E2ERootEvent>
+{
+    public IReadOnlyList<object> Handle(E2ERootEvent @event) =>
+        [new E2EChildEvent()];
+}
+
+public class E2EFailingWriteSideHandler : IEventHandler<E2EFailingEvent>
+{
+    public IReadOnlyList<object> Handle(E2EFailingEvent @event)
+    {
+        E2EDomain.ThrowEventHandlerDomainError();
+        return [];
+    }
+}
+
+public class E2EProjection : IHandleSyncProjection<E2ERootEvent>
+{
+    public void Handle(E2ERootEvent @event) { }
 }

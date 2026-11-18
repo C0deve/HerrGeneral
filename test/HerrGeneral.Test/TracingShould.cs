@@ -159,7 +159,7 @@ public class TracingShould(ITestOutputHelper output)
 
         var commandActivity = stoppedActivities.FirstOrDefault(a =>
             a.OperationName == HerrGeneralDiagnostics.Activities.ExecuteCommand &&
-            a.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName)?.ToString() == "FailingCommand");
+            a.GetTagItem(HerrGeneralDiagnostics.Tags.CommandName)?.ToString() == "TracingShould.FailingCommand");
 
         commandActivity.ShouldNotBeNull();
         commandActivity.Status.ShouldBe(ActivityStatusCode.Error);
