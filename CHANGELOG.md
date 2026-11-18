@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.8.0](https://github.com/C0deve/HerrGeneral/compare/v1.7.1...v1.8.0) (2026-11-18)
+
+
+### Features
+
+* **diagnostics:** combine successive UseDiagnosticTypeNames calls ([83305ef](https://github.com/C0deve/HerrGeneral/commit/83305ef09a78e315487f289d1e74f44c1b1e7390))
+* **diagnostics:** let the application name types in diagnostics ([b540c43](https://github.com/C0deve/HerrGeneral/commit/b540c43311ee27db8c4a0e55472be1632cc979e1))
+* **diagnostics:** readable type names in traces ([fb54125](https://github.com/C0deve/HerrGeneral/commit/fb54125221302d5c5693d3cc0260e1f25477bfa3))
+
+
+### Bug Fixes
+
+* **diagnostics:** name nested types with their declaring types ([45ceb0a](https://github.com/C0deve/HerrGeneral/commit/45ceb0ac651483e70901d007af62579ae60cff86))
+
 ## [1.7.1](https://github.com/C0deve/HerrGeneral/compare/v1.7.0...v1.7.1) (2026-11-18)
 
 
