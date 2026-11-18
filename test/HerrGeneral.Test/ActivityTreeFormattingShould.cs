@@ -339,7 +339,7 @@ public class ActivityTreeFormattingShould
         log.ShouldContain("EXCEPTION: InvalidOperationException");
         log.ShouldContain("Message : \"Command business error\"");
         log.ShouldContain($"Origin  : {typeof(E2EDomain).FullName}.ThrowDomainError()");
-        log.ShouldNotContain("HerrGeneral.Core.WriteSide.CommandPipeline");
+        log.ShouldNotContain("Origin  : HerrGeneral.Core.");
     }
 
     [Fact]
