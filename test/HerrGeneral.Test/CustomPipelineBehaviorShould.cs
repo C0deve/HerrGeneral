@@ -90,7 +90,7 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
     {
         var tracker = new ExecutionTracker();
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(tracker)
             .AddSingleton<IUnitOfWork, FakeUnitOfWork>()
             .AddSingleton<CreateUserHandler>()
@@ -123,7 +123,7 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
     {
         var tracker = new ExecutionTracker();
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(tracker)
             .AddSingleton<IUnitOfWork, FakeUnitOfWork>()
             .AddSingleton<CreateUserHandler>()
@@ -200,7 +200,7 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
         var auditSink = new InMemoryAuditSink();
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(tracker)
             .AddSingleton<IAuditSink>(auditSink)
             .AddSingleton<IUnitOfWork, FakeUnitOfWork>()
@@ -229,7 +229,7 @@ public class CustomPipelineBehaviorShould(ITestOutputHelper output)
     {
         var tracker = new ExecutionTracker();
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(tracker)
             .AddSingleton<CreateUserHandler>()
             .AddHerrGeneral(cfg => cfg.ScanWriteSideOn(typeof(CreateUserHandler).Assembly, typeof(CreateUserHandler).Namespace!));

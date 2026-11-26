@@ -49,7 +49,7 @@ namespace HerrGeneral.Test.SyncProjections.Success
             var uow = new FakeUnitOfWork(log);
 
             var services = new ServiceCollection()
-                .AddHerrGeneralTestLogger(output)
+                .AddHerrGeneralTestLogger(output.WriteLine)
                 .AddSingleton(log)
                 .AddSingleton<IUnitOfWork>(uow)
                 .AddSingleton<SuccessfulSyncProjectionHandler>()
@@ -135,7 +135,7 @@ namespace HerrGeneral.Test.SyncProjections.Failure
             var uow = new FakeUnitOfWork(log);
 
             var services = new ServiceCollection()
-                .AddHerrGeneralTestLogger(output)
+                .AddHerrGeneralTestLogger(output.WriteLine)
                 .AddSingleton(log)
                 .AddSingleton<IUnitOfWork>(uow)
                 .AddSingleton<FailingSyncProjectionHandler>()

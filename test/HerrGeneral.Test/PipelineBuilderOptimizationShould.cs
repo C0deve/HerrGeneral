@@ -56,7 +56,7 @@ public class PipelineBuilderOptimizationShould(ITestOutputHelper output)
     public async Task Fast_path_without_custom_behaviors_executes_successfully()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<SimpleCommandHandler>()
             .AddHerrGeneral(cfg => cfg.ScanWriteSideOn(typeof(SimpleCommandHandler).Assembly, typeof(SimpleCommandHandler).Namespace!));
 
@@ -75,7 +75,7 @@ public class PipelineBuilderOptimizationShould(ITestOutputHelper output)
     {
         var tracker = new StepTracker();
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(tracker)
             .AddSingleton<SimpleCommandHandler>()
             .AddTransient(typeof(ICommandPipelineBehavior<,>), typeof(DiagnosticsBehavior<,>))

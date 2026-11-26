@@ -148,7 +148,7 @@ public class KeyedConcurrencyLimiterShould(ITestOutputHelper output)
         using var barrier = new Barrier(2);
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(log)
             .AddSingleton(barrier)
             .AddHerrGeneral(scanner =>
@@ -174,7 +174,7 @@ public class KeyedConcurrencyLimiterShould(ITestOutputHelper output)
         var activeCount = new ConcurrentDictionary<string, int>();
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(log)
             .AddSingleton(activeCount)
             .AddHerrGeneral(scanner =>
@@ -203,7 +203,7 @@ public class KeyedConcurrencyLimiterShould(ITestOutputHelper output)
         var activeCount = new ConcurrentDictionary<Guid, int>();
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(log)
             .AddSingleton(activeCount)
             .AddHerrGeneral(scanner =>
@@ -232,7 +232,7 @@ public class KeyedConcurrencyLimiterShould(ITestOutputHelper output)
         using var barrier = new Barrier(2);
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(log)
             .AddHerrGeneral(scanner =>
                 scanner.ScanWriteSideOn(typeof(OrderHandler).Assembly, typeof(OrderHandler).Namespace!));
@@ -260,7 +260,7 @@ public class KeyedConcurrencyLimiterShould(ITestOutputHelper output)
         var activeCount = new ConcurrentDictionary<Guid, int>();
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(log)
             .AddSingleton(activeCount)
             .AddHerrGeneral(scanner =>
@@ -324,7 +324,7 @@ public class KeyedConcurrencyLimiterShould(ITestOutputHelper output)
         var activeCount = new ConcurrentDictionary<string, int>();
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(log)
             .AddSingleton(activeCount)
             .AddHerrGeneral(scanner =>

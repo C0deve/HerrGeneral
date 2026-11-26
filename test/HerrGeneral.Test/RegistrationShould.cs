@@ -25,7 +25,7 @@ public class RegistrationShould(ITestOutputHelper output)
     public async Task Resolve_main_handler()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(scanner =>
                 scanner.ScanWriteSideOn(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!));
 
@@ -44,7 +44,7 @@ public class RegistrationShould(ITestOutputHelper output)
     public async Task Raise_exception_if_no_command_handler_registered()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(scanner =>
                 scanner.ScanWriteSideOn(typeof(PingHandler).Assembly, "empty.namespace"));
 
@@ -61,7 +61,7 @@ public class RegistrationShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddSingleton<AReadModelWithMultipleHandlers>()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(scanner =>
                 scanner
                     .ScanReadSideOn(typeof(AReadModelWithMultipleHandlers).Assembly, typeof(AReadModelWithMultipleHandlers).Namespace!)
@@ -82,7 +82,7 @@ public class RegistrationShould(ITestOutputHelper output)
     public void Register_read_side_repositories_as_singleton()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(scanner =>
                 scanner
                     .ScanReadSideOn(typeof(AReadModelWithMultipleHandlers).Assembly, typeof(AReadModelWithMultipleHandlers).Namespace!)
@@ -107,7 +107,7 @@ public class RegistrationShould(ITestOutputHelper output)
     public async Task Resolve_multiple_command_handlers_in_a_single_class()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(scanner =>
                 scanner.ScanWriteSideOn(typeof(MultiCommandHandler).Assembly, typeof(MultiCommandHandler).Namespace!));
 
@@ -142,7 +142,7 @@ public class RegistrationShould(ITestOutputHelper output)
     public async Task LimitConcurrentCommands_allows_multiple_parallel_executions()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(scanner =>
                 scanner
                     .ScanWriteSideOn(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!)

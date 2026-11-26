@@ -10,7 +10,7 @@ public class SendWithErrorShould
     public SendWithErrorShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(x =>
                 x
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
@@ -22,7 +22,7 @@ public class SendWithErrorShould
                         result.Events)
                     .RegisterReadSideEventHandler<EventBase, Test.Data.WithMapping.ReadSide.ILocalEventHandler<EventBase>>()
             );
-        
+
         var serviceProvider = services.BuildServiceProvider();
         _mediator = serviceProvider.GetRequiredService<Mediator>();
     }

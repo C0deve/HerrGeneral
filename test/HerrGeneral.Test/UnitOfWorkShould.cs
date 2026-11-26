@@ -10,7 +10,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddSingleton<EventTracker>()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(scanner =>
                 scanner
                     .ScanWriteSideOn(typeof(Ping.Handler).Assembly, typeof(Ping.Handler).Namespace!)
@@ -29,7 +29,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
     private Mediator BuildMediator(IUnitOfWork unitOfWork)
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddScoped<IUnitOfWork>(_ => unitOfWork)
             .AddSingleton<EventTracker>()
             .AddSingleton<AReadModelWithMultipleHandlers>()
@@ -38,7 +38,7 @@ public class UnitOfWorkShould(ITestOutputHelper output)
                 scanner
                     .ScanWriteSideOn(typeof(Ping).Assembly, typeof(Ping).Namespace!)
                     .ScanReadSideOn(typeof(Ping).Assembly, typeof(AReadModel).Namespace!)
-                    .RegisterCommandHandlerWithMapping<CommandBase, 
+                    .RegisterCommandHandlerWithMapping<CommandBase,
                         ILocalCommandHandler<CommandBase>, MyResult<Unit>>(result => result.Events)
                     .RegisterWriteSideEventHandlerWithMapping<EventBase,
                         HerrGeneral.Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>,

@@ -55,7 +55,7 @@ namespace HerrGeneral.Test.PostProjections.Success
             var uow = new FakeUnitOfWork(log);
 
             var services = new ServiceCollection()
-                .AddHerrGeneralTestLogger(output)
+                .AddHerrGeneralTestLogger(output.WriteLine)
                 .AddSingleton(log)
                 .AddSingleton<IUnitOfWork>(uow)
                 .AddSingleton<UserReadModelProjection>()
@@ -138,7 +138,7 @@ namespace HerrGeneral.Test.PostProjections.Failure
             var uow = new FakeUnitOfWork(log);
 
             var services = new ServiceCollection()
-                .AddHerrGeneralTestLogger(output)
+                .AddHerrGeneralTestLogger(output.WriteLine)
                 .AddSingleton(log)
                 .AddSingleton<IUnitOfWork>(uow)
                 .AddSingleton<FailingPostProjectionHandler>()

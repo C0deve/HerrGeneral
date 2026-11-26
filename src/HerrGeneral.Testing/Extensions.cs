@@ -1,7 +1,6 @@
 using HerrGeneral.Testing.Log;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Xunit.Abstractions;
 
 namespace HerrGeneral.Testing;
 
@@ -11,17 +10,18 @@ namespace HerrGeneral.Testing;
 public static class Extensions
 {
     /// <summary>
-    /// Register a logger to writes to the xUnit test output.
+    /// Register a logger that writes to the test output, whatever the test framework and its version.
+    /// With xUnit: <c>services.AddHerrGeneralTestLogger(testOutputHelper.WriteLine)</c>.
     /// </summary>
     /// <param name="serviceCollection"></param>
-    /// <param name="testOutputHelper"></param>
+    /// <param name="writeLine">Writes one line to the test output</param>
     /// <param name="logLevel"></param>
     /// <returns></returns>
-    public static IServiceCollection AddHerrGeneralTestLogger(this IServiceCollection serviceCollection, ITestOutputHelper testOutputHelper, LogLevel logLevel = LogLevel.Debug) =>
+    public static IServiceCollection AddHerrGeneralTestLogger(this IServiceCollection serviceCollection, Action<string> writeLine, LogLevel logLevel = LogLevel.Debug) =>
         serviceCollection.AddLogging(builder =>
         {
             builder
                 .SetMinimumLevel(logLevel)
-                .AddXunit(testOutputHelper, LogConfig.Current);
+                .AddProvider(new TestOutputLoggerProvider(writeLine));
         });
 }

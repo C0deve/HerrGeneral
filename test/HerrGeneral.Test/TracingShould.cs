@@ -26,7 +26,7 @@ public class TracingShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
             .AddSingleton<ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler>()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
@@ -54,7 +54,7 @@ public class TracingShould(ITestOutputHelper output)
 
         var services = new ServiceCollection()
             .AddSingleton<ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler>()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
@@ -114,7 +114,7 @@ public class TracingShould(ITestOutputHelper output)
 
         var services = new ServiceCollection()
             .AddSingleton<ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler>()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
@@ -146,7 +146,7 @@ public class TracingShould(ITestOutputHelper output)
         ActivitySource.AddActivityListener(listener);
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(configuration =>
                 configuration
                     .ScanWriteSideOn(typeof(TracingShould).Assembly, typeof(TracingShould).Namespace!));

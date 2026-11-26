@@ -11,7 +11,7 @@ public class SendWithMappingShould
     public SendWithMappingShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<EventTracker>()
             .AddHerrGeneral(configuration =>
                 configuration
@@ -36,13 +36,13 @@ public class SendWithMappingShould
     {
         var t1 = new Ping().SendFrom(_mediator)
             .ShouldSuccess();
-        
+
         var t2 = new Ping().SendFrom(_mediator)
             .ShouldSuccess();
-        
+
         var t3 = new Ping().SendFrom(_mediator)
             .ShouldSuccess();
-        
+
         await Task.WhenAll(t1, t2, t3);
     }
 
@@ -54,8 +54,8 @@ public class SendWithMappingShould
         await new CreatePing { AggregateId = AggregateId, Message = "Ping" }
             .SendFrom<Guid>(_mediator)
             .ShouldSuccessWithValue(AggregateId);
-    
-    
+
+
     [Fact]
     public async Task Dispatch_events_on_write_side()
     {

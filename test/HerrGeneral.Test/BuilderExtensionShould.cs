@@ -49,7 +49,7 @@ public class BuilderExtensionShould(ITestOutputHelper output)
     public async Task Support_custom_registration_policy_via_builder()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<CustomCommandHandler>()
             .AddHerrGeneral(cfg => cfg
                 .UseSampleModule("TestOption")
