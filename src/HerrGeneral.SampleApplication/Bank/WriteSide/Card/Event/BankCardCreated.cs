@@ -8,5 +8,5 @@ public record BankCardCreated(
     string CardholderName,
     CardType CardType,
     Guid SourceCommandId,
-    CardNumber AggregateId) 
+    CardNumber AggregateId)
     : DomainEvent<BankCard, CardNumber>(SourceCommandId, AggregateId);

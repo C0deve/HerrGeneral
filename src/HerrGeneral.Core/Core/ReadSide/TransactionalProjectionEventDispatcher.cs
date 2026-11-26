@@ -22,7 +22,7 @@ internal sealed class TransactionalProjectionEventDispatcher(IServiceProvider se
         HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
             new KeyValuePair<string, object?>("herrgeneral.stage", "SyncProjections"));
 
-        foreach (var eventToDispatch in events) 
+        foreach (var eventToDispatch in events)
             DispatchSingle(eventToDispatch);
     }
 

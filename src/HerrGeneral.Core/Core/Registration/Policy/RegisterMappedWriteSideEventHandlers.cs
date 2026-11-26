@@ -32,9 +32,9 @@ internal class RegisterMappedWriteSideEventHandlers(EventHandlerMappingsConfigur
         {
             var @interface = typeof(IEventHandler<>).MakeGenericType(scanResult.eventType);
             var internalHandler = typeof(EventHandlerWithMapping<,>).MakeGenericType(scanResult.eventType, scanResult.externalHandlerType);
-            
+
             serviceCollection.TryAddTransient(scanResult.externalHandlerType);
-            
+
             serviceCollection.AddTransient(
                 @interface,
                 internalHandler);

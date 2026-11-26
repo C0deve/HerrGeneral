@@ -33,9 +33,9 @@ internal sealed class RegisterICrossAggregateChangeHandler : IRegistrationPolicy
             if (handlerInterfaces.Count == 0)
                 throw new InvalidOperationException($"Interface ICrossAggregateChangeHandler not found on {externalWriteSideEventHandler.GetFriendlyName()}");
 
-            foreach (var genericArguments in 
+            foreach (var genericArguments in
                      handlerInterfaces
-                         .Select(handlerInterface => handlerInterface.GetGenericArguments())) 
+                         .Select(handlerInterface => handlerInterface.GetGenericArguments()))
                 RegisterEventHandlerServices(serviceCollection, genericArguments, externalWriteSideEventHandler);
         }
     }
@@ -58,7 +58,7 @@ internal sealed class RegisterICrossAggregateChangeHandler : IRegistrationPolicy
         }
 
         serviceCollection.TryAddTransient(externalWriteSideEventHandler);
-            
+
         serviceCollection.AddTransient(
             @interface,
             internalHandler);

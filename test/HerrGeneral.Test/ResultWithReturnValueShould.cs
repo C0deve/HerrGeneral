@@ -10,7 +10,7 @@ public class ResultWithReturnValueShould
     {
         var message = "";
         var expected = Guid.NewGuid();
-        
+
         Result
             .Success(expected)
             .Match(

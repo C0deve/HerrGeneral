@@ -24,7 +24,7 @@ internal class RegisterMappedReadSideEventHandlers(EventHandlerMappingsConfigura
             from mapping in eventHandlerMappingsConfiguration.All()
             where externalHandlersProvider.TryGetValue(mapping.HandlerGenericType, out _)
             from externalHandlerType in externalHandlersProvider[mapping.HandlerGenericType]
-            from method in externalHandlerType.GetMethods(BindingFlags.Public|BindingFlags.Instance|BindingFlags.DeclaredOnly)
+            from method in externalHandlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
             where method.Name == mapping.MethodInfo.Name
             let eventType = method
                 .GetParameters()[0]

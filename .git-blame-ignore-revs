@@ -1,0 +1,6 @@
+# Commits git blame skips: mass reformatting that changed no code.
+# GitHub applies this file on its own; locally, once per clone:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# style: dotnet format whitespace on the whole solution
+a42ac71ac152e88bb0afb83be516941fbeaac420

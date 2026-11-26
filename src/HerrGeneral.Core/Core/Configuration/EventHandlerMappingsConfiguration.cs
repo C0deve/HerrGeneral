@@ -84,8 +84,8 @@ internal class EventHandlerMappingsConfiguration
                              $"was found on type '{handlerType.Name}'");
 
         // Ensure the handler type is generic
-        return handlerType.IsGenericType 
-            ? (methodInfo, handlerType) 
+        return handlerType.IsGenericType
+            ? (methodInfo, handlerType)
             : throw new HandlerTypeMustBeGenericMappingDefinitionException(handlerType);
     }
 
@@ -108,8 +108,8 @@ internal class EventHandlerMappingsConfiguration
     }
 
     private void RegisterMapping<TEvent>(
-        MethodInfo methodInfo, 
-        Type handlerType, 
+        MethodInfo methodInfo,
+        Type handlerType,
         Func<object, IReadOnlyList<object>>? eventMapper)
     {
         _handlerMappers.Add(

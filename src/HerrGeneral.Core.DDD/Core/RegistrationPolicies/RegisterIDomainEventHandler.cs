@@ -26,9 +26,9 @@ internal sealed class RegisterIDomainEventHandler : IRegistrationPolicy
             if (handlerInterfaces.Count == 0)
                 throw new InvalidOperationException($"Interface {_handlerInterface.Name} not found on {externalWriteSideEventHandler.GetFriendlyName()}");
 
-            foreach (var genericArguments in 
+            foreach (var genericArguments in
                      handlerInterfaces
-                         .Select(handlerInterface => handlerInterface.GetGenericArguments())) 
+                         .Select(handlerInterface => handlerInterface.GetGenericArguments()))
                 RegisterEventHandlerServices(serviceCollection, genericArguments, externalWriteSideEventHandler);
         }
     }
@@ -38,7 +38,7 @@ internal sealed class RegisterIDomainEventHandler : IRegistrationPolicy
         var eventType = genericArguments[0];
         var aggregateType = genericArguments[1];
         var keyType = aggregateType.GetKeyTypeFromAggregate();
-            
+
         var @interface = TypeDefinition.WriteSideEventHandlerInterface.MakeGenericType(eventType);
         Type internalHandler;
         if (keyType != null && keyType != typeof(Guid))
@@ -51,7 +51,7 @@ internal sealed class RegisterIDomainEventHandler : IRegistrationPolicy
         }
 
         serviceCollection.TryAddTransient(externalWriteSideEventHandler);
-            
+
         serviceCollection.AddTransient(
             @interface,
             internalHandler);

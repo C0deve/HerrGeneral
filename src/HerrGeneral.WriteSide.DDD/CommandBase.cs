@@ -9,7 +9,7 @@ public abstract record CommandBase
     /// Id of the command
     /// </summary>
     public Guid Id { get; init; } = Guid.NewGuid();
-    
+
     /// <summary>
     /// Execution date of the command
     /// </summary>

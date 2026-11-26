@@ -29,6 +29,6 @@ internal sealed class ChangeMultiHandlerInternal<TAggregate, TKey, TCommand, THa
 
         return (newEvents, Unit.Default);
     }
-    
+
     public Type GetHandlerType() => typeof(THandler);
 }

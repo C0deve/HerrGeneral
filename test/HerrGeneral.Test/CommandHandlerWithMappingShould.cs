@@ -39,7 +39,7 @@ public class CommandHandlerWithMappingShould
     public void ReturnValue()
     {
         var mappers = new CommandHandlerMappings();
-        
+
         mappers.AddMapping<
             CommandBase,
             ILocalCommandHandler<CommandBase, int>,

@@ -149,13 +149,13 @@ public class ResultShould
         (await Task.FromResult(Result.Success(Guid.NewGuid()))
             .Then(_ => Task.FromResult(Result.Success())))
         .ShouldBe(Result.Success());
-    
+
     [Fact]
     public async Task CreateResultRailwayDomainError() =>
         (await Task.FromResult(Result<Guid>.DomainFail(new PingError()))
             .Then(_ => Task.FromResult(Result.Success())))
         .IsSuccess.ShouldBe(false);
-    
+
     [Fact]
     public async Task CreateResultRailwayDomainError2() =>
         (await Task.FromResult(Result<Guid>.Success(Guid.NewGuid()))

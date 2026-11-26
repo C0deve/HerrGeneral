@@ -30,7 +30,7 @@ namespace HerrGeneral.Scanner.Test
                 .ShouldBe([
                     typeof(Command3.Command3Handler)
                 ]);
-        
+
         [Fact]
         public void GetAllConcreteClassFilteredByParentNamespace() =>
             HerrGeneral.Core.Registration.Scanner.Scan([
@@ -44,14 +44,14 @@ namespace HerrGeneral.Scanner.Test
                     typeof(Command1.Command1Handler),
                     typeof(Command2Handler),
                 ]);
-        
+
     }
 
-    internal interface ICommandHandler<in T> 
+    internal interface ICommandHandler<in T>
     {
         IReadOnlyList<object> Handle(T command);
     }
-        
+
     internal record Command1
     {
         public class Command1Handler : ICommandHandler<Command1>

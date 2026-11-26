@@ -21,6 +21,6 @@ internal sealed class VoidEventHandlerInternal<TEvent, THandler>(
         handler.Handle(notification);
         return [];
     }
-    
+
     public Type GetHandlerType() => typeof(THandler);
 }

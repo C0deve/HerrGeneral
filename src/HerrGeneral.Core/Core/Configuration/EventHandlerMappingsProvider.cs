@@ -27,7 +27,7 @@ internal class EventHandlerMappingsProvider(EventHandlerMappingsConfiguration ma
     /// This method implements caching to avoid repeated expensive reflection operations.
     /// It first checks an internal cache, and if not found, it resolves the method using reflection.
     /// </remarks>
-    public MethodInfo GetHandleMethod(Type evtType, Type handlerType) => 
+    public MethodInfo GetHandleMethod(Type evtType, Type handlerType) =>
         GetCachedOrResolveMethod(evtType, handlerType).Method;
 
     /// <summary>
@@ -45,7 +45,7 @@ internal class EventHandlerMappingsProvider(EventHandlerMappingsConfiguration ma
     /// This extended version is used by write-side handlers that need additional mapping information
     /// to process events and their results correctly.
     /// </remarks>
-    (MethodInfo Method, EventHandlerMapping Mapping) IWriteSideEventHandlerMappings.GetHandleMethod(Type evtType, Type handlerType) => 
+    (MethodInfo Method, EventHandlerMapping Mapping) IWriteSideEventHandlerMappings.GetHandleMethod(Type evtType, Type handlerType) =>
         GetCachedOrResolveMethod(evtType, handlerType);
 
     /// <summary>

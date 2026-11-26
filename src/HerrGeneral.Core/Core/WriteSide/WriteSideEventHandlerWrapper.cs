@@ -28,7 +28,7 @@ internal class WriteSideEventHandlerWrapper<TEvent> : IEventHandlerWrapper
                 .WithDomainExceptionMapping(domainExceptionMapper)
                 .WithTracer(handler, collector)(@event);
 
-            for (var i = 0; i < result.Count; i++) 
+            for (var i = 0; i < result.Count; i++)
                 builder.Add(result[i]);
         }
 

@@ -3,7 +3,7 @@ using HerrGeneral.DDD.Exception;
 
 namespace HerrGeneral.SampleApplication.Bank.Infrastructure;
 
-public class Repository<TAggregate, TKey> : WriteSide.IMyAggregateRepository<TAggregate, TKey> 
+public class Repository<TAggregate, TKey> : WriteSide.IMyAggregateRepository<TAggregate, TKey>
     where TAggregate : IAggregate<TKey>
     where TKey : notnull
 {
@@ -18,6 +18,6 @@ public class Repository<TAggregate, TKey> : WriteSide.IMyAggregateRepository<TAg
     public void Save(TAggregate aggregate) =>
         _aggregates[aggregate.Id] = aggregate;
 
-    public IEnumerable<TAggregate> FindBySpecification(Func<TAggregate, bool> func) => 
+    public IEnumerable<TAggregate> FindBySpecification(Func<TAggregate, bool> func) =>
         _aggregates.Values.Where(func);
 }

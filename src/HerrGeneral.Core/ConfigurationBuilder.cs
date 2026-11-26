@@ -18,30 +18,30 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
     private readonly HashSet<ScanParam> _readSideSearchParams = [];
     private readonly HashSet<Type> _domainExceptionInterfaces = [];
     private readonly List<IRegistrationPolicy> _customPolicies = [];
-    
+
     /// <summary>
     /// Collection of mappings for external command handlers.
     /// These mappings allow integration of command handlers from external sources into the system.
     /// </summary>
-    private readonly CommandHandlerMappings _commandHandlerMappings  = new();
-    
+    private readonly CommandHandlerMappings _commandHandlerMappings = new();
+
     /// <summary>
     /// Collection of mappings for external write side event handlers.
     /// Allows registration of event handlers that modify the system state.
     /// </summary>
-    private readonly  EventHandlerMappingsConfiguration _writeSideEventHandlerMappingsConfiguration  = new();
+    private readonly EventHandlerMappingsConfiguration _writeSideEventHandlerMappingsConfiguration = new();
 
     /// <summary>
     /// Collection of mappings for external read side event handlers.
     /// Allows registration of event handlers that update views and projections.
     /// </summary>
-    private readonly  EventHandlerMappingsConfiguration _readSideEventHandlerMappingsConfiguration  = new();
-    
+    private readonly EventHandlerMappingsConfiguration _readSideEventHandlerMappingsConfiguration = new();
+
     /// <summary>
     /// Gets or sets a value indicating whether execution tracing for command handlers is enabled.
     /// Enables detailed logging of command processing for debugging and performance monitoring.
     /// </summary>
-    private bool _isTracingEnabled  = true;
+    private bool _isTracingEnabled = true;
 
     private short _maximumConcurrentCommands = 1;
 
@@ -80,7 +80,7 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
         _maximumConcurrentCommands,
         _customPolicies,
         _diagnosticTypeNaming);
-    
+
     /// <summary>
     /// Validates the configuration and throws an exception if it is not valid.
     /// A valid configuration must have at least one assembly to scan, either on the read side or on the write side.
@@ -91,7 +91,7 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
         if (_writeSideSearchParams.Count == 0 && _readSideSearchParams.Count == 0)
             throw new InvalidOperationException($"No assembly to scan. Use {nameof(ScanWriteSideOn)} or {nameof(ScanReadSideOn)} to specify on which assemblies to scan");
     }
-    
+
     /// <summary>
     /// Adds an assembly to scan for the read side.
     /// Event handlers discovered in this assembly will be used to update views and projections.
@@ -156,7 +156,7 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
         _domainExceptionInterfaces.Add(typeof(TException));
         return this;
     }
-    
+
     /// <summary>
     /// Registers an external command handler that produces events.
     /// This method allows integration of handlers that don't directly follow the system's convention.
@@ -246,7 +246,7 @@ public class ConfigurationBuilder(IServiceCollection? services = null) : IHerrGe
         _writeSideEventHandlerMappingsConfiguration.AddWriteSideMapping<TEvent, THandler>();
         return this;
     }
-    
+
     /// <summary>
     /// Registers all external event handlers for the write side that implement the specified THandler interface,
     /// with a custom transformation function to convert their return values into events.

@@ -28,6 +28,10 @@ jobs:
           cache: true
           cache-dependency-path: Directory.Packages.props
 
+      # Fix locally with: dotnet format whitespace HerrGeneral.slnx
+      - name: Check formatting
+        run: dotnet format whitespace HerrGeneral.slnx --verify-no-changes
+
       - name: Check package vulnerabilities
         run: dotnet list package --vulnerable --include-transitive
 

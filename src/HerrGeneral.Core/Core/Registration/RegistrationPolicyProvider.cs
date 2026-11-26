@@ -8,7 +8,7 @@ namespace HerrGeneral.Core.Registration;
 /// </summary>
 internal class RegistrationPolicyProvider
 {
-    
+
     /// <summary>
     /// Gets all write-side policies including mapped handlers
     /// </summary>

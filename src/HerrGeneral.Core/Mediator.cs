@@ -17,7 +17,7 @@ public class Mediator(IServiceProvider serviceProvider, CommandConcurrencyLimite
         : this(serviceProvider, new CommandConcurrencyLimiter(maxConcurrentCommands))
     {
     }
-    
+
     /// <summary>
     /// Send a creation command
     /// </summary>

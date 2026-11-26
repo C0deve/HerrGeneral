@@ -2,7 +2,7 @@
 
 namespace HerrGeneral.SampleApplication.Bank.WriteSide;
 
-public interface IMyAggregateRepository<TAggregate, TKey> : IAggregateRepository<TAggregate, TKey> 
+public interface IMyAggregateRepository<TAggregate, TKey> : IAggregateRepository<TAggregate, TKey>
     where TAggregate : IAggregate<TKey>
     where TKey : notnull
 {

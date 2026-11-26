@@ -8,7 +8,7 @@ namespace HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.TheThing.Command;
 public record DeleteAllTheThings
 {
     public Guid Id { get; } = Guid.NewGuid();
-    
+
     /// <summary>
     /// Handler for deleting all TheThing aggregates
     /// </summary>
@@ -19,7 +19,7 @@ public record DeleteAllTheThings
         /// </summary>
         /// <param name="command">The delete command</param>
         /// <returns>Success result</returns>
-        public IEnumerable<TheThing> Handle(DeleteAllTheThings command) => 
+        public IEnumerable<TheThing> Handle(DeleteAllTheThings command) =>
             tracker.All()
                 .Select(repository.Get)
                 .Select(aggregate => aggregate.Delete(command.Id));

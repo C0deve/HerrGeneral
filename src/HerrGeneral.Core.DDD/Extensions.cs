@@ -27,7 +27,7 @@ public static class Extensions
     /// <returns>A task containing the result with the GUID of the created aggregate</returns>
     public static Task<Result<Guid>> SendFrom<TAggregate>(this Create<TAggregate> command, Mediator mediator)
         where TAggregate : IAggregate<Guid> => mediator.Send<Guid>(command);
-    
+
     /// <summary>
     /// Sends a change command through the mediator using a fluent syntax.
     /// This method modifies an existing aggregate entity.

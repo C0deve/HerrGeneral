@@ -316,7 +316,7 @@ internal partial record ExceptionInfo(Type Type, string Message, string? Origin)
         }
     }
 
-    private static string? FindFirstValidFrame(System.Diagnostics.StackFrame[] frames, bool excludePipeline) => 
+    private static string? FindFirstValidFrame(System.Diagnostics.StackFrame[] frames, bool excludePipeline) =>
         frames
             .Select(frame => FormatFrame(frame, excludePipeline))
             .OfType<string>()

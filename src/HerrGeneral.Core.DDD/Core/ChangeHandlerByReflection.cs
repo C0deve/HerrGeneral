@@ -11,7 +11,7 @@ namespace HerrGeneral.DDD.Core;
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TCommand"></typeparam>
 internal sealed class ChangeHandlerByReflection<TAggregate, TKey, TCommand> : IChangeHandler<TAggregate, TCommand, TKey>
-    where TAggregate : Aggregate<TAggregate, TKey> 
+    where TAggregate : Aggregate<TAggregate, TKey>
     where TCommand : Change<TAggregate, TKey>
     where TKey : notnull
 {

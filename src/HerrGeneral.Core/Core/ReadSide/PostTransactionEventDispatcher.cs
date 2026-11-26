@@ -20,7 +20,7 @@ internal sealed class PostTransactionEventDispatcher(IServiceProvider servicePro
         HerrGeneralDiagnostics.EventsTotal.Add(events.Count,
             new KeyValuePair<string, object?>("herrgeneral.stage", "PostTransaction"));
 
-        foreach (var eventToDispatch in events) 
+        foreach (var eventToDispatch in events)
             DispatchSingle(eventToDispatch);
     }
 

@@ -1,6 +1,6 @@
 ﻿namespace HerrGeneral.WriteSide.DDD.Test.Data.WriteSide.AnotherThing;
 
-public class ToBeNotifiedOnNameChangedTracker 
+public class ToBeNotifiedOnNameChangedTracker
 {
     private readonly List<Guid> _ids = [];
 

@@ -23,14 +23,14 @@ internal class CommandHandlerMappings
         if (returnType != typeof(THandlerReturn))
             throw new TypeMismatchInMappingDefinitionException(typeof(THandlerReturn), methodInfo);
 
-        if(! handlerType.IsGenericType)
+        if (!handlerType.IsGenericType)
             throw new HandlerTypeMustBeGenericMappingDefinitionException(handlerType);
-        
+
         Func<object, object>? mapValueFinal =
             mapValue is null
             ? null
             : o => mapValue((THandlerReturn)o);
-        
+
         _handlerMappers.TryAdd(
             (typeof(TCommand), typeof(TValue)),
             new CommandHandlerMapping(
@@ -48,7 +48,7 @@ internal class CommandHandlerMappings
     public CommandHandlerMappings AddMapping<TCommand, THandler, THandlerReturn>(
         Func<THandlerReturn, IReadOnlyList<object>> mapEvents) =>
         AddMapping<TCommand, THandler, THandlerReturn, Unit>(mapEvents, _ => Unit.Default);
-   
+
     /// <summary>
     /// Return handlerMapper corresponding to <paramref name="command"/>
     /// </summary>
@@ -66,6 +66,6 @@ internal class CommandHandlerMappings
 
         throw new MissingCommandHandlerMapperException(command.GetType(), returnType);
     }
-    
+
     public IEnumerable<CommandHandlerMapping> All() => _handlerMappers.Values;
 }

@@ -24,7 +24,7 @@ internal sealed class CommandHandlerWithMapping<TCommand, THandler, TResult>(THa
 
         var invoker = InvokerCache.GetOrAdd(command.GetType(), _ =>
         {
-            var handleMethod = typeof(THandler).GetMethod(mapping.MethodInfo.Name) 
+            var handleMethod = typeof(THandler).GetMethod(mapping.MethodInfo.Name)
                                ?? throw new InvalidOperationException();
             return CompileInvoker(handleMethod);
         });
