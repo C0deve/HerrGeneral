@@ -32,11 +32,11 @@ public abstract class Projection<T>
             _data
                 .Where(predicate)
                 .ToList()
-                .ForEach(item => 
+                .ForEach(item =>
                     _data[_data.IndexOf(item)] = action(item));
         }
     }
-    
+
     protected IEnumerable<T> Find(Func<T, bool> predicate)
     {
         lock (_lock)

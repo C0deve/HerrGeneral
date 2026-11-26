@@ -17,7 +17,7 @@ internal static class AssemblyExtensions
             where type.IsAssignableFromOpenType(openType)
             group type by openType into g
             select (g.Key, new HashSet<Type>(g));
-        
+
         return query.ToDictionary().AsReadOnly();
     }
 

@@ -38,7 +38,7 @@ public abstract class Aggregate<TAggregate, TKey> : IAggregate<TKey>
         {
             lock (_newEvents)
             {
-                return [.._newEvents];
+                return [.. _newEvents];
             }
         }
     }

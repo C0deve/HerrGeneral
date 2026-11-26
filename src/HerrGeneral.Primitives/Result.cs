@@ -8,11 +8,11 @@ public record Result : Result<Unit>
     private Result() : base(Unit.Default)
     {
     }
-    
+
     private Result(object error) : base(error)
     {
     }
-    
+
     private Result(System.Exception error) : base(error)
     {
     }
@@ -40,8 +40,8 @@ public record Result : Result<Unit>
     /// <param name="panicException"></param>
     /// <returns></returns>
     public new static Result PanicFail(System.Exception panicException) => new(panicException);
-    
-    
+
+
     /// <summary>
     /// Evaluates a specified action based on the .current state
     /// </summary>
@@ -63,7 +63,7 @@ public record Result : Result<Unit>
         else
             throw new InvalidOperationException("Invalid state");
     }
-    
+
     /// <summary>
     /// Evaluates a specified function, based on the .current state
     /// </summary>

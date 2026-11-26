@@ -12,7 +12,7 @@ public class CommandHandlerMappersShould
             var sut = new Core.WriteSide.CommandHandlerMappings();
             sut.GetFromCommand(new Ping());
         });
-    
+
     [Fact]
     public void ThrowExceptionWhenHandlerInterfaceIsNotGeneric() =>
         Should.Throw<HandlerTypeMustBeGenericMappingDefinitionException>(() =>
@@ -36,7 +36,7 @@ public class CommandHandlerMappersShould
             x => x.Events,
             x => x.Result);
     }
-    
+
     [Fact]
     public void ReturnMapperFromCommandAndResultType()
     {
@@ -47,18 +47,18 @@ public class CommandHandlerMappersShould
             Guid>(
             x => x.Events,
             x => x.Result);
-        
+
         sut.AddMapping<CommandBase,
             ILocalCommandHandler<CommandBase, int>,
             MyResult<int>,
             int>(
             x => x.Events,
             x => x.Result);
-        
+
         sut.AddMapping<CommandBase,
             ILocalCommandHandler<CommandBase>,
             MyResult<Unit>>(x => x.Events);
-        
+
         sut
             .GetFromCommand(new PingWithReturnValue(), typeof(int))
             .ShouldNotBeNull();

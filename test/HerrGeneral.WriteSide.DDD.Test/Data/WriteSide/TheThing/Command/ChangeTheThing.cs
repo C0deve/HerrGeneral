@@ -6,7 +6,7 @@ public record ChangeTheThing(string FriendName, Guid AggregateId) : Change<TheTh
 {
     public class Handler : IChangeHandler<TheThing, ChangeTheThing>
     {
-        public TheThing Handle(TheThing aggregate, ChangeTheThing command) => 
+        public TheThing Handle(TheThing aggregate, ChangeTheThing command) =>
             aggregate.AddFriend(command.FriendName, command.Id);
     }
 }

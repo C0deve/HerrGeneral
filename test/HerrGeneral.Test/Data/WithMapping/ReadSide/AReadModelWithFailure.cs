@@ -2,6 +2,6 @@ namespace HerrGeneral.Test.Data.WithMapping.ReadSide;
 
 public class AReadModelWithFailure : ILocalEventHandler<PongWithReadSideFailure>
 {
-    public void Handle(PongWithReadSideFailure notification) => 
+    public void Handle(PongWithReadSideFailure notification) =>
         throw new SomePanicException();
 }

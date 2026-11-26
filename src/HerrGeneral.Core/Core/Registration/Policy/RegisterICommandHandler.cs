@@ -13,16 +13,16 @@ internal class RegisterICommandHandler : IRegistrationPolicy
 
     public void Register(IServiceCollection serviceCollection, Dictionary<Type, HashSet<Type>> externalHandlersProvider)
     {
-        if (!externalHandlersProvider.TryGetValue(_handlerInterface, out var externalCommandHandlers)) 
+        if (!externalHandlersProvider.TryGetValue(_handlerInterface, out var externalCommandHandlers))
             return;
-        
+
         foreach (var externalCommandHandler in externalCommandHandlers)
         {
             serviceCollection.TryAddTransient(externalCommandHandler);
-            
+
             var interfaces = externalCommandHandler
                 .GetInterfacesHavingGenericOpenType(_handlerInterface);
-            
+
             foreach (var @interface in interfaces)
             {
                 if (serviceCollection.Any(sd => sd.ServiceType == @interface))

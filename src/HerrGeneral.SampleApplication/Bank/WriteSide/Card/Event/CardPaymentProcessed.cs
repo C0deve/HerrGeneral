@@ -9,5 +9,5 @@ public record CardPaymentProcessed(
     string MerchantName,
     decimal DailySpentTotal,
     Guid SourceCommandId,
-    CardNumber AggregateId) 
+    CardNumber AggregateId)
     : DomainEvent<BankCard, CardNumber>(SourceCommandId, AggregateId);

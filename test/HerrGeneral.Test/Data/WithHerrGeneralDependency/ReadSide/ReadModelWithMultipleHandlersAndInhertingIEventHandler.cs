@@ -14,6 +14,6 @@ public class ProjectionWithMultipleHandlersAndInheritingIProjectionEventHandler 
     public void Handle(AnotherPong notification) =>
         AddHandled(notification);
 
-    public void Handle(PongPong notification)=>
+    public void Handle(PongPong notification) =>
         AddHandled(notification);
 }

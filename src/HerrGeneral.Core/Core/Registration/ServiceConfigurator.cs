@@ -16,7 +16,7 @@ internal class ServiceConfigurator(RegistrationPolicyProvider policyProvider)
         RegisterReadSide(serviceCollection, configuration, policyProvider);
 
         var maxConcurrentCommands = configuration.MaxConcurrentCommands;
-        
+
         if (configuration.IsTracingEnabled)
         {
             serviceCollection.AddScoped<ActivityTreeCollector>();

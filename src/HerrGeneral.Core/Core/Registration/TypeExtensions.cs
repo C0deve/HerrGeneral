@@ -10,9 +10,9 @@ internal static class TypeExtensions
 
         public bool IsAssignableFromOpenType(Type openType)
         {
-            if(type.IsGenericType && type.GetGenericTypeDefinition() == openType) 
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == openType)
                 return true;
-        
+
             var isAssignable = type.GetInterfaces().Any(t =>
                 t.IsGenericType &&
                 t.GetGenericTypeDefinition() == openType);

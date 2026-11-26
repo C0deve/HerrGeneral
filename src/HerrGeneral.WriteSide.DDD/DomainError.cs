@@ -14,7 +14,7 @@ public abstract class DomainError
     {
         if (string.IsNullOrEmpty(message))
             throw new ArgumentNullException(nameof(message));
-        
+
         Message = message;
     }
 

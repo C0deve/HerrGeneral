@@ -15,7 +15,7 @@ public class CardPaymentProcessedHandler(
     public void Handle(CardPaymentProcessed @event)
     {
         // Fraud detection for card payments
-        if (fraudDetection.IsSuspiciousCardPayment(@event.CardNumber, @event.Amount, @event.MerchantName)) 
+        if (fraudDetection.IsSuspiciousCardPayment(@event.CardNumber, @event.Amount, @event.MerchantName))
             notification.SendSuspiciousCardActivityAlert(@event.CardNumber, @event.Amount, @event.MerchantName);
 
         // Alert when approaching daily limit

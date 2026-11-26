@@ -41,7 +41,7 @@ internal sealed class RegisterIChangeMultiHandler : IRegistrationPolicy
 
             var @interface = TypeDefinition.CommandHandlerInterface.MakeGenericType(commandType, typeof(Unit));
             var internalHandler = typeof(ChangeMultiHandlerInternal<,,,>).MakeGenericType(aggregateType, keyType, commandType, externalCommandHandler);
-            
+
             serviceCollection.TryAddAggregateDependencies(aggregateType, keyType);
             serviceCollection.TryAddTransient(externalCommandHandler);
             serviceCollection.AddTransient(@interface, internalHandler);

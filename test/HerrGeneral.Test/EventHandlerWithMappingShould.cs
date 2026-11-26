@@ -11,7 +11,7 @@ public class EventHandlerWithMappingShould
     {
         var mappers = new EventHandlerMappingsConfiguration();
         mappers.AddWriteSideMapping<EventBase, HerrGeneral.Test.Data.WithMapping.WriteSide.ILocalEventHandler<EventBase>, MyEventHandlerResult>(x => x.Events);
-        
+
         var eventTracker = new EventTracker();
         var sut = new EventHandlerWithMapping<Pong, PongHandler>(new PongHandler(eventTracker),
             new EventHandlerMappingsProvider(mappers));

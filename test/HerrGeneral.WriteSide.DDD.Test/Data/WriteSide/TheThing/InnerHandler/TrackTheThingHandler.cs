@@ -7,9 +7,9 @@ public class TrackTheThingHandler(TheThingTracker tracker) :
     IVoidDomainEventHandler<TheThingIsCreated>,
     IVoidDomainEventHandler<TheThingNameChanged>
 {
-    public void Handle(TheThingIsCreated notification) => 
+    public void Handle(TheThingIsCreated notification) =>
         tracker.Track(notification.AggregateId);
 
-    public void Handle(TheThingNameChanged notification) => 
+    public void Handle(TheThingNameChanged notification) =>
         tracker.UnTrack(notification.AggregateId);
 }

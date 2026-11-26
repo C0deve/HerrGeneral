@@ -37,7 +37,7 @@ public class EventHandlerMappersShould
     {
         var sut = new EventHandlerMappingsConfiguration();
 
-        Should.Throw<InvalidOperationException>(() => 
+        Should.Throw<InvalidOperationException>(() =>
                 sut.AddWriteSideMapping<Pong, IInvalidReturnTypeHandler<Pong>>())
             .Message
             .ShouldContain("must return a type that implements IReadOnlyList<object>");

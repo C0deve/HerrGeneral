@@ -31,14 +31,14 @@ internal class RegisterMappedCommandHandlers(CommandHandlerMappings commandHandl
         {
             var @interface = typeof(ICommandHandler<,>).MakeGenericType(scanResult.CommandType, scanResult.ValueType);
             var internalHandler = typeof(CommandHandlerWithMapping<,,>).MakeGenericType(scanResult.CommandType, scanResult.HandlerType, scanResult.ValueType);
-            
+
             if (serviceCollection.Any(sd => sd.ServiceType == @interface))
             {
                 throw new InvalidOperationException($"Command '{scanResult.CommandType.Name}' already has a registered handler. A command can only have one handler.");
             }
 
             serviceCollection.TryAddTransient(scanResult.HandlerType);
-            
+
             serviceCollection.AddTransient(
                 @interface,
                 internalHandler);

@@ -6,7 +6,7 @@ namespace HerrGeneral;
 public record Result<TResult>
 {
     private readonly TResult? _value;
-    
+
     /// <summary>
     /// A panic exception
     /// </summary>
@@ -16,7 +16,7 @@ public record Result<TResult>
     /// A domain exception
     /// </summary>
     internal readonly object? DomainError;
-   
+
     /// <summary>
     /// Result has a panic error
     /// </summary>
@@ -26,7 +26,7 @@ public record Result<TResult>
     /// Operation succeeded.
     /// </summary>
     public bool IsSuccess => !IsDomainError && !IsPanicError;
-    
+
     /// <summary>
     /// Result has a domain error
     /// </summary>

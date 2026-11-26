@@ -19,7 +19,7 @@ public class Repository<TAggregate, TKey> : IAggregateRepository<TAggregate, TKe
     public void Save(TAggregate aggregate) =>
         _aggregates[aggregate.Id] = aggregate;
 
-    public IEnumerable<TAggregate> FindBySpecification(Func<TAggregate, bool> func) => 
+    public IEnumerable<TAggregate> FindBySpecification(Func<TAggregate, bool> func) =>
         _aggregates.Values.Where(func);
 }
 

@@ -37,12 +37,12 @@ public class AnotherThingProjection : Projection<AnotherThingProjectionItem>,
             item => item with { IsParentNameLiked = true }
         );
 
-    public void Handle(ParentNameNotLiked notification)=>
+    public void Handle(ParentNameNotLiked notification) =>
         Update(
             item => item.Id == notification.Id,
             item => item with { IsParentNameLiked = false }
         );
-    
+
     /// <summary>
     /// Gets all AnotherThing IDs for a given parent aggregate
     /// </summary>

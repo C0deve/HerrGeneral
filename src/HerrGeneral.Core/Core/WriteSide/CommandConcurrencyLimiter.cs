@@ -97,10 +97,10 @@ public sealed class CommandConcurrencyLimiter(int maxConcurrentCommands = 1) : I
             case IKeyedCommand keyedCommand:
                 return keyedCommand.Key;
             default:
-            {
-                var extractor = KeyExtractors.GetOrAdd(command.GetType(), CreateKeyExtractor);
-                return extractor?.Invoke(command);
-            }
+                {
+                    var extractor = KeyExtractors.GetOrAdd(command.GetType(), CreateKeyExtractor);
+                    return extractor?.Invoke(command);
+                }
         }
     }
 

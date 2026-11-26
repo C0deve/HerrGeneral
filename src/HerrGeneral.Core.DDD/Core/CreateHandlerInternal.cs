@@ -71,6 +71,6 @@ internal sealed class CreateHandlerInternal<TAggregate, TKey, TCommand, THandler
 
         return default!;
     }
-    
+
     public Type GetHandlerType() => typeof(THandler);
 }

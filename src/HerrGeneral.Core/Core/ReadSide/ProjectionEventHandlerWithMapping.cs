@@ -24,7 +24,7 @@ internal class ProjectionEventHandlerWithMapping<TEvent, THandler>(THandler hand
             var handleMethod = eventHandlerMappingProvider.GetHandleMethod(typeof(TEvent), typeof(THandler));
             return CompileInvoker(handleMethod);
         });
-        
+
         try
         {
             invoker(handler, evt);

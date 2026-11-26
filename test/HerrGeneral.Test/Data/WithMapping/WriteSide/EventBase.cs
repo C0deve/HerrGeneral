@@ -10,8 +10,8 @@ public abstract record EventBase
     /// </summary>
     /// <param name="sourceCommandId"></param>
     /// <param name="aggregateId"></param>
-    protected EventBase(Guid sourceCommandId, Guid aggregateId) : this(sourceCommandId, aggregateId, DateTime.Now){}
-    
+    protected EventBase(Guid sourceCommandId, Guid aggregateId) : this(sourceCommandId, aggregateId, DateTime.Now) { }
+
     /// <summary>
     /// Ctor
     /// </summary>
@@ -30,17 +30,17 @@ public abstract record EventBase
     /// Execution date of the event.
     /// </summary>
     public DateTime DateTimeEventOccurred { get; }
-    
+
     /// <summary>
     /// Id of the event.
     /// </summary>
     public Guid EventId { get; }
-    
+
     /// <summary>
     /// Id of the command who triggered the event.
     /// </summary>
     public Guid SourceCommandId { get; }
-    
+
     /// <summary>
     ///  Id of the aggregate who triggered the event.
     /// </summary>

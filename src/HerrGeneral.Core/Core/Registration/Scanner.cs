@@ -32,7 +32,7 @@ internal static class Scanner
     /// </summary>
     /// <param name="scanParam"></param>
     /// <param name="openTypes"></param>
-    private static ReadOnlyDictionary<Type,HashSet<Type>> ScanForImplementations(ScanParam scanParam, params HashSet<Type> openTypes) =>
+    private static ReadOnlyDictionary<Type, HashSet<Type>> ScanForImplementations(ScanParam scanParam, params HashSet<Type> openTypes) =>
         scanParam.Assembly.MapImplementationsFromOpenTypes(
             scanParam.Namespaces,
             openTypes);
