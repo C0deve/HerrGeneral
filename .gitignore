@@ -30,3 +30,5 @@ TestResult.xml
 
 /assets/.$HowItWorks.drawio.bkp
 /assets/.$HowItWorks.drawio.dtmp
+# Source folder named Log, not build logs
+!src/HerrGeneral.Testing/Log/

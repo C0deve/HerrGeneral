@@ -67,7 +67,7 @@ public class PipelineExecutionOrderTests(ITestOutputHelper output)
         var uow = new FakeUnitOfWork(log);
 
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton(log)
             .AddSingleton<IUnitOfWork>(uow)
             .AddSingleton<OrderCommandHandler>()

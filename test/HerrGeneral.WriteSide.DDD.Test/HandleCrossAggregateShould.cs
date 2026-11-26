@@ -13,8 +13,8 @@ namespace HerrGeneral.WriteSide.DDD.Test;
 
 public class HandleCrossAggregateShould
 {
-    public class ReactToNameChangedViaHandleCrossAggregate(ToBeNotifiedOnNameChangedTracker tracker) : 
-        ChangesPlanner<AnotherThing>, 
+    public class ReactToNameChangedViaHandleCrossAggregate(ToBeNotifiedOnNameChangedTracker tracker) :
+        ChangesPlanner<AnotherThing>,
         IHandleCrossAggregate<TheThingNameChanged, AnotherThing>
     {
         public ChangeRequests<AnotherThing> Handle(TheThingNameChanged notification) =>
@@ -29,7 +29,7 @@ public class HandleCrossAggregateShould
     public HandleCrossAggregateShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
             .AddSingleton<IAggregateRepository<AnotherThing>, Repository<AnotherThing>>()
             .AddSingleton<ChangesCounter>()

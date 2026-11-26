@@ -25,9 +25,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Divergic.Logging.Xunit"/>
         <PackageReference Include="Shouldly"/>
-        <PackageReference Include="xunit.assert"/>
+        <PackageReference Include="Microsoft.Extensions.Logging"/>
     </ItemGroup>
 
     <ItemGroup>

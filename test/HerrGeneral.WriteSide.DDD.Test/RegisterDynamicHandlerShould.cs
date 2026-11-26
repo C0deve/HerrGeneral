@@ -11,7 +11,7 @@ namespace HerrGeneral.WriteSide.DDD.Test;
 public class RegisterDynamicHandlersShould(ITestOutputHelper output)
 {
     private readonly IServiceProvider _container = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
             .AddSingleton<IAggregateFactory<TheThing>, DefaultAggregateFactory<TheThing>>()
             .AddHerrGeneral(configuration =>

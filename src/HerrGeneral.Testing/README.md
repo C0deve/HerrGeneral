@@ -46,14 +46,14 @@ await mediator.Send(new InvalidOperationCommand())
     .ShouldFailWithPanicExceptionOfType<InvalidOperationException>();
 ```
 
-### 3. xUnit Test Output Logging
+### 3. Test Output Logging
 
-Integrate Microsoft.Extensions.Logging with xUnit's `ITestOutputHelper` during test execution:
+Write Microsoft.Extensions.Logging logs to the test output. Any `Action<string>` works, so no test framework nor version is imposed (xUnit v2 or v3, NUnit…):
 
 ```csharp
 using HerrGeneral.Testing;
 
-services.AddHerrGeneralTestLogger(testOutputHelper, LogLevel.Debug);
+services.AddHerrGeneralTestLogger(testOutputHelper.WriteLine, LogLevel.Debug);
 ```
 
 When enabled, test runs produce a structured hierarchical causal tree in test output:

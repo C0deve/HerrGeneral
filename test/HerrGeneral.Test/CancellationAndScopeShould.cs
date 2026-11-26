@@ -26,7 +26,7 @@ public class CancellationAndScopeShould(ITestOutputHelper output)
     public async Task Propagate_cancellation_token()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(scanner =>
                 scanner.ScanWriteSideOn(typeof(CancelHandler).Assembly, typeof(CancelHandler).Namespace!));
 
@@ -46,7 +46,7 @@ public class CancellationAndScopeShould(ITestOutputHelper output)
     public async Task Reuse_ambient_scope_for_scoped_dependencies()
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddScoped<ScopedDependency>()
             .AddHerrGeneral(scanner =>
                 scanner.ScanWriteSideOn(typeof(ScopedHandler).Assembly, typeof(ScopedHandler).Namespace!));

@@ -18,7 +18,7 @@ public class CreateAggregateShould
     public CreateAggregateShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
             .AddSingleton<IAggregateRepository<AnotherThing>, Repository<AnotherThing>>()
             .AddSingleton<ChangesCounter>()
@@ -31,7 +31,7 @@ public class CreateAggregateShould
                     .ScanWriteSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.WriteSide")
                     .ScanReadSideOn(typeof(TheThing).Assembly, "HerrGeneral.WriteSide.DDD.Test.Data.ReadModel")
             );
-        
+
         _container = services.BuildServiceProvider();
 
         _mediator = _container.GetRequiredService<Mediator>();
@@ -53,7 +53,7 @@ public class CreateAggregateShould
             .Count
             .ShouldBe(1);
     }
-    
+
     [Fact]
     public async Task DispatchEventsCreatedInWriteSideEventHandler()
     {

@@ -16,7 +16,7 @@ public class GenericKeyAggregateShould
     public GenericKeyAggregateShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<IAggregateRepository<OrderAggregate, string>, Repository<OrderAggregate, string>>()
             .AddSingleton<IAggregateRepository<CounterAggregate, int>, Repository<CounterAggregate, int>>()
             .AddSingleton<IAggregateRepository<CustomerAggregate, CustomerId>, Repository<CustomerAggregate, CustomerId>>()

@@ -18,7 +18,7 @@ public class CommandMultiAggregatesShould
     public CommandMultiAggregatesShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
             .AddSingleton<IAggregateRepository<AnotherThing>, Repository<AnotherThing>>()
             .AddSingleton<ChangesCounter>()
@@ -44,7 +44,7 @@ public class CommandMultiAggregatesShould
         await new CreateTheThing("Doe").AssertSendFrom<Guid>(_mediator);
 
         await new DeleteAllTheThings().SendFrom(_mediator).ShouldSuccess();
-        
+
         var repository = _container.GetRequiredService<IAggregateRepository<TheThing>>();
         _container.GetRequiredService<TheThingTracker>()
             .All()
@@ -60,7 +60,7 @@ public class CommandMultiAggregatesShould
         await new CreateTheThing("Doe").AssertSendFrom<Guid>(_mediator);
 
         await new DeleteAllTheThings().AssertSendFrom(_mediator);
-        
+
         _container.GetRequiredService<AProjection>()
             .All()
             .Select(item => item.IsDeleted)

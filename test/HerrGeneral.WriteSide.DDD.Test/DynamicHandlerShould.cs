@@ -16,7 +16,7 @@ public class DynamicHandlerShould
     public DynamicHandlerShould(ITestOutputHelper output)
     {
         var services = new ServiceCollection()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddSingleton<IAggregateRepository<TheThing>, Repository<TheThing>>()
             .AddSingleton<IAggregateFactory<TheThing>, DefaultAggregateFactory<TheThing>>()
             .AddSingleton<IAggregateRepository<AnotherThing>, Repository<AnotherThing>>()
@@ -31,39 +31,39 @@ public class DynamicHandlerShould
         _mediator = services
             .BuildServiceProvider()
             .GetRequiredService<Mediator>();
-}
+    }
 
-[Fact]
-public async Task HandleAChangeCommandWithoutHandler() =>
-    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
-        .Then(personId =>
-            HerrGeneral.DDD.Extensions.SendFrom(new AChangeCommandWithoutHandler("Remy", personId), _mediator))
+    [Fact]
+    public async Task HandleAChangeCommandWithoutHandler() =>
+        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
+            .Then(personId =>
+                HerrGeneral.DDD.Extensions.SendFrom(new AChangeCommandWithoutHandler("Remy", personId), _mediator))
+            .ShouldSuccess();
+
+    [Fact]
+    public async Task HandleASecondChangeCommandWithoutHandler() =>
+        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
+            .Then(personId =>
+                HerrGeneral.DDD.Extensions.SendFrom(new ASecondChangeCommandWithoutHandler("Remy", personId), _mediator))
         .ShouldSuccess();
 
-[Fact]
-public async Task HandleASecondChangeCommandWithoutHandler() =>
-    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
-        .Then(personId =>
-            HerrGeneral.DDD.Extensions.SendFrom(new ASecondChangeCommandWithoutHandler("Remy", personId), _mediator))
-    .ShouldSuccess();
+
+    [Fact]
+    public async Task HandleACreateCommandWithoutHandler() =>
+        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
+            .ShouldSuccess();
+
+    [Fact]
+    public async Task ThrowIfExecuteMethodNotFound() =>
+        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
+            .Then(personId =>
+                HerrGeneral.DDD.Extensions.SendFrom(new AThirdChangeCommandWithoutHandler("Remy", personId), _mediator))
+            .ShouldFailWithPanicExceptionOfType<MissingMethodException>();
 
 
-[Fact]
-public async Task HandleACreateCommandWithoutHandler() =>
-    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
-        .ShouldSuccess();
-
-[Fact]
-public async Task ThrowIfExecuteMethodNotFound() =>
-    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandler("John"), _mediator)
-        .Then(personId =>
-            HerrGeneral.DDD.Extensions.SendFrom(new AThirdChangeCommandWithoutHandler("Remy", personId), _mediator))
-        .ShouldFailWithPanicExceptionOfType<MissingMethodException>();
-
-
-[Fact]
-public async Task ThrowIfConstructorNotFound() =>
-    await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandlerWithFailure(), _mediator)
-        .ShouldFailWithPanicExceptionOfType<Guid, MissingMethodException>();
+    [Fact]
+    public async Task ThrowIfConstructorNotFound() =>
+        await HerrGeneral.DDD.Extensions.SendFrom(new CreateTheThingNoHandlerWithFailure(), _mediator)
+            .ShouldFailWithPanicExceptionOfType<Guid, MissingMethodException>();
 
 }

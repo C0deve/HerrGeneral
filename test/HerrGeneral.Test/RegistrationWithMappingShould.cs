@@ -11,13 +11,13 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
     {
         public IReadOnlyList<object> Handle(TCommand command);
     }
-    
+
     private class PingHandler(Dependency dependency) : ICommandHandler<Ping>
     {
         public IReadOnlyList<object> Handle(Ping command)
         {
             dependency.Called = true;
-            return  [];
+            return [];
         }
     }
 
@@ -25,19 +25,19 @@ public class RegistrationWithMappingShould(ITestOutputHelper output)
     {
         public bool Called { get; set; }
     }
-    
+
     [Fact]
     public async Task Resolve_main_command_handler_with_mapping()
     {
         var services = new ServiceCollection()
             .AddSingleton<Dependency>()
-            .AddHerrGeneralTestLogger(output)
+            .AddHerrGeneralTestLogger(output.WriteLine)
             .AddHerrGeneral(configuration =>
             {
                 configuration
                     .RegisterCommandHandler<Ping, ICommandHandler<Ping>>()
                     .ScanWriteSideOn(typeof(PingHandler).Assembly, typeof(PingHandler).Namespace!);
-                
+
                 return configuration;
             });
 
