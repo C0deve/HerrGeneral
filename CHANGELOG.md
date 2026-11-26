@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.0](https://github.com/C0deve/HerrGeneral/compare/v1.8.0...v2.0.0) (2026-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **testing:** AddHerrGeneralTestLogger(ITestOutputHelper) becomes AddHerrGeneralTestLogger(Action<string>); pass testOutputHelper.WriteLine.
+
+### Features
+
+* **testing:** no dependency on a test framework ([569fe94](https://github.com/C0deve/HerrGeneral/commit/569fe94edf945b7f4824dec9dcc18018bb794a06))
+
+
+### Bug Fixes
+
+* **testing:** commit the Log folder ignored by .gitignore ([c31fb76](https://github.com/C0deve/HerrGeneral/commit/c31fb76310867a77a8f5d8e4c9fa153b0da69e24))
+
 ## [1.8.0](https://github.com/C0deve/HerrGeneral/compare/v1.7.1...v1.8.0) (2026-11-18)
 
 
